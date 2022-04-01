@@ -13,6 +13,9 @@ using LambdaFn
 using DimensionalData
 import Statistics: quantile
 
+using Reexport
+Reexport.@reexport using NaNStatistics
+
 using Printf
 export @sprintf
 
@@ -20,7 +23,7 @@ export @sprintf
 @eval const $(Symbol("@f")) = $(Symbol("@λ"))
 export @λ, @lf, @f
 
-
+include("missing.jl")
 include("plyr.jl")
 include("cmd.jl")
 include("dates.jl")
@@ -32,6 +35,7 @@ include("tools.jl")
 include("factor.jl")
 include("data.frame.jl")
 include("DimensionalData.jl")
+include("statistics.jl")
 
 dim = size
 # whos = varinfo

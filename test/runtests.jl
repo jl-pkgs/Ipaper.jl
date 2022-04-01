@@ -7,6 +7,9 @@ using Ipaper
 # cd(dirname(@__FILE__)) do
 
 include("test-Ipaper.jl")
+include("test-missing.jl")
+include("test-statistics.jl")
+
     # include("test-smooth_whit.jl")
     # include("test-smooth_SG.jl")
     # include("test_wTSM.jl")
