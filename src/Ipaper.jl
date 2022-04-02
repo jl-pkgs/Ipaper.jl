@@ -3,8 +3,7 @@
 # For a copy, see <https://opensource.org/licenses/MIT>.
 
 module Ipaper
-
-# Reexport
+# using Ipaper
 # @reexport using Z: x, y
 
 using Dates
