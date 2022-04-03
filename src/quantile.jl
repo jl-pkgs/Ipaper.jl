@@ -1,5 +1,6 @@
 import Statistics
 import Statistics: require_one_based_indexing
+import NaNStatistics: _nanquantile!
 # quantile, quantile!, _quantile,
 
 # const q_missing = missing;
@@ -102,4 +103,77 @@ quantile2(v::AbstractVector, p; sorted::Bool=false, alpha::Real=1.0, beta::Real=
 quantile2(x::Vector{Missing}, p; kw...) = repeat([q_missing], length(p))
 
 
-export quantile2
+function Quantile(array::AbstractArray{<:Real}, probs=[0, 0.25, 0.5, 0.75, 1]; dims=1, missval=nothing)
+  if missval === nothing
+    mapslices(x -> quantile2(x, probs), array, dims=dims)
+  else
+    array = to_missing(array, missval)
+    Quantile(array, probs, dims=dims)
+  end
+end
+
+function Quantile(array::AbstractNanArray, probs=[0, 0.25, 0.5, 0.75, 1]; dims=1)
+  mapslices(x -> begin
+      ans = quantile2(skipmissing(x), probs)
+    end, array, dims=dims)
+end
+
+# `dims`: symbol
+"""
+  Quantile(array::AbstractArray{<:Real}, probs=[0, 0.25, 0.5, 0.75, 1]; dims=1, missval = nothing)
+  Quantile(array::AbstractNanArray, probs=[0, 0.25, 0.5, 0.75, 1]; dims=1)
+  
+# Examples
+```julia
+arr = rand(200, 200, 365);
+d = DimArray(arr, ["lon", "lat", "time"]);
+probs = [0.5, 0.9];
+Quantile(d, probs; dims = :time)
+```
+"""
+function Quantile(da::AbstractDimArray, probs=[0, 0.25, 0.5, 0.75, 1]; dims=1)
+  # dims = dimnum2(array, dims)
+  if eltype(dims) <: Integer
+    dims = name(da.dims)[dims]
+  end
+  if dims isa String
+    dims = Symbol(dims)
+  end
+
+  bands = collect(name(da.dims))
+  r = mapslices(x -> quantile(x, probs), da, dims=dims)
+  r = DimArray(r.data, bands) # dimension error, rebuild it
+  set(r, dims => :prob)
+end
+
+
+"""
+  nanquantile(A::AbstractArray{T,N}, probs::Vector{<:Real}; 
+    dims::Integer=1, type = Float64) where {T,N}
+
+# Examples
+```julia
+x = rand(4, 4, 201);
+probs = [0.9, 0.99, 0.9999]
+
+r1 = Quantile(x, probs, dims=3);
+r2 = nanquantile(x, probs, dims=3);
+```
+"""
+function nanquantile(A::AbstractArray{T,N}, probs::Vector{<:Real};
+  dims::Integer=1, type=Float64) where {T,N}
+
+  Aₜ = copyto!(Array{T,N}(undef, size(A)), A)
+
+  Size = size(A) |> collect
+  Size[dims] = length(probs)
+
+  res = zeros(type, Size...)
+  for k = 1:length(probs)
+    q = probs[k]
+    selectdim(res, dims, k) .= _nanquantile!(Aₜ, q, dims)
+  end
+  res
+end
+
+export quantile2, nanquantile, Quantile

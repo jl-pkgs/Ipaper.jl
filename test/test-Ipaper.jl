@@ -17,7 +17,7 @@
     push!(res, d)
   end
 
-  
+
   df1 = melt_list(res, id = 1:4)
   df2 = melt_list(res)
   # test for empty list

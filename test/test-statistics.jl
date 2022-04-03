@@ -20,4 +20,14 @@
   x[1:2, :] .= missing
   r2 = Quantile(x, [0.1, 0.2]; dims=2)
   @test all(isnan.(r2[1:2, 1:2]))
+
+  ## Quantile and nanquantile works
+  x = rand(4, 4, 201)
+  probs = [0.9, 0.99, 0.9999]
+
+  r1 = Quantile(x, probs, dims=3)
+  r2 = nanquantile(x, probs, dims=3)
+
+  e_max = maximum(abs.(r1 - r2))
+  @test e_max <= 1e-10
 end

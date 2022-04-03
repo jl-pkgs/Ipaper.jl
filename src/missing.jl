@@ -3,6 +3,9 @@
   AbstractNaArray = AbstractArray{<:Union{T, Missing}} where T <: Real
   AbstractNanArray = AbstractArray{Union{T, Missing}} where T <: Real
 
+- `AbstractNanArray`: must have missing value
+- `AbstractNaArray` : may have missing value
+
 # Examples
 ```
 f(x::AbstractNanArray) = x
@@ -17,20 +20,20 @@ f2([missing])
 ```
 """
 # 可以含有missing、也可以不含有
-AbstractNaArray = AbstractArray{<:Union{T, Missing}} where T <: Real
+AbstractNaArray = AbstractArray{<:Union{T,Missing}} where {T<:Real}
 # 必须含有missing
-AbstractNanArray = AbstractArray{Union{T, Missing}} where T <: Real
+AbstractNanArray = AbstractArray{Union{T,Missing}} where {T<:Real}
 
 
 
 to_missing(x::AbstractNanArray) = x
 
-function to_missing(x::AbstractArray{<:Real}, replacement = 0) 
-  x2 = zeros(Union{eltype(x), Missing}, size(x)...);
-  x2 .= x;
+function to_missing(x::AbstractArray{<:Real}, replacement=0)
+  x2 = zeros(Union{eltype(x),Missing}, size(x)...)
+  x2 .= x
   for i = eachindex(x2)
     if x[i] == replacement
-      x2[i] = missing;
+      x2[i] = missing
     end
   end
   x2
@@ -39,7 +42,7 @@ end
 function replace_value!(x::AbstractNaArray, org, new)
   for i in eachindex(x)
     if !ismissing(x[i]) && x[i] == org
-      x[i] = new;
+      x[i] = new
     end
   end
   x
@@ -52,7 +55,7 @@ end
   drop_missing(x::AbstractArray{<:Real}, replacement = 0)
   drop_missing(x::AbstractNanArray, replacement=0)
 """
-drop_missing(x::AbstractArray{<:Real}, replacement = 0) = x;
+drop_missing(x::AbstractArray{<:Real}, replacement=0) = x;
 
 function drop_missing(x::AbstractNanArray, replacement=0)
   x2 = ones(eltype(x).b, size(x)...) .* replacement
@@ -67,15 +70,17 @@ end
 ## for `AbstractNaArray`: should use `===` to compare
 # Base.:-, Base.isequal
 function Base.isequal(a::AbstractNaArray, b::AbstractNaArray)
-  size(a) != size(b) && return(false)
+  size(a) != size(b) && return (false)
   for i = eachindex(a)
-    if (a[i] !== b[i]); return(false); end
+    if (a[i] !== b[i])
+      return (false)
+    end
   end
-  return(true);
+  return (true)
 end
 
 
-export AbstractNaArray, AbstractNanArray, 
-  isequal, 
+export AbstractNaArray, AbstractNanArray,
+  isequal,
   replace_value!,
   drop_missing, to_missing;
