@@ -9,6 +9,7 @@ using Ipaper
 include("test-Ipaper.jl")
 include("test-missing.jl")
 include("test-statistics.jl")
+include("test-datatable.jl")
 
     # include("test-smooth_whit.jl")
     # include("test-smooth_SG.jl")

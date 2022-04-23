@@ -1,7 +1,7 @@
 name = "Ipaper"
 uuid = "e58298cb-69f7-4186-aecd-5834b6793426"
 authors = ["Dongdong Kong <kongdd@users.noreply.github.com>"]
-version = "0.1.1"
+version = "0.1.2"
 
 [deps]
 CFTime = "179af706-886a-5703-950a-314cd64e0468"

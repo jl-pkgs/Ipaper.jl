@@ -3,7 +3,7 @@ using CSV
 
 # rbind(args...) = cat(args..., dims = 1)
 # cbind(args...) = cat(args..., dims = 2)
-abind(args...; along = 3) = cat(args..., dims = along)
+abind(args...; along=3) = cat(args..., dims=along)
 
 
 rbind(args...) = vcat(args...)
@@ -53,23 +53,23 @@ function melt_list(list; kwargs...)
 end
 
 # seealso: leftjoin, rightjoin, innerjoin, outerjoin
-function dt_merge(x::DataFrame, y::DataFrame; by = nothing,
-    all = false, all_x = all, all_y = all, makeunique = true, kwargs...)
+function dt_merge(x::DataFrame, y::DataFrame; by=nothing,
+    all=false, all_x=all, all_y=all, makeunique=true, kwargs...)
 
     if by === nothing
         by = intersect(names(x), names(y))
     end
     if !all
         if all_x
-            leftjoin(x, y; on = by, makeunique = true, kwargs...)
+            leftjoin(x, y; on=by, makeunique=true, kwargs...)
         elseif all_y
-            rightjoin(x, y; on = by, makeunique = true, kwargs...)
+            rightjoin(x, y; on=by, makeunique=true, kwargs...)
         else
             # all_x = f && all_y = f
-            innerjoin(x, y; on = by, makeunique = true, kwargs...)
+            innerjoin(x, y; on=by, makeunique=true, kwargs...)
         end
     else
-        outerjoin(x, y; on = by, makeunique = true, kwargs...)
+        outerjoin(x, y; on=by, makeunique=true, kwargs...)
     end
 end
 
@@ -79,7 +79,20 @@ fwrite(df, file) = begin
     CSV.write(file, df)
 end
 
+# for data.frame by reference operation
+function datatable(; kwargs...)
+    @show kwargs
+    DataFrame(pairs(kwargs))
+end
+
+#! This version not work
+# function datatable(args...; kwargs...)
+#     params = args..., kwargs...
+#     datatable(; params...)
+# end
+
 export rbind, cbind, abind, melt_list,
-    fread, fwrite, dt_merge, 
+    fread, fwrite, dt_merge,
     is_dataframe,
-    DataFrame, names, nrow
+    DataFrame, names, nrow,
+    datatable
