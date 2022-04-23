@@ -25,7 +25,7 @@ end
 """
     str_replace(x::AbstractString, pattern::AbstractString, replacement::AbstractString = "")
 """
-function str_replace(x::AbstractString, pattern::AbstractString, replacement::AbstractString = "")
+function str_replace(x::AbstractString, pattern::AbstractString, replacement::AbstractString="")
     replace(x, pattern => replacement)
 end
 
@@ -72,17 +72,17 @@ end
 dir("src", "\\.jl\$")
 ```
 """
-function dir(path = ".", pattern = ""; full_names = true, include_dirs = true, recursive = false)
-    res = readdir(path_mnt(path), join = true) # also include directory
-    
+function dir(path=".", pattern=""; full_names=true, include_dirs=true, recursive=false)
+    res = readdir(path_mnt(path), join=true) # also include directory
+
     dirs = filter(isdir, res)
     files = filter(isfile, res)
 
     if recursive
         files_deep = map(dirs) do x
-            dir(x, pattern; full_names = full_names, include_dirs = include_dirs, recursive = recursive)
+            dir(x, pattern; full_names=full_names, include_dirs=include_dirs, recursive=recursive)
         end
-        files = cat([files, files_deep...]..., dims = 1)
+        files = cat([files, files_deep...]..., dims=1)
     end
 
     if include_dirs
