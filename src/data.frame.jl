@@ -81,7 +81,6 @@ end
 
 # for data.frame by reference operation
 function datatable(; kwargs...)
-    @show kwargs
     DataFrame(pairs(kwargs))
 end
 

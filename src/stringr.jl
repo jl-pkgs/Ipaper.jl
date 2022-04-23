@@ -4,13 +4,18 @@ export glob
 
 """
     str_extract(x::AbstractString, pattern::AbstractString)
-    str_extract_all(x::AbstractString, pattern::AbstractString)
+    str_extract(x::Vector{<:AbstractString}, pattern::AbstractString)
 
+    str_extract_all(x::AbstractString, pattern::AbstractString)
 """
 function str_extract(x::AbstractString, pattern::AbstractString)
     r = match(Regex(pattern), basename(x))
     r === nothing ? "" : r.match
     # if ; r.match; else ""; end
+end
+
+function str_extract(x::Vector{<:AbstractString}, pattern::AbstractString)
+    str_extract.(x, pattern)
 end
 
 function str_extract_all(x::AbstractString, pattern::AbstractString)
