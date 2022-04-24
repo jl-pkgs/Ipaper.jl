@@ -11,6 +11,9 @@ using Pipe
 using LambdaFn
 using DimensionalData
 using Plots: plot!, savefig
+
+using DataFrames
+import CSV
 # import Statistics: quantile
 
 using Reexport
@@ -26,6 +29,7 @@ export @λ, @lf, @f
 include("missing.jl")
 include("plyr.jl")
 include("cmd.jl")
+include("macro.jl")
 include("dates.jl")
 include("file_operation.jl")
 include("par.jl")
@@ -35,6 +39,7 @@ include("factor.jl")
 include("data.frame.jl")
 include("DimensionalData.jl")
 include("statistics.jl")
+include("con_parse.jl")
 
 dim = size
 # whos = varinfo
