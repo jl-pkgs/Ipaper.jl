@@ -6,7 +6,7 @@
   y = 2
   dt = datatable(; x, y=[2, 3], z=[1, 3])
 
-  @test typeof(d) == DataFrame
+  @test typeof(dt) == DataFrame
   @test @subset(dt, y == 2) |> nrow == 1
   @test @subset(dt, y == 1) |> nrow == 0
   @test @subset(dt, y == 2 & z == 1) |> nrow == 1
@@ -14,6 +14,9 @@ end
 
 # con = "x == 1 & y == 2 | z == 1"
 # con_dt_transform(con; dname="df")
+pattern_lgl_left = r"([[:alnum:]\.]*)( *)(?=[=<>≤≥\!])" # logical operation
+pattern_lgl_right = r"(?<=[=<>≤≥])( *)([[:alnum:]\.]+)" # logical operation
+pattern_op = r"([=<>≤≥\!]+)"
 
 ## Prepare for @subset
 @testset "pattern key" begin

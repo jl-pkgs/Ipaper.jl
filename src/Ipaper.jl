@@ -7,7 +7,7 @@ module Ipaper
 # @reexport using Z: x, y
 
 using Dates
-using Pipe
+# using Pipe
 using LambdaFn
 using DimensionalData
 using Plots: plot!, savefig
@@ -17,7 +17,7 @@ import CSV
 # import Statistics: quantile
 
 using Reexport
-Reexport.@reexport using NaNStatistics
+@reexport using NaNStatistics
 
 using Printf
 export @sprintf
@@ -25,6 +25,9 @@ export @sprintf
 # rename to @f
 @eval const $(Symbol("@f")) = $(Symbol("@λ"))
 export @λ, @lf, @f
+
+include("Pipe.jl")
+@reexport using .Pipe
 
 include("missing.jl")
 include("plyr.jl")
@@ -45,6 +48,5 @@ dim = size
 # whos = varinfo
 
 export dim
-export @pipe
 
 end
