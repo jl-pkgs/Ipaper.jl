@@ -15,6 +15,9 @@ pipe_equals(e1::Expr, e2::Expr) = stringify_expr(_macroexpand(e1)) == stringify_
   @test _macroexpand(:(@pipe a |> b(xb, _) |> c |> d(_, xd) |> e(xe) |> f(xf, _, yf) |> _[i])) == :((f(xf, e(d(c(b(xb, a)), xd), xe), yf))[i])
 end
 
+
+
+
 #Marked locations
 @testset "Pipe main" begin
   #No change to nonpipes functionality

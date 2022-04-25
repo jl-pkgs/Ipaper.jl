@@ -33,12 +33,20 @@ function find_underscores(x::Expr)
 end
 
 function rewrite(ff::Expr, target)
+  # @show ff.args
+  # dump(ff.args)
   # check underscores; if not found, insert to the first position
   _found = find_underscores(ff)
+
   if !_found
     agrs = ff.args
-    ff.args = [agrs[1], :_, agrs[2:end]...]
+    if typeof(ff.args[2]) == LineNumberNode
+      ff.args = [agrs[1:2]..., :_, agrs[3:end]...]
+    else
+      ff.args = [agrs[1], :_, agrs[2:end]...]
+    end
   end
+  # dump(ff.args)
 
   rep_args = map(x -> replace(x, target), ff.args)
   if ff.args != rep_args
