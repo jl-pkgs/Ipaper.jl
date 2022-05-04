@@ -1,6 +1,7 @@
 function con_parse(x::AbstractString)
-  pattern_lgl_left = r"([[:alnum:]\.]*)( *)(?=[=<>≤≥\!])" # logical operation
-  pattern_lgl_right = r"(?<=[=<>≤≥])( *)([[:alnum:]\.]+)" # logical operation
+  word = "[[:alnum:]_\\.\\[\\]\"]+"
+  pattern_lgl_left = "($word)( *)(?=[=<>≤≥\\!])" # logical operation
+  pattern_lgl_right = "(?<=[=<>≤≥])( *)($word)" # logical operation
   pattern_op = r"([=<>≤≥\!]+)"
 
   k = str_extract_strip(x, pattern_lgl_left)

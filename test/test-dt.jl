@@ -4,8 +4,9 @@
 
 # con = "x == 1 & y == 2 | z == 1"
 # con_dt_transform(con; dname="df")
-pattern_lgl_left = r"([[:alnum:]\.]*)( *)(?=[=<>≤≥\!])" # logical operation
-pattern_lgl_right = r"(?<=[=<>≤≥])( *)([[:alnum:]\.]+)" # logical operation
+word = "[[:alnum:]_\\.\\[\\]]+"
+pattern_lgl_left = "($word)( *)(?=[=<>≤≥\\!])" # logical operation
+pattern_lgl_right = "(?<=[=<>≤≥])( *)($word)" # logical operation
 pattern_op = r"([=<>≤≥\!]+)"
 
 ## Prepare for @subset
