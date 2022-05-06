@@ -81,6 +81,10 @@ function datatable(; kwargs...)
     DataFrame(pairs(kwargs))
 end
 
+function list(; kwargs...)
+    Dict(pairs(kwargs))
+end
+
 #! This version not work
 # function datatable(args...; kwargs...)
 #     params = args..., kwargs...
@@ -91,4 +95,5 @@ export rbind, cbind, abind, melt_list,
     fread, fwrite, dt_merge,
     is_dataframe,
     DataFrame, names, nrow,
+    list,
     datatable
