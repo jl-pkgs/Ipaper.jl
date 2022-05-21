@@ -1,33 +1,7 @@
 # using Ipaper
 # using Test
 
-@testset "Ipaper cbind" begin
-  probs = [0.90, 0.95, 0.99, 0.999, 0.9999]
-  levs = factor(probs)
-
-  d = DataFrame(x = 1:40)
-  names(d)
-
-  d2 = cbind(d, prob = probs[1])
-  @test names(d2) == ["x", "prob"]
-
-  ## for data.frame melt_list
-  res = []
-  for i = 1:4
-    push!(res, d)
-  end
-
-
-  df1 = melt_list(res, id = 1:4)
-  df2 = melt_list(res)
-  # test for empty list
-  push!(res, [])
-  df3 = melt_list(res)
-  @test names(df2) == ["x", "prob", "id", "I"]
-end
-
-
-@testset "Ipaper factor" begin
+@testset "factor" begin
   probs = [0.90, 0.95, 0.99, 0.999, 0.9999]
   levs = factor(probs)
 
@@ -39,7 +13,7 @@ end
 end
 
 
-@testset "Ipaper dir" begin
+@testset "dir" begin
   files = dir(".", "\\.jl\$")
   @test length(files) > 0
 end
@@ -53,7 +27,7 @@ end
 end
 
 # using Test
-@testset "Ipaper stringr" begin
+@testset "stringr" begin
   x = "hello world!"
   @test gsub(x, "hello", "Hello") == "Hello world!"
   @test grepl(x, "!\$")

@@ -1,5 +1,6 @@
 # using Ipaper
 # using Test
+# using PyPlot
 
 @testset "Quantile" begin
   n = 20
