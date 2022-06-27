@@ -1,5 +1,8 @@
 import DataFrames: DataFrame
 import StatsBase: countmap, weights, mean
+import Random: seed!
+
+set_seed(seed) = seed!(seed)
 
 
 # import Base: length
@@ -89,4 +92,5 @@ seq_len(n) = 1:n
 export table, which_isna, which_notna, match2, uniqueN, duplicated, 
     is_empty, not_empty,
     mean, weighted_mean, weighted_sum, 
-    seq_along, seq_len
+    seq_along, seq_len, 
+    set_seed

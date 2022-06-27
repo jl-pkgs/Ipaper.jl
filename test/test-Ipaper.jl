@@ -41,3 +41,6 @@ end
 
 # weighted_mean(x, w)
 # weighted_sum(x, w)
+
+set_seed(1)
+rand(4)

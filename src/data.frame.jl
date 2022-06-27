@@ -138,9 +138,9 @@ function dataframe(; kw...)
 end
 datatable = dataframe
 
-function list(; kw...)
-    Dict(pairs(kw))
-end
+# function list(; kw...)
+#     Dict(pairs(kw))
+# end
 
 #! This version not work
 # function datatable(args...; kw...)
@@ -155,5 +155,4 @@ export rbind, cbind, abind, melt_list,
     as_dataframe,
     as_matrix, nrow, ncol,
     DataFrame, DF, names,
-    list,
     datatable, dataframe
