@@ -8,29 +8,29 @@ DataFrames.ncol(x::AbstractArray) = size(x, 2)
 # cbind(args...) = cat(args..., dims = 2)
 abind(args...; along=3) = cat(args..., dims=along)
 
-# rbind = vcat
+# # rbind = vcat
 rbind(args...; kw...) = vcat(args...; kw...)
-rbind(x) = x
-rbind(x::DataFrame,
-    y::Union{DataFrame,AbstractVecOrMat}; kw...) = begin
-    # @assert (ncol(x) == ncol(y))
-    x = as_dataframe(x)
-    y = as_dataframe(y, names(x))
-    vcat(x, y; kw...)
-end
+# rbind(x) = x
+# rbind(x::DataFrame,
+#     y::Union{DataFrame,AbstractVecOrMat}; kw...) = begin
+#     # @assert (ncol(x) == ncol(y))
+#     x = as_dataframe(x)
+#     y = as_dataframe(y, names(x))
+#     vcat(x, y; kw...)
+# end
 
-rbind(x::AbstractVecOrMat, y::DataFrame; kw...) = rbind(as_dataframe(x, names(y)), y; kw...)
+# rbind(x::AbstractVecOrMat, y::DataFrame; kw...) = rbind(as_dataframe(x, names(y)), y; kw...)
 
-function rbind(x::DataFrame, args...; kw...)
-    x = as_dataframe(x)
-    if length(args) == 0
-        x
-    elseif length(args) == 1
-        rbind(x, args[1])
-    else
-        rbind(rbind(x, args[1]), args[2:end]...)
-    end
-end
+# function rbind(x::DataFrame, args...; kw...)
+#     x = as_dataframe(x)
+#     if length(args) == 0
+#         x
+#     elseif length(args) == 1
+#         rbind(x, args[1])
+#     else
+#         rbind(rbind(x, args[1]), args[2:end]...)
+#     end
+# end
 
 # cbind = hcat # not work
 cbind(args...; kw...) = hcat(args...; kw...)
@@ -102,7 +102,7 @@ function melt_list(list; kw...)
         end
     end
     ind = map(is_dataframe, list)
-    rbind(list[ind]...)
+    vcat(list[ind]...)
 end
 
 # seealso: leftjoin, rightjoin, innerjoin, outerjoin

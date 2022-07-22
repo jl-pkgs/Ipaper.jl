@@ -11,12 +11,12 @@ mat = as_matrix(df)
     @test_nowarn cbind(id=1:10, as_matrix(df), df)
 end
 
-@testset "rbind" begin
-    @test typeof(rbind(mat, mat, mat)) == Matrix{Int64}
-    @test_nowarn rbind(df, mat)
-    @test_nowarn rbind(mat, df)
-    @test_nowarn rbind(df, mat, mat, df)
-end
+# @testset "rbind" begin
+#     @test typeof(rbind(mat, mat, mat)) == Matrix{Int64}
+#     @test_nowarn rbind(df, mat)
+#     @test_nowarn rbind(mat, df)
+#     @test_nowarn rbind(df, mat, mat, df)
+# end
 
 @testset "melt_list" begin
     probs = [0.90, 0.95, 0.99, 0.999, 0.9999]
