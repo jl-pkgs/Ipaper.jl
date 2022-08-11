@@ -2,6 +2,16 @@
 # using Test
 # @subset(dt, y == 2)
 
+@testset "fwrite" begin
+  df = DataFrame(A=1:3, B=4:6, C=7:9)
+  fwrite(df, "a.csv")
+  fwrite(df, "a.csv", append=true)
+
+  df = fread("a.csv")
+  @test nrow(df) == 6
+  rm("a.csv")
+end
+
 # con = "x == 1 & y == 2 | z == 1"
 # con_dt_transform(con; dname="df")
 word = "[[:alnum:]_\\.\\[\\]]+"

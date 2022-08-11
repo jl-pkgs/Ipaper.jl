@@ -126,10 +126,21 @@ function dt_merge(x::DataFrame, y::DataFrame; by=nothing,
     end
 end
 
-fread(f) = DataFrame(CSV.File(f))
-fwrite(df, file) = begin
+fread(file::AbstractString) = DataFrame(CSV.File(file))
+
+"""
+    fwrite(df, file; kw...)
+
+```julia
+df = DataFrame(A=1:3, B=4:6, C=7:9)
+for i in 1:10   # do the following for 10 times
+    CSV.write("append_a_line.csv", df, header = true, append = true)
+end
+```
+"""
+fwrite(df::DataFrame, file::AbstractString; append=false, kw...) = begin
     dirname(file) |> check_dir
-    CSV.write(file, df)
+    CSV.write(file, df; append=append, kw...)
 end
 
 # for data.frame by reference operation
@@ -156,3 +167,6 @@ export rbind, cbind, abind, melt_list,
     as_matrix, nrow, ncol,
     DataFrame, DF, names,
     datatable, dataframe
+
+precompile(fread, (String,))
+precompile(fread, (DataFrame, String))

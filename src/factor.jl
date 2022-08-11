@@ -8,3 +8,6 @@ factor(args...) = CategoricalArray(args...) |> compress
 factor_value(x::CategoricalValue) = levels(x)[x.ref]
 
 export factor, factor_value, CategoricalArrays
+
+
+precompile(factor, (Vector{Float64}, ))
