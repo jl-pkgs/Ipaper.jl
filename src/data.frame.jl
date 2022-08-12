@@ -35,12 +35,12 @@ rbind(args...; kw...) = vcat(args...; kw...)
 # cbind = hcat # not work
 cbind(args...; kw...) = hcat(args...; kw...)
 cbind(x) = x
-cbind(x::DataFrame, y::Union{DataFrame,AbstractVecOrMat}) =
+cbind(x::AbstractDataFrame, y::Union{AbstractDataFrame,AbstractVecOrMat}) =
     hcat(as_dataframe(x), as_dataframe(y); makeunique=true)
-cbind(x::AbstractVecOrMat, y::DataFrame; kw...) = cbind(as_dataframe(x), y; kw...)
+cbind(x::AbstractVecOrMat, y::AbstractDataFrame; kw...) = cbind(as_dataframe(x), y; kw...)
 
 # by reference
-function cbind(x::DataFrame, args...; kw...)
+function cbind(x::AbstractDataFrame, args...; kw...)
     x = as_dataframe(x)
     n = length(kw)
     if n > 0
@@ -73,9 +73,9 @@ macro as_df(x)
 end
 export @as_df;
 
-as_matrix(x::DataFrame) = Matrix(x)
+as_matrix(x::AbstractDataFrame) = Matrix(x)
 
-as_dataframe(x::DataFrame, args...) = x
+as_dataframe(x::AbstractDataFrame, args...) = x
 as_dataframe(x::AbstractVector) = @as_df(x)
 
 as_dataframe(x::AbstractMatrix) = DataFrame(x, :auto)
@@ -106,8 +106,7 @@ function melt_list(list; kw...)
 end
 
 # rename Duplicate variables in dt_merge
-rename_varsDup(x::AbstractString, vars_dup::Vector{<:AbstractString}, suffix="_x") = x in vars_dup ? x * suffix : x
-
+rename_varsDup(x::AbstractString, vars_dup::Vector, suffix="_x") = x in vars_dup ? x * suffix : x
 
 """
     $(TYPEDSIGNATURES)
@@ -122,14 +121,16 @@ d[:, "B.rh"]
 seealso: [`leftjoin`](@ref), [`rightjoin`](@ref), [`innerjoin`](@ref), 
     [`outerjoin`](@ref)
 """
-function dt_merge(x::DataFrame, y::DataFrame; by=nothing,
+function dt_merge(x::AbstractDataFrame, y::AbstractDataFrame; by=nothing,
     all=false, all_x=all, all_y=all, makeunique=true, suffixes=["_x", "_y"], kw...)
 
     if by === nothing
         by = intersect(names(x), names(y))
     end
-
+    by = String.(by) # Symbol not work in `setdiff`
+    
     vars_dup = intersect(setdiff(names(x), by), setdiff(names(y), by))
+    
     rename_x(x) = rename_varsDup(x, vars_dup, suffixes[1])
     rename_y(x) = rename_varsDup(x, vars_dup, suffixes[2])
     kw2 = (kw..., on=by, makeunique, renamecols=rename_x => rename_y)
@@ -161,7 +162,7 @@ fwrite(df, "a.csv", append=true)
 fread("a.csv")
 ```
 """
-fwrite(df::DataFrame, file::AbstractString; append=false, kw...) = begin
+fwrite(df::AbstractDataFrame, file::AbstractString; append=false, kw...) = begin
     dirname(file) |> check_dir
     CSV.write(file, df; append=append, kw...)
 end
@@ -187,6 +188,7 @@ export rbind, cbind, abind, melt_list,
     fread, fwrite, dt_merge,
     is_dataframe,
     as_dataframe,
+    # rename_varsDup,
     as_matrix, nrow, ncol,
     DataFrame, DF, names,
     datatable, dataframe

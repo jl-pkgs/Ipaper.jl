@@ -39,7 +39,7 @@ Base.names(x::MNT) = keys(x) |> collect
 # end
 
 
-function add(x::MutableNamedTuple, y::MutableNamedTuple)
+function append(x::MutableNamedTuple, y::MutableNamedTuple)
   list([keys(x)..., keys(y)...],
     [values(x)..., values(y)...],)
 end
@@ -51,4 +51,4 @@ function Base.:(==)(x::MNT, y::MNT)
   keys(x) == keys(y) && values(x) == values(y)
 end
 
-export list, add
+export list, append

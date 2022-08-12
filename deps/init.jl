@@ -3,6 +3,8 @@ using Ipaper
 
 dir(".")
 
+probs = factor([0.9, 0.99])
+
 df = DataFrame(A=1:3, B=4:6, C=7:9)
 fwrite(df, "a.csv")
 fwrite(df, "a.csv", append=true)
@@ -11,4 +13,7 @@ rm("a.csv")
 
 d1 = DataFrame(A=1:3, B=4:6, C=7:9)
 d2 = DataFrame(A=1:3, B=4:6, D=7:9)
-d = dt_merge(d1, d2, by = "A", suffixes=["_x", ".y"])
+r1 = dt_merge(d1, d2, by="A", suffixes=["_x", ".y"])
+r1 = dt_merge(d1, d2, by=["A"], suffixes=["_x", ".y"])
+r2 = dt_merge(d1, d2, by=:A, suffixes=["_x", ".y"])
+r2 = dt_merge(d1, d2, by=[:A], suffixes=["_x", ".y"])

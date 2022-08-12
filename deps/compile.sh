@@ -4,7 +4,7 @@ time julia compile.jl
 
 # "julia.additionalArgs": [
 #         "--sysimage",
-#         "/opt/julia/libnctools.so"
+#         "/opt/julia/libIpaper.so"
 #     ],
 time julia --sysimage /opt/julia/libIpaper.so init.jl
 time julia init.jl
