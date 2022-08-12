@@ -2,6 +2,13 @@
 # using Test
 # @subset(dt, y == 2)
 
+@testset "dt_merge" begin
+   d1 = DataFrame(A=1:3, B=4:6, C=7:9)
+   d2 = DataFrame(A=1:3, B=4:6, D=7:9)
+   d = dt_merge(d1, d2, by = "A", suffixes=["_tas", ".rh"])
+   @test length(d[:, "B.rh"]) == 3
+end
+
 @testset "fwrite" begin
   df = DataFrame(A=1:3, B=4:6, C=7:9)
   fwrite(df, "a.csv")

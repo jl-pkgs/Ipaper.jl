@@ -5,6 +5,7 @@
 module Ipaper
 # using Ipaper
 # @reexport using Z: x, y
+using DocStringExtensions: TYPEDSIGNATURES
 
 using Dates
 # using Pipe

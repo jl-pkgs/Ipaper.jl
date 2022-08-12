@@ -105,24 +105,46 @@ function melt_list(list; kw...)
     vcat(list[ind]...)
 end
 
-# seealso: leftjoin, rightjoin, innerjoin, outerjoin
+# rename Duplicate variables in dt_merge
+rename_varsDup(x::AbstractString, vars_dup::Vector{<:AbstractString}, suffix="_x") = x in vars_dup ? x * suffix : x
+
+
+"""
+    $(TYPEDSIGNATURES)
+
+```julia
+d1 = DataFrame(A=1:3, B=4:6, C=7:9)
+d2 = DataFrame(A=1:3, B=4:6, D=7:9)
+d = dt_merge(d1, d2, by = "A", suffixes=["_tas", ".rh"])
+d[:, "B.rh"]
+```
+
+seealso: [`leftjoin`](@ref), [`rightjoin`](@ref), [`innerjoin`](@ref), 
+    [`outerjoin`](@ref)
+"""
 function dt_merge(x::DataFrame, y::DataFrame; by=nothing,
-    all=false, all_x=all, all_y=all, makeunique=true, kw...)
+    all=false, all_x=all, all_y=all, makeunique=true, suffixes=["_x", "_y"], kw...)
 
     if by === nothing
         by = intersect(names(x), names(y))
     end
+
+    vars_dup = intersect(setdiff(names(x), by), setdiff(names(y), by))
+    rename_x(x) = rename_varsDup(x, vars_dup, suffixes[1])
+    rename_y(x) = rename_varsDup(x, vars_dup, suffixes[2])
+    kw2 = (kw..., on=by, makeunique, renamecols=rename_x => rename_y)
+    # @show kw2
     if !all
         if all_x
-            leftjoin(x, y; on=by, makeunique=true, kw...)
+            leftjoin(x, y; kw2...)
         elseif all_y
-            rightjoin(x, y; on=by, makeunique=true, kw...)
+            rightjoin(x, y; kw2...)
         else
             # all_x = f && all_y = f
-            innerjoin(x, y; on=by, makeunique=true, kw...)
+            innerjoin(x, y; kw2...)
         end
     else
-        outerjoin(x, y; on=by, makeunique=true, kw...)
+        outerjoin(x, y; kw2...)
     end
 end
 
@@ -133,9 +155,10 @@ fread(file::AbstractString) = DataFrame(CSV.File(file))
 
 ```julia
 df = DataFrame(A=1:3, B=4:6, C=7:9)
-for i in 1:10   # do the following for 10 times
-    CSV.write("append_a_line.csv", df, header = true, append = true)
-end
+fwrite(df, "a.csv")
+fwrite(df, "a.csv", append=true)
+
+fread("a.csv")
 ```
 """
 fwrite(df::DataFrame, file::AbstractString; append=false, kw...) = begin
