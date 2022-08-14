@@ -103,6 +103,7 @@ quantile2(v::AbstractVector, p; sorted::Bool=false, alpha::Real=1.0, beta::Real=
 quantile2(x::Vector{Missing}, p; kw...) = repeat([q_missing], length(p))
 
 
+# Quantile also works for missing 
 function Quantile(array::AbstractArray{<:Real}, probs=[0, 0.25, 0.5, 0.75, 1]; dims=1, missval=nothing)
   if missval === nothing
     mapslices(x -> quantile2(x, probs), array, dims=dims)

@@ -1,4 +1,4 @@
-rm /opt/julia/libIpaper.so
+rm /opt/julia/*.so
 time julia compile.jl
 
 # add to vscode setting

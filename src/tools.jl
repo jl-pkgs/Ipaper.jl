@@ -28,6 +28,14 @@ which_notna(x) = findall(x .!= nothing)
 
 # Examples
 ```julia
+## original version
+mds = [1, 4, 3, 5]
+md = [1, 5, 6]
+
+findall(indexin(mds, md) .!= nothing)
+indexin(md, mds)
+
+## modern version
 x = [1, 2, 3, 3, 4]
 y = [0, 2, 2, 3, 4, 5, 6]
 match2(x, y)
@@ -41,7 +49,7 @@ function match2(x, y)
     I_x = which_notna(ind)
     I_y = something.(ind[I_x])
     # use `something` to suppress nothing `Union`
-    DataFrame(value = x[I_x], I_x = I_x, I_y = I_y)
+    DataFrame(; value=x[I_x], I_x, I_y)
 end
 
 uniqueN(x) = length(unique(x))
@@ -70,15 +78,19 @@ function duplicated(x::Vector)
     grps = filter(x -> x[2] > 1, grps)
 
     n = length(x)
-    res  = BitArray(undef, n)
+    res = BitArray(undef, n)
     res .= false
-    for (key, val) in grps
+    for (key, freq) in grps
         k = 0
         for i = 1:n
             if x[i] == key
                 k = k + 1
-                if k >= 2; res[i] = true; end
-                if k == val; break; end
+                if k >= 2
+                    res[i] = true
+                end
+                if k == freq
+                    break
+                end
             end
         end
     end
@@ -89,8 +101,8 @@ seq_along(x) = 1:length(x)
 seq_len(n) = 1:n
 
 
-export table, which_isna, which_notna, match2, uniqueN, duplicated, 
+export table, which_isna, which_notna, match2, uniqueN, duplicated,
     is_empty, not_empty,
-    mean, weighted_mean, weighted_sum, 
-    seq_along, seq_len, 
+    mean, weighted_mean, weighted_sum,
+    seq_along, seq_len,
     set_seed

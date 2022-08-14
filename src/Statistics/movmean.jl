@@ -21,16 +21,15 @@ end
 
 moving mean average
 """
-function movmean(x::AbstractArray, halfwin::Integer=2; dim=3, fun=mean, FT=Float64)
-  @assert length(dim) == 1 "The length of `dim` should be 1!"
-
-  n = size(x, dim)
+function movmean(x::AbstractArray, halfwin::Integer=2; dims=3, fun=mean, FT=Float64)
+  @assert length(dims) == 1 "The length of `dims` should be 1!"
+  
+  n = size(x, dims)
   zi = zeros(FT, n)
-  mapslices(xi -> movmean!(zi, xi, halfwin; fun=fun), x; dims=dim)
+  mapslices(xi -> movmean!(zi, xi, halfwin; fun=fun), x; dims=dims)
 end
 
 ## the weighted version --------------------------------------------------------
-
 weighted_mean(x::AbstractVector, w::AbstractVector) = sum(x .* w) / sum(w)
 
 # 4 times slower
