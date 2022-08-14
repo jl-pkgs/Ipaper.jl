@@ -9,10 +9,16 @@
 # Examples
 ```julia
 dates = make_date(2010, 1, 1):Day(1):make_date(2010, 12, 31)
+ym = format.(dates, "yyyy-mm")
+
+## example 01
+x1 = rand(365)
+apply(x1, 1, by)
+
+## example 02
 n = 100
 x = rand(n, n, 365)
 
-ym = format.(dates, "yyyy-mm")
 res = apply(x, 3, ym)
 size(res) == (n, n, 12)
 
