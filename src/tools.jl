@@ -100,9 +100,11 @@ end
 seq_along(x) = 1:length(x)
 seq_len(n) = 1:n
 
+Range(x) = [minimum(x), maximum(x)]
 
 export table, which_isna, which_notna, match2, uniqueN, duplicated,
     is_empty, not_empty,
     mean, weighted_mean, weighted_sum,
     seq_along, seq_len,
+    Range, 
     set_seed

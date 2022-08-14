@@ -8,4 +8,5 @@ include("Vogel2020.jl")
 
 export mean, movmean, weighted_mean, weighted_movmean
 export apply
-export quantile2, nanquantile, Quantile
+export nanquantile, Quantile
+# quantile2, 

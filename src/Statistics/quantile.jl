@@ -102,11 +102,30 @@ quantile2(v::AbstractVector, p; sorted::Bool=false, alpha::Real=1.0, beta::Real=
 # fix quantile missing
 quantile2(x::Vector{Missing}, p; kw...) = repeat([q_missing], length(p))
 
+# function _copy!(dest::AbstractArray{T}, source::AbstractArray{T}) where {T <: Real}
+#   @inbounds for i in eachindex(dest)
+#     dest[i] = source[i]
+#   end
+# end
+
+function Quantile2(x::AbstractArray, probs=[0, 0.25, 0.5, 0.75, 1]; dims=3)
+  # @assert length(dims) == 1 "The length of `dims` should be 1!"
+  n = size(x, dims)
+  zi = zeros(eltype(x), n)
+  mapslices(xi -> begin
+      copy!(zi, xi) # copy xi to zi
+      Statistics.quantile!(zi, probs)
+    end, x; dims=dims)
+end
 
 # Quantile also works for missing 
-function Quantile(array::AbstractArray{<:Real}, probs=[0, 0.25, 0.5, 0.75, 1]; dims=1, missval=nothing)
+"""
+# Arguments
+- `kw...`: other parameters to [`quantile2`](@ref)
+"""
+function Quantile(array::AbstractArray{<:Real}, probs=[0, 0.25, 0.5, 0.75, 1]; dims=1, missval=nothing, kw...)
   if missval === nothing
-    mapslices(x -> quantile2(x, probs), array, dims=dims)
+    mapslices(x -> quantile2(x, probs; kw...), array, dims=dims)
   else
     array = to_missing(array, missval)
     Quantile(array, probs, dims=dims)

@@ -21,7 +21,7 @@ Moving Threshold for Heatwaves Definition
   Geophysical Research: Atmospheres, 125(9).
   https://doi.org/10.1029/2019JD032070
 """
-function cal_mTRS_base(data::AbstractArray{T}, dates;
+function cal_mTRS_base!(res, data::AbstractArray{T}, dates;
   probs::Vector{Float64}=[0.90, 0.95, 0.99, 0.999, 0.9999],
   use_mov=true,
   halfwin::Int=7,
@@ -39,9 +39,9 @@ function cal_mTRS_base(data::AbstractArray{T}, dates;
     doy_min = 1
   end
 
-  dim = size(data)
-  nprob = length(probs)
-  res = zeros(T, dim[1:2]..., doy_max, nprob)
+  # dim = size(data)
+  # nprob = length(probs)
+  # res = zeros(T, dim[1:2]..., doy_max, nprob)
 
   @inbounds @par parallel for doy = doy_min:doy_max
     doys_mov = use_mov ? find_adjacent_doy(doy; doy_max=doy_max, halfwin=halfwin) : [doy]
@@ -52,7 +52,7 @@ function cal_mTRS_base(data::AbstractArray{T}, dates;
       md = mds[doys_mov]
       ind = findall(indexin(mmdd, md) .!= nothing)
     end
-    @views res[:, :, doy, :] = Ipaper.Quantile(data[:, :, ind], probs; dims=3)
+    @views res[:, :, doy, :] = Ipaper.Quantile2(data[:, :, ind], probs; dims=3)
     # @views res[:, doy] = Quantile(data[:, ind], probs)
   end
   res
@@ -95,7 +95,9 @@ Moving Threshold for Heatwaves Definition
   Geophysical Research: Atmospheres, 125(9).
   https://doi.org/10.1029/2019JD032070
 """
-function cal_mTRS_full(arr::AbstractArray, dates; width=15, verbose=true, use_mov=true, kw...)
+function cal_mTRS_full(arr::AbstractArray{T}, dates; width=15, verbose=true, use_mov=true, 
+  probs = [0.90, 0.95, 0.99, 0.999, 0.9999], kw...) where {T <: Real}
+
   # 必须是完整的年份，不然会出错
   years = year.(dates)
   grps = unique(years)
@@ -104,13 +106,18 @@ function cal_mTRS_full(arr::AbstractArray, dates; width=15, verbose=true, use_mo
   year_max = maximum(grps)
 
   mmdd = Dates.format.(dates, "mm-dd")
-  mds = mmdd |> unique |> sort
-
-  # 相对arr做15天的滑动平均
+  mds = unique(mmdd) |> sort
+  doy_max = length(mds)
+  # doy_min = 1
+  
   if !use_mov
-    printstyled("running: 15d moving average")
+    printstyled("running: 15d moving average first ... ")
     @time arr = movmean(arr, 7; dims=3, FT=Float32)
   end
+  
+  dim = size(arr)
+  nprob = length(probs)
+  mTRS = zeros(T, dim[1:2]..., doy_max, nprob)
 
   res = map(year -> begin
       verbose && println("running [year=$year]")
@@ -120,8 +127,8 @@ function cal_mTRS_full(arr::AbstractArray, dates; width=15, verbose=true, use_mo
       ind = @.(years >= year_min && year <= year_max)
       _data = selectdim(arr, 3, ind)
       _dates = @view dates[ind]
-      mTRS = cal_mTRS_base(_data, _dates; use_mov=use_mov, kw...)
-
+      cal_mTRS_base!(mTRS, _data, _dates; use_mov=use_mov, kw...)
+      
       # 使md匹配起来
       _md = @view mmdd[years.==year]
       ind = findall(indexin(mds, _md) .!= nothing)
