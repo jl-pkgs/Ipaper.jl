@@ -14,7 +14,7 @@ include("test-dt.jl")
 include("test-dt_pipe.jl")
 include("test-list.jl")
 include("test-date.jl")
-
+include("test-apply.jl")
 # include("test-smooth_whit.jl")
 # include("test-smooth_SG.jl")
 # include("test_wTSM.jl")

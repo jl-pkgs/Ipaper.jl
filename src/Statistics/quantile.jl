@@ -175,5 +175,3 @@ function nanquantile(A::AbstractArray{T,N}, probs::Vector{<:Real};
   end
   res
 end
-
-export quantile2, nanquantile, Quantile

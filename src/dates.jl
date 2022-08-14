@@ -1,5 +1,5 @@
 import Dates
-import Dates: DateTime, Year, Month, Day, year, month, day
+import Dates: DateTime, Year, Month, Day, year, month, day, format
 using CFTime
 
 # only for daily scale 
@@ -23,7 +23,5 @@ make_datetime = DateTime
 make_date = DateTime
 
 export dates_miss, dates_nmiss,
-    year, month, day,
-    Year, Month, Day,
-    DateTime,
+    DateTime, year, month, day, Year, Month, Day, format, 
     make_datetime, make_date

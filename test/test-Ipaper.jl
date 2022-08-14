@@ -29,8 +29,7 @@ end
   check_dir("a/b")
   @test isdir("a/b")
   check_dir("a/b")
-
-  rm("a/b")
+  rm("a", recursive=true)
 end
 
 @testset "duplicated" begin

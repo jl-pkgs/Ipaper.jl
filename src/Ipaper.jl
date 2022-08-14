@@ -32,7 +32,6 @@ include("Pipe.jl")
 @reexport using .Pipe
 
 include("missing.jl")
-include("plyr.jl")
 include("cmd.jl")
 include("macro.jl")
 include("dates.jl")
@@ -44,7 +43,7 @@ include("factor.jl")
 include("list.jl")
 include("data.frame.jl")
 include("DimensionalData.jl")
-include("statistics.jl")
+include("Statistics/Statistics.jl")
 include("con_parse.jl")
 
 dim = size
