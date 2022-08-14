@@ -7,7 +7,8 @@ module Ipaper
 # @reexport using Z: x, y
 using DocStringExtensions: TYPEDSIGNATURES
 
-using Dates
+# using Dates
+import Dates
 # using Pipe
 using LambdaFn
 using DimensionalData

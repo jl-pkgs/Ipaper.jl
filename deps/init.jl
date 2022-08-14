@@ -16,5 +16,5 @@ r1 = dt_merge(d1, d2, by="A", suffixes=["_x", ".y"])
 r1 = dt_merge(d1, d2, by=["A"], suffixes=["_x", ".y"])
 r2 = dt_merge(d1, d2, by=:A, suffixes=["_x", ".y"])
 r2 = dt_merge(d1, d2, by=[:A], suffixes=["_x", ".y"])
-r2
+println(r2)
 # ! time julia --sysimage /opt/julia/libIpaper.so init.jl

@@ -5,10 +5,12 @@
   probs = [0.90, 0.95, 0.99, 0.999, 0.9999]
   levs = factor(probs)
 
+  @test factor_value(levs) == probs
+  
   n = Int(1e3)
   x = repeat([levs[1]], n)
   y = repeat([probs[1]], n)
-
+  
   sizeof(x) < sizeof(y)
 end
 
@@ -16,6 +18,19 @@ end
 @testset "dir" begin
   files = dir(".", "\\.jl\$")
   @test length(files) > 0
+end
+
+
+@testset "check_file" begin
+  check_file("a/b/c.tmp")
+  @test isdir("a/b")
+  check_file("a/b/c.tmp")
+
+  check_dir("a/b")
+  @test isdir("a/b")
+  check_dir("a/b")
+
+  rm("a/b")
 end
 
 @testset "duplicated" begin

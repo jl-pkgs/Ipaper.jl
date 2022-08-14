@@ -1,5 +1,6 @@
+import Dates
+import Dates: DateTime, Year, Month, Day, year, month, day
 using CFTime
-using Dates
 
 # only for daily scale 
 function dates_miss(dates)
@@ -18,19 +19,11 @@ function dates_nmiss(dates)
     n_full - length(dates) # n_miss
 end
 
-
-year = Dates.year
-month = Dates.month
-day = Dates.day
-
-Year = Dates.Year
-Month = Dates.Month
-Day = Dates.Day
-
 make_datetime = DateTime
 make_date = DateTime
 
 export dates_miss, dates_nmiss,
     year, month, day,
     Year, Month, Day,
+    DateTime,
     make_datetime, make_date
