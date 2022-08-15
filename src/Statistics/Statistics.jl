@@ -2,6 +2,8 @@ import Statistics
 using Statistics: mean
 
 include("quantile.jl")
+include("quantile_nd.jl")
+
 include("movmean.jl")
 include("apply.jl")
 include("Vogel2020.jl")

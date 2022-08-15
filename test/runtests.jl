@@ -8,7 +8,7 @@ using Ipaper
 
 include("test-Ipaper.jl")
 include("test-missing.jl")
-include("test-statistics.jl")
+include("test-quantile.jl")
 include("test-Pipe.jl")
 include("test-dt.jl")
 include("test-dt_pipe.jl")
