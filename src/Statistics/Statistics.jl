@@ -1,6 +1,7 @@
 import Statistics
 using Statistics: mean
 
+include("missing.jl")
 include("quantile.jl")
 include("quantile_nd.jl")
 
@@ -10,5 +11,4 @@ include("Vogel2020.jl")
 
 export mean, movmean, weighted_mean, weighted_movmean
 export apply
-export nanquantile, Quantile
-# quantile2, 
+export nanquantile, Quantile, quantile!

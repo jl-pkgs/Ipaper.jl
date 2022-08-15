@@ -12,32 +12,3 @@ _arr = deepcopy(arr);
 
 r1 == r2
 arr == _arr
-
-# x = ones(4)
-# y = Base.copymutable(x)
-# y[1] = 4
-# y
-# x
-
-
-using Random
-
-begin
-  Random.seed!(1)
-  x = rand(100)
-
-  r1 = quantile!(x, 0.5; sorted=true) # 第一种求解是错误的
-  r2 = quantile!(x, 0.5)
-
-  @show r1
-  @show r2
-  x
-end
-
-import Statistics
-# 节省zi的开支
-
-
-# y = zeros(3)
-# quantile!(y, x, [0.1, 0.5, 0.9]) === y
-

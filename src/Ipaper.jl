@@ -31,7 +31,6 @@ export @λ, @lf, @f
 include("Pipe.jl")
 @reexport using .Pipe
 
-include("missing.jl")
 include("cmd.jl")
 include("macro.jl")
 include("dates.jl")

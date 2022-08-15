@@ -1,7 +1,6 @@
 import Statistics
 import Statistics: require_one_based_indexing
-import NaNStatistics: _nanquantile!
-# quantile, quantile!, _quantile,
+# quantile, quantile!, ,
 
 # const q_missing = missing;
 const q_missing = NaN; #-9999.0;
@@ -37,7 +36,7 @@ quantile!(v::AbstractVector, p::Real; sorted::Bool=false, alpha::Real=1.0, beta:
 
 # Function to perform partial sort of v for quantiles in given range
 function _quantilesort!(v::AbstractArray, sorted::Bool, minp::Real, maxp::Real)
-  isempty(v) && return #throw(ArgumentError("empty data vector"))
+  isempty(v) && return #throw(ArgumentError("empty data vector")) # kdd
   require_one_based_indexing(v)
 
   if !sorted
@@ -65,7 +64,7 @@ end
   n = length(v)
 
   # @assert n > 0 # this case should never happen here
-  n == 0 && return q_missing
+  n == 0 && return q_missing # kdd
 
   m = alpha + p * (one(alpha) - alpha - beta)
   aleph = n * p + oftype(p, m)
@@ -87,36 +86,32 @@ end
   end
 end
 
+
+## QUANTILE FUNCITON for vector containing missing values ----------------------
 _quantile(v::Nothing, p::Real; alpha::Real=1.0, beta::Real=alpha) = q_missing;
 _quantile(v::Vector{Union{}}, p::Real; alpha::Real=1.0, beta::Real=alpha) = q_missing;
 
 quantile!(v::Vector{Union{}}, p::Float64; kw...) = q_missing;
 
 
-quantile2(itr, p; sorted::Bool=false, alpha::Real=1.0, beta::Real=alpha) =
+quantile_missing(itr, p; sorted::Bool=false, alpha::Real=1.0, beta::Real=alpha) =
   quantile!(collect(itr), p, sorted=sorted, alpha=alpha, beta=beta)
 
-quantile2(v::AbstractVector, p; sorted::Bool=false, alpha::Real=1.0, beta::Real=alpha) =
+quantile_missing(v::AbstractVector, p; sorted::Bool=false, alpha::Real=1.0, beta::Real=alpha) =
   quantile!(sorted ? v : Base.copymutable(v), p; sorted=sorted, alpha=alpha, beta=beta)
 
-# fix quantile missing
-quantile2(x::Vector{Missing}, p; kw...) = repeat([q_missing], length(p))
-
-# function _copy!(dest::AbstractArray{T}, source::AbstractArray{T}) where {T <: Real}
-#   @inbounds for i in eachindex(dest)
-#     dest[i] = source[i]
-#   end
-# end
+# fix quantile missing; all is missing
+quantile_missing(x::Vector{Missing}, p; kw...) = repeat([q_missing], length(p))
 
 
 # Quantile also works for missing 
 """
 # Arguments
-- `kw...`: other parameters to [`quantile2`](@ref)
+- `kw...`: other parameters to [`quantile_missing`](@ref)
 """
 function Quantile(array::AbstractArray{<:Real}, probs=[0, 0.25, 0.5, 0.75, 1]; dims=1, missval=nothing, kw...)
   if missval === nothing
-    mapslices(x -> quantile2(x, probs; kw...), array, dims=dims)
+    mapslices(x -> quantile_missing(x, probs; kw...), array, dims=dims)
   else
     array = to_missing(array, missval)
     Quantile(array, probs, dims=dims)
@@ -125,40 +120,10 @@ end
 
 function Quantile(array::AbstractNanArray, probs=[0, 0.25, 0.5, 0.75, 1]; dims=1)
   mapslices(x -> begin
-      ans = quantile2(skipmissing(x), probs)
+      ans = quantile_missing(skipmissing(x), probs)
     end, array, dims=dims)
 end
 
-
-
-"""
-  nanquantile(A::AbstractArray{T,N}, probs::Vector{<:Real}; 
-    dims::Integer=1, type = Float64) where {T,N}
-
-# Examples
-```julia
-x = rand(4, 4, 201);
-probs = [0.9, 0.99, 0.9999]
-
-r1 = Quantile(x, probs, dims=3);
-r2 = nanquantile(x, probs, dims=3);
-```
-"""
-function nanquantile(A::AbstractArray{T,N}, probs::Vector{<:Real};
-  dims::Integer=1, type=Float64) where {T,N}
-
-  Aₜ = copyto!(Array{T,N}(undef, size(A)), A)
-
-  Size = size(A) |> collect
-  Size[dims] = length(probs)
-
-  res = zeros(type, Size...)
-  for k = 1:length(probs)
-    q = probs[k]
-    selectdim(res, dims, k) .= _nanquantile!(Aₜ, q, dims)
-  end
-  res
-end
 
 # # `dims`: symbol
 # """
