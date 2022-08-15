@@ -30,7 +30,7 @@ function cal_mTRS_base!(Q, data::AbstractArray{T}, dates;
   use_mov=true,
   halfwin::Int=7,
   parallel::Bool=true,
-  method_q="base",
+  method_q="base", na_rm=false,
   type="md") where {T<:Real}
 
   if type == "doy"
@@ -59,9 +59,9 @@ function cal_mTRS_base!(Q, data::AbstractArray{T}, dates;
     q = @view Q[:, :, doy, :]
     x = @view data[:, :, ind]
     if method_q == "base"
-      quantile_3d!(q, x; probs=probs, dims=3)
+      nanQuantile!(q, x; probs, dims=3, na_rm)
     elseif method_q == "mapslices"
-      q .= quantile_nd(x, probs; dims=3)
+      q .= nanQuantile(x; probs, dims=3, na_rm) # mapslices is suppressed for 3d `nanQuantile`
     end
   end
   Q

@@ -17,7 +17,7 @@ end
 
 # multiple dimension case
 """
-    $(TYPEDSIGNATURES)
+  $(TYPEDSIGNATURES)
 
 moving mean average
 """

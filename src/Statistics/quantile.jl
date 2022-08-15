@@ -93,36 +93,15 @@ _quantile(v::Vector{Union{}}, p::Real; alpha::Real=1.0, beta::Real=alpha) = q_mi
 
 quantile!(v::Vector{Union{}}, p::Float64; kw...) = q_missing;
 
-
-quantile_missing(itr, p; sorted::Bool=false, alpha::Real=1.0, beta::Real=alpha) =
+# quantile2 allow empty
+_quantile2(itr, p; sorted::Bool=false, alpha::Real=1.0, beta::Real=alpha) =
   quantile!(collect(itr), p, sorted=sorted, alpha=alpha, beta=beta)
 
-quantile_missing(v::AbstractVector, p; sorted::Bool=false, alpha::Real=1.0, beta::Real=alpha) =
+_quantile2(v::AbstractVector, p; sorted::Bool=false, alpha::Real=1.0, beta::Real=alpha) =
   quantile!(sorted ? v : Base.copymutable(v), p; sorted=sorted, alpha=alpha, beta=beta)
 
 # fix quantile missing; all is missing
-quantile_missing(x::Vector{Missing}, p; kw...) = repeat([q_missing], length(p))
-
-
-# Quantile also works for missing 
-"""
-# Arguments
-- `kw...`: other parameters to [`quantile_missing`](@ref)
-"""
-function Quantile(array::AbstractArray{<:Real}, probs=[0, 0.25, 0.5, 0.75, 1]; dims=1, missval=nothing, kw...)
-  if missval === nothing
-    mapslices(x -> quantile_missing(x, probs; kw...), array, dims=dims)
-  else
-    array = to_missing(array, missval)
-    Quantile(array, probs, dims=dims)
-  end
-end
-
-function Quantile(array::AbstractNanArray, probs=[0, 0.25, 0.5, 0.75, 1]; dims=1)
-  mapslices(x -> begin
-      ans = quantile_missing(skipmissing(x), probs)
-    end, array, dims=dims)
-end
+_quantile2(x::Vector{Missing}, p; kw...) = repeat([q_missing], length(p))
 
 
 # # `dims`: symbol

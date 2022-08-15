@@ -1,8 +1,8 @@
 using Ipaper
-using nctools
 using JLD2
 using BenchmarkTools
 using Test
+# using nctools
 
 
 dates = make_date(2010, 1, 1):Day(1):make_date(2018, 12, 31)
@@ -13,10 +13,9 @@ arr = rand(Float32, 280, 160, ntime);
 
 # @time mTRS_full = cal_mTRS_full(arr, dates; use_mov=true);
 # @profview_allocs mTRS_full = cal_mTRS_full(arr, dates; use_mov=true);
-
 Threads.nthreads()
 
-@time mTRS_full_base = cal_mTRS_full(arr, dates; use_mov=true, method_q="base");
+@time mTRS_full_base = cal_mTRS_full(arr, dates; use_mov=true, method_q="base", na_rm=false);
 # 26.906053 seconds (992.32 k allocations: 3.217 GiB, 0.30% gc time)
 
 @time mTRS_full_map = cal_mTRS_full(arr, dates; use_mov=true, method_q="mapslices");

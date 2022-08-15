@@ -3,7 +3,7 @@ using Statistics: mean
 
 include("missing.jl")
 include("quantile.jl")
-include("quantile_nd.jl")
+include("nanQuantile.jl")
 
 include("movmean.jl")
 include("apply.jl")
