@@ -38,6 +38,7 @@ gdal/
 *.mat
 *.csv
 
+*.so
 *.R
 
 ## data

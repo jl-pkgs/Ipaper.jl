@@ -1,5 +1,5 @@
 # rm /share/opt/julia/*.so
-time julia build.jl
+time julia compile.jl
 
 # add to vscode setting
 

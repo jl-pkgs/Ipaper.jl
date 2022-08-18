@@ -3,7 +3,7 @@
 using nctools
 using JLD2
 
-function _ncwrite(mTRS_full, outfile="OBS_mTRS_full_V1.nc")
+function _ncwrite(mTRS_full, outfile="OBS_mTRS_full_V2.nc")
   _dims = nc_dims(f)
   probs = [0.9, 0.95, 0.99, 0.999, 0.9999]
   dim_prob = NcDim("prob", probs)
@@ -31,11 +31,11 @@ Threads.nthreads()
 
 if false
   @time mTRS_full = cal_mTRS_full(arr, dates; use_mov=true);
-  _ncwrite(mTRS_full, "OBS_mTRS_full_V1.nc")
+  _ncwrite(mTRS_full, "OBS_mTRS_full_V2.nc")
 end
 # 1675.866281 seconds (8.29 G allocations: 3.986 TiB, 24.24% gc time, 0.45% compilation time)
 # 0.465 hours, 16 threads
   
 # @profview_allocs mTRS_full = cal_mTRS_full(arr, dates; probs=[0.9]);
 @time mTRS_full_simple = cal_mTRS_full(arr, dates; use_mov=false);
-_ncwrite(mTRS_full_simple, "OBS_mTRS_full_simple.nc")
+_ncwrite(mTRS_full_simple, "OBS_mTRS_full_simple_V2.nc")

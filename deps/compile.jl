@@ -12,6 +12,3 @@ try
 catch e
   println(e)
 end
-
-println(pwd())
-println("Hello world!")
