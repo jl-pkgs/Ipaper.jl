@@ -12,7 +12,6 @@ import Dates
 # using Pipe
 using LambdaFn
 using DimensionalData
-using Plots: plot!, savefig
 
 using DataFrames
 import CSV

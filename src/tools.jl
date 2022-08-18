@@ -23,6 +23,12 @@ end
 which_isna(x) = findall(x .== nothing)
 which_notna(x) = findall(x .!= nothing)
 
+
+Base.isnan(x::AbstractArray) = isnan.(x)
+
+all_isnan(x::AbstractArray) = all(isnan(x))
+any_isnan(x::AbstractArray) = any(isnan(x))
+
 """
     match2(x, y)
 
@@ -106,5 +112,6 @@ export table, which_isna, which_notna, match2, uniqueN, duplicated,
     is_empty, not_empty,
     mean, weighted_mean, weighted_sum,
     seq_along, seq_len,
-    Range, 
-    set_seed
+    Range,
+    set_seed;
+export isnan, all_isnan, any_isnan;

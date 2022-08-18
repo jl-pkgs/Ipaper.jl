@@ -1,3 +1,15 @@
+# using Plots: plot!, savefig
+
+# 这一个函数，负担极重
+function write_fig(file="Rplot.pdf", width=10, height=5; show=true)
+  plot!(size=(width * 72, height * 72))
+  savefig(file)
+  if show
+    show_file(file)
+  end
+end
+
+
 macro methods(func)
   :(methods($func))
 end
@@ -7,7 +19,7 @@ is_windows() = Sys.iswindows()
 is_linux() = Sys.islinux()
 
 """
-    path_mnt(path = ".")
+  path_mnt(path = ".")
 
 Relative path will kept the original format.
 """
@@ -45,14 +57,6 @@ function show_file(file, verbose=false)
   run(cmd; wait=false)
   if !verbose
     return nothing
-  end
-end
-
-function write_fig(file="Rplot.pdf", width=10, height=5; show=true)
-  plot!(size=(width * 72, height * 72))
-  savefig(file)
-  if show
-    show_file(file)
   end
 end
 

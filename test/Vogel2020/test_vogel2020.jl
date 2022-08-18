@@ -1,4 +1,5 @@
-using Ipaper
+@time using Ipaper
+
 using nctools
 using JLD2
 

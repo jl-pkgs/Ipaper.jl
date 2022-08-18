@@ -1,11 +1,11 @@
-rm /opt/julia/*.so
-time julia compile.jl
+# rm /share/opt/julia/*.so
+time julia build.jl
 
 # add to vscode setting
 
 # "julia.additionalArgs": [
 #         "--sysimage",
-#         "/opt/julia/libIpaper-v0.1.4.so"
+#         "/share/opt/julia/libIpaper.so"
 #     ],
-time julia --sysimage /opt/julia/libIpaper-v0.1.4.so init.jl
-time julia init.jl
+time julia --sysimage /opt/julia/libIpaper.so init.jl
+# time julia init.jl

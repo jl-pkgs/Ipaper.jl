@@ -1,18 +1,15 @@
 using Ipaper
 using Test
-# using BenchmarkTools
+using BenchmarkTools
 
 
 _print(x) = printstyled(x * "\n", color=:blue, bold=true, underline=true)
 
 @testset "NanQuantile" begin
-  # ## local test version
-  # year_end = 2013
-  # scale = 2 
-  ## cloud tets version
-  year_end = 2010
-  scale = 1 
-  
+  year_end = 2013
+  scale = 2 # local test version
+  # year_end = 2010; scale = 1 # cloud tets version
+
   dates = make_date(2010, 1, 1):Day(1):make_date(year_end, 12, 31)
   ntime = length(dates)
   arr = rand(Float32, 140 * scale, 80 * scale, ntime)
@@ -46,22 +43,22 @@ _print(x) = printstyled(x * "\n", color=:blue, bold=true, underline=true)
   @test r2_0 == r0
   @test r3_0 == r0
   @test arr2 == arr
-  # ## accurate time -------------------------------------------------------------
-  # _print("Accurate time =====================================================")
-  # _print("0. low version:")
-  # @btime r0 = nanquantile($arr, dims=3) # low version
+  ## accurate time -------------------------------------------------------------
+  _print("Accurate time =====================================================")
+  _print("0. low version:")
+  @btime r0 = nanquantile($arr, dims=3) # low version
 
-  # _print("1. mapslices:")
-  # @btime r1_0 = nanQuantile($arr; dims=3, na_rm=false)
-  # @btime r1_1 = nanQuantile($arr; dims=3, na_rm=true)
+  _print("1. mapslices:")
+  @btime r1_0 = nanQuantile($arr; dims=3, na_rm=false)
+  @btime r1_1 = nanQuantile($arr; dims=3, na_rm=true)
 
-  # _print("2. for loop memory saved:")
-  # @btime r2_0 = nanQuantile_3d($arr; dims=3, na_rm=false)
-  # @btime r2_1 = nanQuantile_3d($arr; dims=3, na_rm=true)
+  _print("2. for loop memory saved:")
+  @btime r2_0 = nanQuantile_3d($arr; dims=3, na_rm=false)
+  @btime r2_1 = nanQuantile_3d($arr; dims=3, na_rm=true)
 
-  # _print("3. for loop memory saved for any dimension:")
-  # @btime r3_0 = NanQuantile($arr; dims=3, na_rm=false)
-  # @btime r3_1 = NanQuantile($arr; dims=3, na_rm=true)
+  _print("3. for loop memory saved for any dimension:")
+  @btime r3_0 = NanQuantile($arr; dims=3, na_rm=false)
+  @btime r3_1 = NanQuantile($arr; dims=3, na_rm=true)
 end
 
 # Accurate time =====================================================
