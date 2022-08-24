@@ -11,8 +11,11 @@ function find_adjacent_doy(doy::Int; doy_max::Int=366, halfwin::Int=7)
   ind
 end
 
+
 """
 Moving Threshold for Heatwaves Definition
+
+$(TYPEDSIGNATURES)
 
 # Arguments
 
@@ -26,7 +29,7 @@ Moving Threshold for Heatwaves Definition
   https://doi.org/10.1029/2019JD032070
 """
 function cal_mTRS_base!(Q, data::AbstractArray{T}, dates;
-  probs::Vector{Float64}=[0.90, 0.95, 0.99, 0.999, 0.9999],
+  probs::Vector=[0.90, 0.95, 0.99, 0.999, 0.9999],
   use_mov=true,
   halfwin::Int=7,
   parallel::Bool=true,
@@ -44,9 +47,6 @@ function cal_mTRS_base!(Q, data::AbstractArray{T}, dates;
     doy_min = 1
   end
 
-  # dim = size(data)
-  # nprob = length(probs)
-  # Q = zeros(T, dim[1:2]..., doy_max, nprob)
   @inbounds @par parallel for doy = doy_min:doy_max
     doys_mov = use_mov ? find_adjacent_doy(doy; doy_max=doy_max, halfwin=halfwin) : [doy]
     # ind = indexin(doys_mov, doys)
@@ -68,6 +68,42 @@ function cal_mTRS_base!(Q, data::AbstractArray{T}, dates;
   Q
 end
 
+length_unique(x::AbstractVector) = length(unique(x))
+
+
+"""
+  $(TYPEDSIGNATURES)
+
+# Arguments
+- `type`: The matching type of the moving `doys`, "md" (default) or "doy".
+
+# Return
+- `TRS`: in the dimension of `[nlat, nlon, ndoy, nprob]`
+"""
+function cal_mTRS_base(arr::AbstractArray{<:Real,3}, dates::Vector{<:DateType};
+  probs::Vector=[0.90, 0.95, 0.99, 0.999, 0.9999],
+  type=nothing,
+  p1::Int=1961, p2::Int=1990, kw...)
+
+  mmdd = Dates.format.(dates, "mm-dd")
+  doy_max = length_unique(mmdd)
+
+  dim = size(arr)
+  nprob = length(probs)
+  type = type === nothing ? eltype(arr) : type
+  Q = zeros(type, dim[1:2]..., doy_max, nprob)
+
+  # constrain date in [p1, p2]
+  years = year.(dates)
+  ind = findall(p1 .<= years .<= p2)
+  _data = @view arr[:, :, ind]
+  _dates = @view dates[ind]
+
+  cal_mTRS_base!(Q, _data, _dates; probs, kw...)
+end
+
+cal_mTRS = cal_mTRS_base;
+
 
 """
 seasonally moving thresholdse
@@ -78,7 +114,7 @@ Thus, thresholds are defined as a fixed baseline (such as for the fixed threshol
 seasonally moving mean warming of the corresponding future climate based on the
 31-year moving mean of the warmest three months.
 """
-function cal_mTRS_seasonal(arr::AbstractArray, dates)
+function cal_mTRS_season(arr::AbstractArray, dates)
   yms = format.(dates, "yyyy-mm")
   ys = SubString.(unique(yms), 1, 4)
 
@@ -89,8 +125,11 @@ function cal_mTRS_seasonal(arr::AbstractArray, dates)
 end
 
 
+
 """
 Moving Threshold for Heatwaves Definition
+
+$(TYPEDSIGNATURES)
 
 # Arguments
 
@@ -98,6 +137,8 @@ Moving Threshold for Heatwaves Definition
   + if `true`, 31*15 values will be used to calculate threshold for each grid; 
   + if `false`, the input `arr` is smoothed first, then only 15 values will be 
     used to calculate threshold.
+
+!!! 必须是完整的年份，不然会出错
 
 # References
 1. Vogel, M. M., Zscheischler, J., Fischer, E. M., & Seneviratne, S. I. (2020).
@@ -108,7 +149,6 @@ Moving Threshold for Heatwaves Definition
 function cal_mTRS_full(arr::AbstractArray{T}, dates; width=15, verbose=true, use_mov=true,
   probs=[0.90, 0.95, 0.99, 0.999, 0.9999], kw...) where {T<:Real}
 
-  # 必须是完整的年份，不然会出错
   years = year.(dates)
   grps = unique(years)
 
@@ -146,6 +186,3 @@ function cal_mTRS_full(arr::AbstractArray{T}, dates; width=15, verbose=true, use
     end, grps)
   cat(res..., dims=3)
 end
-
-
-export cal_mTRS_base, cal_mTRS_seasonal, cal_mTRS_full
