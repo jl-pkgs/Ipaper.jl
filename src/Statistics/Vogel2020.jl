@@ -80,7 +80,7 @@ length_unique(x::AbstractVector) = length(unique(x))
 # Return
 - `TRS`: in the dimension of `[nlat, nlon, ndoy, nprob]`
 """
-function cal_mTRS_base(arr::AbstractArray{<:Real,3}, dates::Vector{<:DateType};
+function cal_mTRS_base(arr::AbstractArray{<:Real,3}, dates;
   probs::Vector=[0.90, 0.95, 0.99, 0.999, 0.9999],
   type=nothing,
   p1::Int=1961, p2::Int=1990, kw...)
