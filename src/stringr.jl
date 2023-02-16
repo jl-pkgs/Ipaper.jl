@@ -99,6 +99,18 @@ function dir(path=".", pattern=""; full_names=true, include_dirs=true, recursive
 end
 
 
+precompile(dir, (String, String))
+precompile(str_extract, (String, String))
+precompile(str_extract, (Vector{String}, String))
+
+precompile(str_extract_all, (String, String))
+precompile(str_replace, (String, String))
+
+precompile(grep, (String, String))
+precompile(grepl, (String, String))
+precompile(grepl, (Vector{String}, String))
+
+
 export str_extract, str_extract_all, str_extract_strip, str_replace,
     grep, grepl, gsub,
     dir
