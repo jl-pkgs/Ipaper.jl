@@ -7,10 +7,8 @@ module Ipaper
 # @reexport using Z: x, y
 using DocStringExtensions: TYPEDSIGNATURES
 
-# using Dates
 import Dates
 # using Pipe
-using LambdaFn
 # using DimensionalData
 # using DataFrames
 # import CSV
@@ -22,9 +20,10 @@ using Reexport
 using Printf
 export @sprintf
 
-# rename to @f
-@eval const $(Symbol("@f")) = $(Symbol("@λ"))
-export @λ, @lf, @f
+# using LambdaFn
+# # rename to @f
+# @eval const $(Symbol("@f")) = $(Symbol("@λ"))
+# export @λ, @lf, @f
 
 include("Pipe.jl")
 @reexport using .Pipe
