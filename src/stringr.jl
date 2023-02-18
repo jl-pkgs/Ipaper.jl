@@ -100,10 +100,13 @@ end
 
 
 precompile(dir, (String, String))
+
 precompile(str_extract, (String, String))
 precompile(str_extract, (Vector{String}, String))
 
 precompile(str_extract_all, (String, String))
+precompile(str_extract_strip, (String, String))
+
 precompile(str_replace, (String, String))
 
 precompile(grep, (String, String))

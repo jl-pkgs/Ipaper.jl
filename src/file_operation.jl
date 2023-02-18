@@ -20,4 +20,7 @@ function check_dir(indir; verbose = false)
     end
 end
 
+precompile(check_file, (String, ))
+precompile(check_dir, (String, ))
+
 export check_dir, check_file

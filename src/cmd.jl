@@ -81,5 +81,9 @@ function merge_pdf(input, outfile="Plot.pdf"; is_del=false, show=true)
   nothing
 end
 
+
+precompile(path_mnt, (String, ))
+
+
 export @methods, is_wsl, is_windows, is_linux,
   path_mnt, show_pdf, show_file, write_fig

@@ -36,40 +36,40 @@ rbind(args...; kw...) = vcat(args...; kw...)
 cbind(args...; kw...) = hcat(args...; kw...)
 cbind(x) = x
 cbind(x::AbstractDataFrame, y::Union{AbstractDataFrame,AbstractVecOrMat}) =
-    hcat(as_dataframe(x), as_dataframe(y); makeunique=true)
+  hcat(as_dataframe(x), as_dataframe(y); makeunique=true)
 cbind(x::AbstractVecOrMat, y::AbstractDataFrame; kw...) = cbind(as_dataframe(x), y; kw...)
 
 # by reference
 function cbind(x::AbstractDataFrame, args...; kw...)
-    x = as_dataframe(x)
-    n = length(kw)
-    if n > 0
-        vars = keys(kw)
-        for i = 1:n
-            key = vars[i]
-            val = kw[i]
-            # @show key
-            # @show val
-            if !isa(val, AbstractArray) || length(val) == 1
-                x[:, key] .= val
-            else
-                x[:, key] = val
-            end
-        end
+  x = as_dataframe(x)
+  n = length(kw)
+  if n > 0
+    vars = keys(kw)
+    for i = 1:n
+      key = vars[i]
+      val = kw[i]
+      # @show key
+      # @show val
+      if !isa(val, AbstractArray) || length(val) == 1
+        x[:, key] .= val
+      else
+        x[:, key] = val
+      end
     end
-    if length(args) == 0
-        x
-    elseif length(args) == 1
-        cbind(x, args[1])
-    else
-        cbind(cbind(x, args[1]), args[2:end]...)
-    end
+  end
+  if length(args) == 0
+    x
+  elseif length(args) == 1
+    cbind(x, args[1])
+  else
+    cbind(cbind(x, args[1]), args[2:end]...)
+  end
 end
 
 macro as_df(x)
-    name = string(x)
-    expr = :(DataFrame($name => $x))
-    esc(expr)
+  name = string(x)
+  expr = :(DataFrame($name => $x))
+  esc(expr)
 end
 export @as_df;
 
@@ -80,29 +80,29 @@ as_dataframe(x::AbstractVector) = @as_df(x)
 
 as_dataframe(x::AbstractMatrix) = DataFrame(x, :auto)
 function as_dataframe(x::AbstractVecOrMat, names::AbstractVector; kw...)
-    DataFrame(x, names; kw...)
+  DataFrame(x, names; kw...)
 end
 
 is_dataframe(d) = d isa DataFrame
 
 # for data.frame by reference operation
 function melt_list(list; kw...)
-    if length(kw) > 0
-        by = keys(kw)[1]
-        vals = kw[1]
-    else
-        by = :I
-        vals = 1:length(list)
-    end
+  if length(kw) > 0
+    by = keys(kw)[1]
+    vals = kw[1]
+  else
+    by = :I
+    vals = 1:length(list)
+  end
 
-    for i = 1:length(list)
-        d = list[i]
-        if (d isa DataFrame)
-            d[:, by] .= vals[i]
-        end
+  for i = 1:length(list)
+    d = list[i]
+    if (d isa DataFrame)
+      d[:, by] .= vals[i]
     end
-    ind = map(is_dataframe, list)
-    vcat(list[ind]...)
+  end
+  ind = map(is_dataframe, list)
+  vcat(list[ind]...)
 end
 
 # rename Duplicate variables in dt_merge
@@ -122,31 +122,31 @@ seealso: [`leftjoin`](@ref), [`rightjoin`](@ref), [`innerjoin`](@ref),
     [`outerjoin`](@ref)
 """
 function dt_merge(x::AbstractDataFrame, y::AbstractDataFrame; by=nothing,
-    all=false, all_x=all, all_y=all, makeunique=true, suffixes=["_x", "_y"], kw...)
+  all=false, all_x=all, all_y=all, makeunique=true, suffixes=["_x", "_y"], kw...)
 
-    if by === nothing
-        by = intersect(names(x), names(y))
-    end
-    by = String.(by) # Symbol not work in `setdiff`
-    
-    vars_dup = intersect(setdiff(names(x), by), setdiff(names(y), by))
-    
-    rename_x(x) = rename_varsDup(x, vars_dup, suffixes[1])
-    rename_y(x) = rename_varsDup(x, vars_dup, suffixes[2])
-    kw2 = (kw..., on=by, makeunique, renamecols=rename_x => rename_y)
-    # @show kw2
-    if !all
-        if all_x
-            leftjoin(x, y; kw2...)
-        elseif all_y
-            rightjoin(x, y; kw2...)
-        else
-            # all_x = f && all_y = f
-            innerjoin(x, y; kw2...)
-        end
+  if by === nothing
+    by = intersect(names(x), names(y))
+  end
+  by = String.(by) # Symbol not work in `setdiff`
+
+  vars_dup = intersect(setdiff(names(x), by), setdiff(names(y), by))
+
+  rename_x(x) = rename_varsDup(x, vars_dup, suffixes[1])
+  rename_y(x) = rename_varsDup(x, vars_dup, suffixes[2])
+  kw2 = (kw..., on=by, makeunique, renamecols=rename_x => rename_y)
+  # @show kw2
+  if !all
+    if all_x
+      leftjoin(x, y; kw2...)
+    elseif all_y
+      rightjoin(x, y; kw2...)
     else
-        outerjoin(x, y; kw2...)
+      # all_x = f && all_y = f
+      innerjoin(x, y; kw2...)
     end
+  else
+    outerjoin(x, y; kw2...)
+  end
 end
 
 fread(file::AbstractString) = DataFrame(CSV.File(file))
@@ -163,19 +163,48 @@ fread("a.csv")
 ```
 """
 fwrite(df::AbstractDataFrame, file::AbstractString; append=false, kw...) = begin
-    dirname(file) |> check_dir
-    CSV.write(file, df; append=append, kw...)
+  dirname(file) |> check_dir
+  CSV.write(file, df; append=append, kw...)
 end
 
 # for data.frame by reference operation
 function dataframe(; kw...)
-    DataFrame(pairs(kw))
+  DataFrame(pairs(kw))
 end
 datatable = dataframe
 
 # function list(; kw...)
 #     Dict(pairs(kw))
 # end
+
+"""
+    match2(x, y)
+
+# Examples
+```julia
+## original version
+mds = [1, 4, 3, 5]
+md = [1, 5, 6]
+
+findall(indexin(mds, md) .!= nothing)
+indexin(md, mds)
+
+## modern version
+x = [1, 2, 3, 3, 4]
+y = [0, 2, 2, 3, 4, 5, 6]
+match2(x, y)
+```
+
+# Note: match2 only find the element in `y`
+"""
+function match2(x, y)
+  # find x in y
+  ind = indexin(x, y)
+  I_x = which_notna(ind)
+  I_y = something.(ind[I_x])
+  # use `something` to suppress nothing `Union`
+  DataFrame(; value=x[I_x], I_x, I_y)
+end
 
 #! This version not work
 # function datatable(args...; kw...)
@@ -185,13 +214,13 @@ datatable = dataframe
 const DF = dataframe;
 
 export rbind, cbind, abind, melt_list,
-    fread, fwrite, dt_merge,
-    is_dataframe,
-    as_dataframe,
-    # rename_varsDup,
-    as_matrix, nrow, ncol,
-    DataFrame, DF, names,
-    datatable, dataframe
+  fread, fwrite, dt_merge,
+  is_dataframe,
+  as_dataframe,
+  # rename_varsDup,
+  as_matrix, nrow, ncol,
+  DataFrame, DF, names,
+  datatable, dataframe
 
 precompile(fread, (String,))
 precompile(fread, (DataFrame, String))

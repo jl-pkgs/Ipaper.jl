@@ -1,4 +1,3 @@
-import DataFrames: DataFrame
 import StatsBase: countmap, weights, mean
 import Random: seed!
 
@@ -29,34 +28,6 @@ Base.isnan(x::AbstractArray) = isnan.(x)
 all_isnan(x::AbstractArray) = all(isnan(x))
 any_isnan(x::AbstractArray) = any(isnan(x))
 
-"""
-    match2(x, y)
-
-# Examples
-```julia
-## original version
-mds = [1, 4, 3, 5]
-md = [1, 5, 6]
-
-findall(indexin(mds, md) .!= nothing)
-indexin(md, mds)
-
-## modern version
-x = [1, 2, 3, 3, 4]
-y = [0, 2, 2, 3, 4, 5, 6]
-match2(x, y)
-```
-
-# Note: match2 only find the element in `y`
-"""
-function match2(x, y)
-    # find x in y
-    ind = indexin(x, y)
-    I_x = which_notna(ind)
-    I_y = something.(ind[I_x])
-    # use `something` to suppress nothing `Union`
-    DataFrame(; value=x[I_x], I_x, I_y)
-end
 
 uniqueN(x) = length(unique(x))
 

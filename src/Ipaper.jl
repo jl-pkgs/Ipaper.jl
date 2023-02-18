@@ -11,10 +11,9 @@ using DocStringExtensions: TYPEDSIGNATURES
 import Dates
 # using Pipe
 using LambdaFn
-using DimensionalData
-
-using DataFrames
-import CSV
+# using DimensionalData
+# using DataFrames
+# import CSV
 # import Statistics: quantile
 
 using Reexport
@@ -31,7 +30,6 @@ include("Pipe.jl")
 @reexport using .Pipe
 
 include("cmd.jl")
-include("macro.jl")
 include("dates.jl")
 include("file_operation.jl")
 include("par.jl")
@@ -39,10 +37,11 @@ include("stringr.jl")
 include("tools.jl")
 include("factor.jl")
 include("list.jl")
-include("data.frame.jl")
-include("DimensionalData.jl")
+# include("data.frame.jl")
+# include("subset.jl")
+# include("con_parse.jl")
+# include("DimensionalData.jl")
 include("Statistics/Statistics.jl")
-include("con_parse.jl")
 
 dim = size
 # whos = varinfo
