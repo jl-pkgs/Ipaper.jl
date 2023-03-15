@@ -20,22 +20,23 @@ using Reexport
 using Printf
 export @sprintf
 
-# using LambdaFn
-# # rename to @f
-# @eval const $(Symbol("@f")) = $(Symbol("@λ"))
-# export @λ, @lf, @f
+using LambdaFn
+# rename to @f
+@eval const $(Symbol("@f")) = $(Symbol("@λ"))
+export @λ, @lf, @f
 
 include("Pipe.jl")
 @reexport using .Pipe
 
 include("cmd.jl")
 include("dates.jl")
+include("factor.jl")
 include("file_operation.jl")
+include("list.jl")
+include("match2.jl")
 include("par.jl")
 include("stringr.jl")
 include("tools.jl")
-include("factor.jl")
-include("list.jl")
 # include("data.frame.jl")
 # include("subset.jl")
 # include("con_parse.jl")
