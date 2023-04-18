@@ -21,7 +21,7 @@ function make_dims(array::AbstractArray, dimnames::Vector{<:TYPE_dimname} = dimn
   Size = size(array)
   dimnames = Symbol.(dimnames)
   
-  [Dim{dimnames[i]}(1:Size[i]) for i in 1:length(Size)]
+  [Dim{dimnames[i]}(1:Size[i]) for i in eachindex(Size)]
 end
 
 function DimensionalData.DimArray(

@@ -43,6 +43,15 @@ seq_len(n) = 1:n
 
 Range(x) = [minimum(x), maximum(x)]
 
+
+function obj_size(x)
+  ans = Base.summarysize(x) / 1024^2
+  ans = round(ans, digits=2)
+  print(typeof(x), " | ", size(x), " | ")
+  printstyled("$ans Mb"; color=:blue, bold=true, underline=true)
+end
+
+
 export which_isna, which_notna, 
     is_empty, not_empty,
     mean, weighted_mean, weighted_sum,
@@ -50,3 +59,4 @@ export which_isna, which_notna,
     Range,
     set_seed;
 export isnan, all_isnan, any_isnan;
+export obj_size

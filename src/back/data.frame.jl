@@ -95,7 +95,7 @@ function melt_list(list; kw...)
     vals = 1:length(list)
   end
 
-  for i = 1:length(list)
+  for i = eachindex(list)
     d = list[i]
     if (d isa DataFrame)
       d[:, by] .= vals[i]

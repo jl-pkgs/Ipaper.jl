@@ -25,10 +25,24 @@ AbstractNaArray = AbstractArray{<:Union{T,Missing}} where {T<:Real}
 AbstractNanArray = AbstractArray{Union{T,Missing}} where {T<:Real}
 
 
+function getDataType(x)
+  T = eltype(x)
+  typeof(T) == Union ? x.b : x
+end
 
+
+"""
+convert `AbstractArray` to `AbstractNanArray`
+
+$(TYPEDSIGNATURES)
+
+"""
 to_missing(x::AbstractNanArray) = x
 
+
 function to_missing(x::AbstractArray{<:Real}, replacement=0)
+  # Cannot `convert` an object of type Missing to an object of type Float64
+  # 必须先定义一个新的变量
   x2 = zeros(Union{eltype(x),Missing}, size(x)...)
   x2 .= x
   for i = eachindex(x2)
@@ -37,6 +51,16 @@ function to_missing(x::AbstractArray{<:Real}, replacement=0)
     end
   end
   x2
+end
+
+function replace_miss!(x, replacement=NaN)
+  T = getDataType(x)
+  replace!(x, missing => T(replacement))
+end
+
+function replace_miss(x, replacement=NaN)
+  T = getDataType(x)
+  replace(x, missing => T(replacement))
 end
 
 function replace_value!(x::AbstractNaArray, org, new)
@@ -82,5 +106,7 @@ end
 
 export AbstractNaArray, AbstractNanArray,
   isequal,
+  getDataType,
   replace_value!,
+  replace_miss, replace_miss!, 
   drop_missing, to_missing;
