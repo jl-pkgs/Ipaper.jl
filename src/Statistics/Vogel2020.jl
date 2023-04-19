@@ -160,11 +160,12 @@ function cal_mTRS_full(arr::AbstractArray{T}, dates; width=15, verbose=true, use
   doy_max = length(mds)
   # doy_min = 1
 
+  # 滑动平均两种不同的做法
   if !use_mov
     printstyled("running: 15d moving average first ... ")
     @time arr = movmean(arr, 7; dims=3, FT=Float32)
   end
-
+  
   dim = size(arr)
   nprob = length(probs)
   mTRS = zeros(T, dim[1:2]..., doy_max, nprob)

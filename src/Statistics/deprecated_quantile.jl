@@ -3,7 +3,7 @@
 # Arguments
 - `kw...`: other parameters to [`_quantile2`](@ref)
 """
-function missQuantile(array::AbstractNanArray;
+function missQuantile(array::AbstractMissArray;
   probs=[0, 0.25, 0.5, 0.75, 1], dims::Integer=1)
   mapslices(x -> _quantile2(skipmissing(x), probs), array, dims=dims)
 end

@@ -107,7 +107,7 @@ _quantile2(x::Vector{Missing}, p; kw...) = repeat([q_missing], length(p))
 # # `dims`: symbol
 # """
 #   Quantile(array::AbstractArray{<:Real}, probs=[0, 0.25, 0.5, 0.75, 1]; dims=1, missval = nothing)
-#   Quantile(array::AbstractNanArray, probs=[0, 0.25, 0.5, 0.75, 1]; dims=1)
+#   Quantile(array::AbstractMissArray, probs=[0, 0.25, 0.5, 0.75, 1]; dims=1)
   
 # # Examples
 # ```julia

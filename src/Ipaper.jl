@@ -5,7 +5,7 @@
 module Ipaper
 # using Ipaper
 # @reexport using Z: x, y
-using DocStringExtensions: TYPEDSIGNATURES
+using DocStringExtensions: TYPEDSIGNATURES, METHODLIST
 
 import Dates
 # using Pipe
@@ -41,6 +41,7 @@ include("tools.jl")
 # include("subset.jl")
 # include("con_parse.jl")
 # include("DimensionalData.jl")
+include("missing.jl")
 include("Statistics/Statistics.jl")
 
 dim = size
