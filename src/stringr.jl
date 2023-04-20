@@ -93,7 +93,7 @@ function dir(path=".", pattern=""; full_names=true, include_dirs=true, recursive
         files = [dirs; files]
     end
     if pattern != ""
-        files = files[grep(files, pattern)]
+        files = files[grep(basename.(files), pattern)]
     end
     files
 end
