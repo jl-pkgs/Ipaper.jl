@@ -25,6 +25,7 @@ using LambdaFn
 @eval const $(Symbol("@f")) = $(Symbol("@λ"))
 export @λ, @lf, @f
 
+include("timeit_all.jl")
 include("Pipe.jl")
 @reexport using .Pipe
 
