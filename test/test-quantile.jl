@@ -25,19 +25,19 @@ _print(x) = printstyled(x * "\n", color=:blue, bold=true, underline=true)
   ## Rough time ----------------------------------------------------------------
   _print("Rough time =====================================================")
   _print("0. low version:")
-  @time r0 = nanquantile(arr, dims=3) # low version
+  @time r0 = nanquantile(arr, dims=3); # low version
 
   _print("1. mapslices:")
-  @time r1_0 = nanQuantile(arr; dims=3, na_rm=false)
-  @time r1_1 = nanQuantile(arr; dims=3, na_rm=true)
+  @time r1_0 = nanQuantile(arr; dims=3, na_rm=false);
+  @time r1_1 = nanQuantile(arr; dims=3, na_rm=true);
 
   _print("2. for loop memory saved:")
-  @time r2_0 = nanQuantile_3d(arr; dims=3, na_rm=false)
-  @time r2_1 = nanQuantile_3d(arr; dims=3, na_rm=true)
+  @time r2_0 = nanQuantile_3d(arr; dims=3, na_rm=false);
+  @time r2_1 = nanQuantile_3d(arr; dims=3, na_rm=true);
 
   _print("3. for loop memory saved for any dimension:")
-  @time r3_0 = NanQuantile(arr; dims=3, na_rm=false)
-  @time r3_1 = NanQuantile(arr; dims=3, na_rm=true)
+  @time r3_0 = NanQuantile(arr; dims=3, na_rm=false);
+  @time r3_1 = NanQuantile(arr; dims=3, na_rm=true);
 
   @test r1_0 == r1_1
   @test r2_0 == r2_1

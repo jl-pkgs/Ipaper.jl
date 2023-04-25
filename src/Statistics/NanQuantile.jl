@@ -1,7 +1,8 @@
 import NaNStatistics: _nanquantile!
+import Statistics: quantile!
 using Base: _unsafe_getindex!, _unsafe_setindex!, Slice
 
-include("deprecated_quantile.jl")
+include("quantile_base.jl")
 
 
 function NaNStatistics._nanquantile!(q::AbstractVector, x::AbstractVector,
@@ -17,7 +18,7 @@ end
 function NanQuantile!(R::AbstractArray{<:Real,N}, A::AbstractArray{<:Real,N};
   probs::Vector=[0, 0.25, 0.5, 0.75, 1], dims::Integer=3, na_rm::Bool=true) where {N}
 
-  fun = na_rm ? _nanquantile! : Statistics.quantile!
+  fun = na_rm ? _nanquantile! : quantile!
   itershape = ntuple(d -> d in dims ? Base.OneTo(1) : axes(A, d), ndims(A))
   inds = CartesianIndices(itershape)
 
@@ -105,7 +106,3 @@ function nanQuantile(x::AbstractArray;
       fun(qi, zi, probs)
     end, x; dims=dims)
 end
-
-
-export _nanquantile!, NanQuantile, NanQuantile!,
-  nanQuantile

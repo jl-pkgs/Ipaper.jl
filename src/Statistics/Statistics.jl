@@ -1,7 +1,6 @@
 import Statistics
 using Statistics: mean
 
-include("quantile.jl")
 include("NanQuantile.jl")
 
 include("movmean.jl")
@@ -12,5 +11,5 @@ include("linreg.jl")
 
 export mean, movmean, weighted_mean, weighted_movmean
 export apply
-export nanquantile, Quantile, quantile!
+export _nanquantile!, nanquantile, nanQuantile,NanQuantile, NanQuantile!
 export lm, linreg_fast, linreg_simple

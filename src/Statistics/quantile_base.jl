@@ -1,25 +1,3 @@
-# Quantile also works for missing 
-"""
-# Arguments
-- `kw...`: other parameters to [`_quantile2`](@ref)
-"""
-function missQuantile(array::AbstractMissArray;
-  probs=[0, 0.25, 0.5, 0.75, 1], dims::Integer=1)
-  mapslices(x -> _quantile2(skipmissing(x), probs), array, dims=dims)
-end
-
-function missQuantile(array::AbstractArray{<:Real};
-  probs=[0, 0.25, 0.5, 0.75, 1], dims::Integer=1, missval=nothing, kw...)
-
-  if missval === nothing
-    mapslices(x -> _quantile2(x, probs; kw...), array, dims=dims)
-  else
-    array = to_missing(array, missval)
-    missQuantile(array; probs, dims)
-  end
-end
-Quantile = missQuantile
-
 # 针对性的写一个最高性能的Quantile
 # 两次@view的嵌套会导致速度变慢；避免这种操作，可以获得极致的速度
 
