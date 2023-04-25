@@ -16,6 +16,8 @@ include("test-string.jl")
 include("test-list.jl")
 include("test-date.jl")
 include("test-apply.jl")
+include("test-linreg.jl")
+
 # include("test-smooth_whit.jl")
 # include("test-smooth_SG.jl")
 # include("test_wTSM.jl")
