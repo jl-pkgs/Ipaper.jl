@@ -26,14 +26,20 @@ end
 cal_mTRS_season(arr::AbstractArray, dates) = cal_yearly_Tair(arr, dates; only_summer=true)
 
 
+"""
+$(TYPEDSIGNATURES)
+"""
 function cal_warming_level(arr::AbstractArray{<:Real, 3}, dates; 
   p1=1981, p2=2010, only_summer=false)
   
   T_year = cal_yearly_Tair(arr, dates; only_summer)
   
-  grps = unique_sort(ys)
+  # yms = format.(dates, "yyyy-mm")
+  # ys = SubString.(unique(yms), 1, 4)
+  # grps = unique_sort(ys)
+  grps = year.(dates) |> unique_sort  
   inds_clim = @.(p1 <= grps <= p2)
-  T_clim = apply(@view T_year[:, :, inds_clim], 3; fun=nanmean)
+  T_clim = apply(@view(T_year[:, :, inds_clim]), 3; fun=nanmean)
   
   T_year .- T_clim
 end

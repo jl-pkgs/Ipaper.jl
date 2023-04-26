@@ -32,7 +32,7 @@ function cal_climatology_base!(Q::AbstractArray{T,3}, data::AbstractArray{T,3}, 
     # q = @view Q[:, :, doy, :]
     for i=1:nlon, j=1:nlat
       x = @view data[i, j, ind]
-      Q[i, j, doy] = fun(x)    
+      Q[i, j, doy] = fun(x)
     end
   end
   Q
@@ -102,7 +102,7 @@ function cal_climatology_full(arr::AbstractArray{T}, dates;
 
   mmdd = Dates.format.(dates, "mm-dd")
   mds = unique(mmdd) |> sort
-  # doy_max = length(mds)
+  doy_max = length(mds)
 
   # 滑动平均两种不同的做法
   if !use_mov
@@ -112,6 +112,7 @@ function cal_climatology_full(arr::AbstractArray{T}, dates;
   
   dim = size(arr)
   mTRS_full = zeros(T, dim[1:3]...)
+  mTRS = zeros(T, dim[1:2]..., doy_max)
   
   TRS_head = cal_climatology_base(arr, dates; p1=YEAR_MIN, p2=YEAR_MIN + width * 2, use_mov, kw...)
   TRS_tail = cal_climatology_base(arr, dates; p1=YEAR_MAX - width * 2, p2=YEAR_MAX, use_mov, kw...)
@@ -135,7 +136,8 @@ function cal_climatology_full(arr::AbstractArray{T}, dates;
       _data = selectdim(arr, 3, inds_data)
       _dates = @view dates[inds_data]
 
-      _mTRS = cal_climatology_base(_data, _dates; use_mov, kw...)
+      cal_climatology_base!(mTRS, _data, _dates; use_mov, kw...)
+      _mTRS = mTRS
     end
     @views copy!(mTRS_full[:, :, inds_year], _mTRS[:, :, ind])
   end

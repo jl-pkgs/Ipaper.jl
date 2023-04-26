@@ -160,7 +160,7 @@ function cal_mTRS_full(arr::AbstractArray{T}, dates; width=15, verbose=true, use
 
     inds_year = years .== year
     md = @view mmdd[inds_year]
-    ind = findall(indexin(mds, md) .!= nothing)
+    inds = findall(indexin(mds, md) .!= nothing)
 
     year_beg = max(year - width, YEAR_MIN)
     year_end = min(year + width, YEAR_MAX)
@@ -177,11 +177,11 @@ function cal_mTRS_full(arr::AbstractArray{T}, dates; width=15, verbose=true, use
 
       # @show year_beg, year_end
       # mTRS = cal_mTRS_base(_data, _dates; use_mov, probs, kw...)
-      cal_mTRS_base!(mTRS, _data, _dates; use_mov, probs, kw...)
-      _mTRS = mTRS
+      cal_mTRS_base!(mTRS, _data, _dates; use_mov, probs, kw...) 
+      _mTRS = mTRS # 366, 后面统一取ind
     end
 
-    @views copy!(mTRS_full[:, :, inds_year, :], _mTRS[:, :, ind, :])
+    @views copy!(mTRS_full[:, :, inds_year, :], _mTRS[:, :, inds, :])
   end
   mTRS_full
 end

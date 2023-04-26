@@ -77,6 +77,35 @@ end
 
 
 
+function squeeze_TailOrHead(A::AbstractArray; type="tail")
+  dims = size(A)
+  n = length(dims)
+
+  dims_drop = []  
+  if type == "head"
+    inds = 1:n
+  elseif type == "tail"
+    inds = n:-1:1
+  end
+  
+  for i = inds
+    if dims[i] == 1
+      push!(dims_drop, i)
+    else
+      break
+    end
+  end
+  
+  if !isempty(dims_drop)
+    dropdims(A, dims=tuple(dims_drop...))
+  else
+    A
+  end
+end
+
+squeeze_tail(A::AbstractArray) = squeeze_TailOrHead(A; type="tail")
+squeeze_head(A::AbstractArray) = squeeze_TailOrHead(A; type="head")
+
 function squeeze(A::AbstractArray)
   dropdims(A, dims=tuple(findall(size(A) .== 1)...))
 end
@@ -89,7 +118,7 @@ export which_isna, which_notna,
   seq_along, seq_len,
   Range,
   length_unique, unique_sort, 
-  squeeze, 
+  squeeze, squeeze_tail, squeeze_head,
   set_seed;
 export isnan, all_isnan, any_isnan;
 export obj_size, r_summary
