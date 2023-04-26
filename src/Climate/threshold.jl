@@ -47,6 +47,8 @@ function cal_mTRS_base!(Q, data::AbstractArray{T}, dates;
     doy_min = 1
   end
 
+  # @inbounds @par parallel 
+  # @timeit_all 
   @inbounds @par parallel for doy = doy_min:doy_max
     doys_mov = use_mov ? find_adjacent_doy(doy; doy_max=doy_max, halfwin=halfwin) : [doy]
     # ind = indexin(doys_mov, doys)
@@ -58,6 +60,8 @@ function cal_mTRS_base!(Q, data::AbstractArray{T}, dates;
     end
     q = @view Q[:, :, doy, :]
     x = @view data[:, :, ind]
+    # q = Q[:, :, doy, :]
+    # x = data[:, :, ind]
     if method_q == "base"
       nanQuantile_3d!(q, x; probs, dims=3, na_rm)
       # NanQuantile!(q, x; probs, dims=3, na_rm)
@@ -67,8 +71,6 @@ function cal_mTRS_base!(Q, data::AbstractArray{T}, dates;
   end
   Q
 end
-
-length_unique(x::AbstractVector) = length(unique(x))
 
 
 """
@@ -106,27 +108,6 @@ cal_mTRS = cal_mTRS_base;
 
 
 """
-seasonally moving thresholdse
-
-we use the fixed thresholds and add the seasonal warming signal. 
-
-Thus, thresholds are defined as a fixed baseline (such as for the fixed threshold) plus
-seasonally moving mean warming of the corresponding future climate based on the
-31-year moving mean of the warmest three months.
-"""
-function cal_mTRS_season(arr::AbstractArray, dates)
-  yms = format.(dates, "yyyy-mm")
-  ys = SubString.(unique(yms), 1, 4)
-
-  T_mon = apply(arr, 3, yms)
-  T_mon = movmean(T_mon, 1; dims=3) #3个月滑动平均
-  T_year = apply(T_mon, 3, ys; fun=maximum) # 最热的3个月，作为每年的升温幅度
-  T_year
-end
-
-
-
-"""
 Moving Threshold for Heatwaves Definition
 
 $(TYPEDSIGNATURES)
@@ -152,38 +133,55 @@ function cal_mTRS_full(arr::AbstractArray{T}, dates; width=15, verbose=true, use
   years = year.(dates)
   grps = unique(years)
 
-  year_min = minimum(grps)
-  year_max = maximum(grps)
+  YEAR_MIN = minimum(grps)
+  YEAR_MAX = maximum(grps)
 
   mmdd = Dates.format.(dates, "mm-dd")
   mds = unique(mmdd) |> sort
   doy_max = length(mds)
-  # doy_min = 1
 
   # 滑动平均两种不同的做法
   if !use_mov
     printstyled("running: 15d moving average first ... ")
     @time arr = movmean(arr, 7; dims=3, FT=Float32)
   end
-  
+
   dim = size(arr)
   nprob = length(probs)
+
+  mTRS_full = zeros(T, dim[1:3]..., nprob)
   mTRS = zeros(T, dim[1:2]..., doy_max, nprob)
 
-  res = map(year -> begin
-      verbose && println("running [year=$year]")
-      year_begin = max(year - width, year + width)
-      year_end = min(year - width, year + width)
+  TRS_head = cal_mTRS_base(arr, dates; p1=YEAR_MIN, p2=YEAR_MIN + width * 2, use_mov, probs, kw...)
+  TRS_tail = cal_mTRS_base(arr, dates; p1=YEAR_MAX - width * 2, p2=YEAR_MAX, use_mov, probs, kw...)
 
-      ind = @.(years >= year_min && year <= year_max)
-      _data = selectdim(arr, 3, ind)
-      _dates = @view dates[ind]
-      cal_mTRS_base!(mTRS, _data, _dates; use_mov=use_mov, kw...)
+  for year = grps
+    verbose && mod(year, 5) == 0 && println("running [year=$year]")
 
-      # 使md匹配起来
-      _md = @view mmdd[years.==year]
-      ind = findall(indexin(mds, _md) .!= nothing)
-      selectdim(mTRS, 3, ind)
-    end, grps)
-  cat(res..., dims=3)
+    inds_year = years .== year
+    md = @view mmdd[inds_year]
+    ind = findall(indexin(mds, md) .!= nothing)
+
+    year_beg = max(year - width, YEAR_MIN)
+    year_end = min(year + width, YEAR_MAX)
+
+    # @show year, YEAR_MIN + width, YEAR_MAX - width
+    if year <= YEAR_MIN + width
+      _mTRS = TRS_head
+    elseif year >= YEAR_MAX - width
+      _mTRS = TRS_tail
+    else
+      inds_data = @.(years >= year_beg && year <= year_end)
+      _data = selectdim(arr, 3, inds_data)
+      _dates = @view dates[inds_data]
+
+      # @show year_beg, year_end
+      # mTRS = cal_mTRS_base(_data, _dates; use_mov, probs, kw...)
+      cal_mTRS_base!(mTRS, _data, _dates; use_mov, probs, kw...)
+      _mTRS = mTRS
+    end
+
+    @views copy!(mTRS_full[:, :, inds_year, :], _mTRS[:, :, ind, :])
+  end
+  mTRS_full
 end

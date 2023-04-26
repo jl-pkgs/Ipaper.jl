@@ -11,7 +11,7 @@
 dates = make_date(2010, 1, 1):Day(1):make_date(2010, 12, 31)
 yms = format.(dates, "yyyy-mm")
 
-## example 01
+## example 01, some as R aggregate
 x1 = rand(365)
 apply(x1, 1, yms)
 apply(x1, 1, by=yms)

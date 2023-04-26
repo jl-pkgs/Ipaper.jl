@@ -1,12 +1,10 @@
 import Statistics
 using Statistics: mean
 
-include("NanQuantile.jl")
-
+include("linreg.jl")
 include("movmean.jl")
 include("apply.jl")
-include("Vogel2020.jl")
-include("linreg.jl")
+include("NanQuantile.jl")
 
 
 export mean, movmean, weighted_mean, weighted_movmean

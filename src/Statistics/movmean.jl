@@ -9,7 +9,9 @@ function movmean!(z::AbstractVector, x::AbstractVector, halfwin::Integer=2; fun=
   z
 end
 
-function movmean(x::AbstractVector, halfwin::Integer=2; fun=mean, FT=Float64)
+function movmean(x::AbstractVector, halfwin::Integer=2; fun=mean, FT=nothing)
+  FT === nothing && (FT = eltype(x))
+
   n = length(x)
   z = zeros(FT, n)
   movmean!(z, x, halfwin; fun=fun)
@@ -21,8 +23,9 @@ end
 
 moving mean average
 """
-function movmean(x::AbstractArray, halfwin::Integer=2; dims=3, fun=mean, FT=Float64)
+function movmean(x::AbstractArray, halfwin::Integer=2; dims=3, fun=mean, FT=nothing)
   @assert length(dims) == 1 "The length of `dims` should be 1!"
+  FT === nothing && (FT = eltype(x))
   
   n = size(x, dims)
   zi = zeros(FT, n)
@@ -48,8 +51,9 @@ function weighted_movmean!(z::AbstractVector, x::AbstractVector, w::AbstractVect
 end
 
 function weighted_movmean(x::AbstractArray, w::AbstractVector, halfwin::Integer=2;
-  fun=weighted_mean, FT=Float64)
-
+  fun=weighted_mean, FT=nothing)
+  FT === nothing && (FT = eltype(x))
+  
   n = length(x)
   z = zeros(FT, n)
   weighted_movmean!(z, x, w, halfwin; fun=fun)

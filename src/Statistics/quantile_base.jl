@@ -7,22 +7,26 @@
 
 - `fun`: reference function, `quantile!` or `_nanquantile!`
 """
-function nanQuantile_3d!(q::AbstractArray{<:Real,3}, x::AbstractArray{<:Real,3};
-  probs::Vector=[0, 0.25, 0.5, 0.75, 1], dims::Integer=3, na_rm::Bool=true)
+function nanQuantile_3d!(q::AbstractArray{T,3}, x::AbstractArray{T,3};
+  probs::Vector=[0, 0.25, 0.5, 0.75, 1], 
+  # dims::Integer=3, 
+  na_rm::Bool=true, ignored...) where {T<:Real}
 
   # println("3d is running!")
-  fun = na_rm ? _nanquantile! : Statistics.quantile!
+  fun! = na_rm ? _nanquantile! : Statistics.quantile!
   # ntime = size(x, dims)
   nrow, ncol, ntime = size(x)
   nprob = length(probs)
-  zi = zeros(eltype(x), ntime)
-  _qi = zeros(eltype(x), nprob)
+  _zi = zeros(T, ntime)
+  _qi = zeros(T, nprob)
   
+  # @inbounds 
   @inbounds for i = 1:nrow, j = 1:ncol
-    for t = eachindex(zi)
-      zi[t] = x[i, j, t]
+    for t = 1:ntime
+      _zi[t] = x[i, j, t]
     end
-    fun(_qi, zi, probs)
+    
+    fun!(_qi, _zi, probs)
     for k = 1:nprob
       q[i, j, k] = _qi[k]
     end
