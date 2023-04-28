@@ -15,14 +15,14 @@ arr = rand(Float32, 1, 1, n)
 obj_size(arr)
 
 kw = (; parallel=true, p1=1961, p2=1980)
-@time anom_full = cal_anomaly_quantile(arr, dates; kw..., method="full")
+@time anom_full = cal_anomaly_quantile(arr, dates; kw..., method="full");
 @time anom_base = cal_anomaly_quantile(arr, dates; kw..., method="base")
 @time anom_season = cal_anomaly_quantile(arr, dates; kw..., method="season")
 
 @test size(anom_base) == size(anom_full)
 @test size(anom_base) == size(anom_season)
 
-size(squeeze_head(anom_full)) == n
+size(squeeze_head(anom_full)) == (n,)
 # Threads.nthreads()
 ```
 

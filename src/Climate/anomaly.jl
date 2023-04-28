@@ -137,3 +137,16 @@ function cal_anomaly(
   end
   anom
 end
+
+
+
+function cal_anomaly_quantile(arr::AbstractVector{<:Real}, dates; kw...)
+  arr = reshape(arr, 1, 1, length(arr))
+  cal_anomaly_quantile(arr, dates; kw...)[1, 1, :]
+end
+
+
+function cal_anomaly(arr::AbstractVector{<:Real}, dates; kw...)
+  arr = reshape(arr, 1, 1, length(arr))
+  cal_anomaly(arr, dates; kw...)[1, 1, :]
+end

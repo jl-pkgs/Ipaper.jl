@@ -12,3 +12,5 @@ export factor, factor_value, CategoricalArrays
 
 
 precompile(factor, (Vector{Float64},))
+
+export levels

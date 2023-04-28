@@ -28,7 +28,7 @@ $(TYPEDSIGNATURES)
   Geophysical Research: Atmospheres, 125(9).
   https://doi.org/10.1029/2019JD032070
 """
-function cal_mTRS_base!(Q, data::AbstractArray{T}, dates;
+function cal_mTRS_base!(Q::AbstractArray{T}, data::AbstractArray{T}, dates;
   probs::Vector=[0.90, 0.95, 0.99, 0.999, 0.9999],
   use_mov=true,
   halfwin::Int=7,
@@ -41,23 +41,24 @@ function cal_mTRS_base!(Q, data::AbstractArray{T}, dates;
     doy_max = maximum(doys)
     doy_min = 1
   else
-    mmdd = Dates.format.(dates, "mm-dd")
-    mds = mmdd |> unique |> sort
+    mmdd = Dates.format.(dates, "mm-dd") |> factor
+    mmdd = mmdd.refs
+    mds = mmdd |> unique_sort
+    # mds = levels(mmdd)
     doy_max = length(mds)
     doy_min = 1
   end
 
-  # @inbounds @par parallel 
   # @timeit_all 
   @inbounds @par parallel for doy = doy_min:doy_max
     doys_mov = use_mov ? find_adjacent_doy(doy; doy_max=doy_max, halfwin=halfwin) : [doy]
     # ind = indexin(doys_mov, doys)
-    if type == "doy"
-      ind = findall(indexin(doys, doys_mov) .!= nothing)
-    else
-      md = mds[doys_mov]
-      ind = findall(indexin(mmdd, md) .!= nothing)
-    end
+    # if type == "doy"
+    #   ind = findall(indexin(doys, doys_mov) .!= nothing)
+    # else
+    md = @view mds[doys_mov]
+    ind = findall(indexin(mmdd, md) .!= nothing) # 这一步耗费内存
+    
     q = @view Q[:, :, doy, :]
     x = @view data[:, :, ind]
     # q = Q[:, :, doy, :]
@@ -155,6 +156,7 @@ function cal_mTRS_full(arr::AbstractArray{T}, dates; width=15, verbose=true, use
   TRS_head = cal_mTRS_base(arr, dates; p1=YEAR_MIN, p2=YEAR_MIN + width * 2, use_mov, probs, kw...)
   TRS_tail = cal_mTRS_base(arr, dates; p1=YEAR_MAX - width * 2, p2=YEAR_MAX, use_mov, probs, kw...)
 
+  reset_timer!(to)
   for year = grps
     verbose && mod(year, 5) == 0 && println("running [year=$year]")
 
@@ -171,14 +173,17 @@ function cal_mTRS_full(arr::AbstractArray{T}, dates; width=15, verbose=true, use
     elseif year >= YEAR_MAX - width
       _mTRS = TRS_tail
     else
-      inds_data = @.(years >= year_beg && year <= year_end)
-      _data = selectdim(arr, 3, inds_data)
-      _dates = @view dates[inds_data]
+      # @timeit_all 
+      begin
+        inds_data = @.(years >= year_beg && year <= year_end)
+        _data = selectdim(arr, 3, inds_data)
+        _dates = @view dates[inds_data]
 
-      # @show year_beg, year_end
-      # mTRS = cal_mTRS_base(_data, _dates; use_mov, probs, kw...)
-      cal_mTRS_base!(mTRS, _data, _dates; use_mov, probs, kw...) 
-      _mTRS = mTRS # 366, 后面统一取ind
+        # @show year_beg, year_end
+        # mTRS = cal_mTRS_base(_data, _dates; use_mov, probs, kw...)
+        cal_mTRS_base!(mTRS, _data, _dates; use_mov, probs, kw...) 
+        _mTRS = mTRS # 366, 后面统一取ind
+      end
     end
 
     @views copy!(mTRS_full[:, :, inds_year, :], _mTRS[:, :, inds, :])

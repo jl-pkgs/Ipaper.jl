@@ -111,6 +111,21 @@ function squeeze(A::AbstractArray)
 end
 
 
+function zip_continue(x::AbstractVector{<:Integer})
+  flag = cumsum([true; diff(x) .!= 1])
+  grps = unique(flag)
+  n = grps[end]
+  
+  res = []
+  for i = 1:n
+    inds = findall(flag .== grps[i])
+    index = [inds[1], inds[end]]
+    push!(res, (; grp=i, index, value=x[index]))
+  end
+  res
+end
+
+
 
 export which_isna, which_notna,
   is_empty, not_empty,
@@ -122,3 +137,4 @@ export which_isna, which_notna,
   set_seed;
 export isnan, all_isnan, any_isnan;
 export obj_size, r_summary
+export zip_continue
