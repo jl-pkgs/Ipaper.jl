@@ -85,7 +85,7 @@ end
 """
 function cal_mTRS_base(arr::AbstractArray{<:Real,3}, dates;
   probs::Vector=[0.90, 0.95, 0.99, 0.999, 0.9999],
-  type=nothing,
+  dtype=nothing,
   p1::Int=1961, p2::Int=1990, kw...)
 
   mmdd = Dates.format.(dates, "mm-dd")
@@ -93,8 +93,8 @@ function cal_mTRS_base(arr::AbstractArray{<:Real,3}, dates;
 
   dim = size(arr)
   nprob = length(probs)
-  type = type === nothing ? eltype(arr) : type
-  Q = zeros(type, dim[1:2]..., doy_max, nprob)
+  dtype = dtype === nothing ? eltype(arr) : dtype
+  Q = zeros(dtype, dim[1:2]..., doy_max, nprob)
 
   # constrain date in [p1, p2]
   years = year.(dates)
