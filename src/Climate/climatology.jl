@@ -62,29 +62,6 @@ function cal_climatology_base(arr::AbstractArray{<:Real,3}, dates;
 end
 
 
-
-"""
-Seasonally moving thresholds
-
-we use the fixed thresholds and add the seasonal warming signal. 
-
-Thus, thresholds are defined as a fixed baseline (such as for the fixed threshold) plus
-seasonally moving mean warming of the corresponding future climate based on the
-31-year moving mean of the warmest three months.
-"""
-function cal_climatology_season(arr::AbstractArray{<:Real, 3}, dates)
-  ys = format.(dates, "yyyy")
-  T_year = apply(arr, 3, ys)
-  # yms = format.(dates, "yyyy-mm")
-  # ys = SubString.(unique(yms), 1, 4)
-  # T_mon = apply(arr, 3, yms)
-  # T_mon = movmean(T_mon, 1; dims=3) #3个月滑动平均
-  # T_year = apply(T_mon, 3, ys; fun=maximum) # 最热的3个月，作为每年的升温幅度
-  T_year
-end
-
-
-
 """
   cal_climatology_full
   

@@ -16,7 +16,7 @@ import Dates
 
 using Reexport
 @reexport using NaNStatistics
-@reexport using TimerOutputs: reset_timer!
+@reexport using TimerOutputs: reset_timer!, @timeit
 
 using Printf
 export @sprintf

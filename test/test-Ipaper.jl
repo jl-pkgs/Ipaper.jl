@@ -48,13 +48,19 @@ end
   @test grep(x, "!\$") == grep(x, "!\$")
 end
 
+@testset "r_summary" begin
+  set_seed(1)
+  x = rand(4, 4)
+  x[1] = NaN
 
-# using StatsBase
-# x = 1:4 |> collect
-# w = [1 1 0.5 0.5]
+  obj_size(x)
+  r_summary(x)
+  @test true
+end
 
-# weighted_mean(x, w)
-# weighted_sum(x, w)
-
-set_seed(1)
-rand(4)
+@testset "weighted_mean" begin
+  x = 1:4 |> collect
+  w = [1 1 0.5 0.5]
+  @test weighted_mean(x, w) ≈ 2.166666666
+  @test weighted_sum(x, w) ≈ 6.5
+end

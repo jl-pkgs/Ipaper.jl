@@ -1,1 +1,4 @@
-src/back
+ignore:
+  - "src/back/*"
+  - "src/*/deprecated"
+  - "src/*/temp"

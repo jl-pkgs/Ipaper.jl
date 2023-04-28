@@ -50,7 +50,7 @@ function obj_size(x)
   ans = Base.summarysize(x) / 1024^2
   ans = round(ans, digits=2)
   print(typeof(x), " | ", size(x), " | ")
-  printstyled("$ans Mb"; color=:blue, bold=true, underline=true)
+  printstyled("$ans Mb\n"; color=:blue, bold=true, underline=true)
 end
 
 
@@ -71,7 +71,7 @@ function r_summary(x::AbstractArray{<:Real}; digits=2)
   r = round.(r, digits=digits)
 
   printstyled("Min\t 1st.Qu\t Median\t Mean\t 3rd.Qu\t Max\t NA's\n"; color=:blue)
-  printstyled("$(r[1])\t $(r[2])\t $(r[3])\t $(r[4])\t $(r[5])\t $(r[6])\t $(n_nan)"; color=:blue)
+  printstyled("$(r[1])\t $(r[2])\t $(r[3])\t $(r[4])\t $(r[5])\t $(r[6])\t $(n_nan)\n"; color=:blue)
   nothing
 end
 

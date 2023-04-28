@@ -22,6 +22,7 @@ function cal_yearly_Tair(arr::AbstractArray{<:Real, 3}, dates; only_summer=false
   T_year
 end
 
+cal_climatology_season(arr::AbstractArray, dates) = cal_yearly_Tair(arr, dates; only_summer=false)
 
 cal_mTRS_season(arr::AbstractArray, dates) = cal_yearly_Tair(arr, dates; only_summer=true)
 
@@ -43,4 +44,3 @@ function cal_warming_level(arr::AbstractArray{<:Real, 3}, dates;
   
   T_year .- T_clim
 end
-
