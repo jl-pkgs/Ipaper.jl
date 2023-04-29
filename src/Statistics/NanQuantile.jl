@@ -5,15 +5,6 @@ using Base: _unsafe_getindex!, _unsafe_setindex!, Slice
 include("quantile_base.jl")
 
 
-function NaNStatistics._nanquantile!(q::AbstractVector, x::AbstractVector,
-  probs::Vector{<:Real}=[0, 0.25, 0.5, 0.75, 1])
-  for k = eachindex(probs)
-    q[k] = NaNStatistics._nanquantile!(x, probs[k], (1,))[1]
-  end
-  q
-end
-
-
 # 至强版NanQuantile!, 适用于任何多维array
 function NanQuantile!(R::AbstractArray{<:Real,N}, A::AbstractArray{<:Real,N};
   probs::Vector=[0, 0.25, 0.5, 0.75, 1], dims::Integer=3, na_rm::Bool=true) where {N}
@@ -77,12 +68,12 @@ arr2 = copy(arr)
 !!!`NanQuantile(na_rm=true)` is 3~4 times faster than `nanquantile(na_rm=true)`
 """
 function NanQuantile(A::AbstractArray{<:Real};
-  probs::Vector=[0, 0.25, 0.5, 0.75, 1], dims::Integer=3, na_rm::Bool=true, type=nothing)
+  probs::Vector=[0, 0.25, 0.5, 0.75, 1], dims::Integer=3, na_rm::Bool=true, dtype=nothing)
 
-  type = type === nothing ? eltype(A) : type
+  dtype = dtype === nothing ? eltype(A) : dtype
   Size = size(A) |> collect
   Size[dims] = length(probs)
-  R = zeros(type, Size...)
+  R = zeros(dtype, Size...)
   NanQuantile!(R, A; probs, dims, na_rm)
 end
 
@@ -90,19 +81,19 @@ end
 # 二者性能相当
 function nanQuantile(x::AbstractArray;
   probs=[0, 0.25, 0.5, 0.75, 1], dims::Integer=3,
-  na_rm::Bool=true, type=nothing)
+  na_rm::Bool=true, dtype=nothing)
 
-  type = type === nothing ? eltype(x) : type
-  fun = na_rm ? _nanquantile! : quantile!
+  dtype = dtype === nothing ? eltype(x) : dtype
+  fun! = na_rm ? _nanquantile! : quantile!
   ntime = size(x, dims)
   nprob = length(probs)
   zi = zeros(eltype(x), ntime)
-  qi = zeros(type, nprob)
+  qi = zeros(dtype, nprob)
 
   mapslices(xi -> begin
       for t = eachindex(zi)
         zi[t] = xi[t]
       end
-      fun(qi, zi, probs)
+      fun!(qi, zi, probs)
     end, x; dims=dims)
 end

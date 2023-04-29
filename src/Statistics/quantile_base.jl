@@ -1,3 +1,11 @@
+function NaNStatistics._nanquantile!(q::AbstractVector, x::AbstractVector,
+  probs::Vector{<:Real}=[0, 0.25, 0.5, 0.75, 1])
+  for k = eachindex(probs)
+    q[k] = NaNStatistics._nanquantile!(x, probs[k], (1,))[1]
+  end
+  q
+end
+
 # 针对性的写一个最高性能的Quantile
 # 两次@view的嵌套会导致速度变慢；避免这种操作，可以获得极致的速度
 
@@ -36,12 +44,12 @@ end
 
 function nanQuantile_3d(x::AbstractArray{<:Real,3};
   probs=[0, 0.25, 0.5, 0.75, 1], dims::Integer=3,
-  na_rm::Bool=true, type=nothing)
+  na_rm::Bool=true, dtype=nothing)
 
-  type = type === nothing ? eltype(x) : type
+  dtype = dtype === nothing ? eltype(x) : dtype
   Size = size(x) |> collect
   Size[dims] = length(probs)
-  q = zeros(type, Size...)
+  q = zeros(dtype, Size...)
   nanQuantile_3d!(q, x; probs, dims, na_rm)
 end
 
@@ -50,7 +58,7 @@ end
 ## LOW EFFICIENT VERSION -------------------------------------------------------
 """
   nanquantile(x::AbstractArray{T,N}, probs::Vector{<:Real}; 
-    dims::Integer=1, type = Float64) where {T,N}
+    dims::Integer=1, dtype = Float64) where {T,N}
 
 # Examples
 ```julia
@@ -77,12 +85,12 @@ function nanquantile!(q::AbstractArray{T}, x::AbstractArray{T,N};
 end
 
 function nanquantile(x::AbstractArray;
-  probs::Vector{<:Real}=[0, 0.25, 0.5, 0.75, 1], dims=1, type=nothing)
+  probs::Vector{<:Real}=[0, 0.25, 0.5, 0.75, 1], dims=1, dtype=nothing)
 
-  type = type === nothing ? eltype(x) : type
+  dtype = dtype === nothing ? eltype(x) : dtype
   Size = size(x) |> collect
   Size[dims] = length(probs)
-  q = zeros(type, Size...)
+  q = zeros(dtype, Size...)
   nanquantile!(q, x; probs, dims)
 end
 

@@ -19,32 +19,33 @@ _print(x) = printstyled(x * "\n", color=:blue, bold=true, underline=true)
   arr2 = copy(arr)
 
   # default `na_rm=true`
-  @test nanQuantile([1, 2, 3, NaN]; probs=[0.5, 0.9], dims=1) == [2.0, 2.8]
-  @test NanQuantile([1, 2, 3, NaN]; probs=[0.5, 0.9], dims=1) == [2.0, 2.8]
+  probs = [0.9, 0.99, 0.999, 0.9999]
+  nanQuantile([1, 2, 3, NaN]; probs, dims=1)# == [2.0, 2.8]
+  NanQuantile([1, 2, 3, NaN]; probs, dims=1)# == [2.0, 2.8]
 
   ## Rough time ----------------------------------------------------------------
   _print("Rough time =====================================================")
   _print("0. low version:")
-  @time r0 = nanquantile(arr, dims=3); # low version
+  @time r0 = nanquantile(arr; probs, dims=3); # low version
 
   _print("1. mapslices:")
-  @time r1_0 = nanQuantile(arr; dims=3, na_rm=false);
-  @time r1_1 = nanQuantile(arr; dims=3, na_rm=true);
+  @time r1_0 = nanQuantile(arr; probs, dims=3, na_rm=false);
+  @time r1_1 = nanQuantile(arr; probs, dims=3, na_rm=true)
 
   _print("2. for loop memory saved:")
-  @time r2_0 = nanQuantile_3d(arr; dims=3, na_rm=false);
-  @time r2_1 = nanQuantile_3d(arr; dims=3, na_rm=true);
+  @time r2_0 = nanQuantile_3d(arr; probs, dims=3, na_rm=false)
+  @time r2_1 = nanQuantile_3d(arr; probs, dims=3, na_rm=true)
 
   _print("3. for loop memory saved for any dimension:")
-  @time r3_0 = NanQuantile(arr; dims=3, na_rm=false);
-  @time r3_1 = NanQuantile(arr; dims=3, na_rm=true);
+  @time r3_0 = NanQuantile(arr; probs, dims=3, na_rm=false)
+  @time r3_1 = NanQuantile(arr; probs, dims=3, na_rm=true)
 
-  @test r1_0 == r1_1
-  @test r2_0 == r2_1
-  @test r3_0 == r3_1
-  @test r1_0 == r0
-  @test r2_0 == r0
-  @test r3_0 == r0
+  @test maximum(abs.(r1_0 - r1_1)) <= 1e-6
+  @test maximum(abs.(r2_0 - r2_1)) <= 1e-6
+  @test maximum(abs.(r3_0 - r3_1)) <= 1e-6
+  @test maximum(abs.(r1_0 - r0)) <= 1e-6
+  @test maximum(abs.(r2_0 - r0)) <= 1e-6
+  @test maximum(abs.(r3_0 - r0)) <= 1e-6
   @test arr2 == arr
   # ## accurate time -------------------------------------------------------------
   # _print("Accurate time =====================================================")

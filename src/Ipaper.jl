@@ -30,7 +30,11 @@ include("timeit_all.jl")
 include("Pipe.jl")
 @reexport using .Pipe
 
+include("tools.jl")
+
 include("cmd.jl")
+include("tools_plot.jl")
+
 include("dates.jl")
 include("factor.jl")
 include("file_operation.jl")
@@ -38,7 +42,6 @@ include("list.jl")
 include("match2.jl")
 include("par.jl")
 include("stringr.jl")
-include("tools.jl")
 # include("DimensionalData.jl")
 include("missing.jl")
 include("Statistics/Statistics.jl")
