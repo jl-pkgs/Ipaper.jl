@@ -21,4 +21,43 @@ function check_dir(indir; verbose = false)
 end
 
 
-export check_dir, check_file
+
+"""
+    dir(path = ".", pattern = ""; full_names = true, include_dirs = false, recursive = false)
+
+# Arguments:
+- `path`
+- `pattern`
+- `full_names`
+- `include_dirs`
+- `recursive`
+
+# Example
+```julia
+dir("src", "\\.jl\$")
+```
+"""
+function dir(path=".", pattern=""; full_names=true, include_dirs=true, recursive=false)
+    res = readdir(path_mnt(path), join=true) # also include directory
+
+    dirs = filter(isdir, res)
+    files = filter(isfile, res)
+
+    if recursive
+        files_deep = map(dirs) do x
+            dir(x, pattern; full_names=full_names, include_dirs=include_dirs, recursive=recursive)
+        end
+        files = cat([files, files_deep...]..., dims=1)
+    end
+
+    if include_dirs
+        files = [dirs; files]
+    end
+    if pattern != ""
+        files = files[grep(basename.(files), pattern)]
+    end
+    files
+end
+
+
+export check_dir, check_file, dir
