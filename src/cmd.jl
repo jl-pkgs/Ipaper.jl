@@ -24,7 +24,5 @@ function path_mnt(path=".")
   path
 end
 
-precompile(path_mnt, (String, ))
-
 
 export @methods, is_wsl, is_windows, is_linux, path_mnt

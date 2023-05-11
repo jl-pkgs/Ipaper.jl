@@ -57,9 +57,3 @@ function weighted_movmean(x::AbstractArray{Tx}, w::AbstractVector{Tw}, halfwin::
   z = zeros(FT, n)
   weighted_movmean!(z, x, w, halfwin; fun=fun)
 end
-
-precompile(movmean, (Vector{Float64}, ))
-precompile(movmean, (Matrix{Float64}, ))
-
-precompile(weighted_mean, (Vector{Float64}, Vector{Float64}))
-precompile(weighted_mean, (Matrix{Float64}, Vector{Float64}))

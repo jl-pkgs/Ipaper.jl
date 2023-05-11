@@ -47,6 +47,8 @@ include("missing.jl")
 include("Statistics/Statistics.jl")
 include("Climate/Climate.jl")
 
+include("precompile.jl")
+
 dim = size
 # whos = varinfo
 

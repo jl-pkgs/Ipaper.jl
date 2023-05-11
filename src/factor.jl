@@ -11,6 +11,5 @@ factor_value(x::CategoricalArray) = factor_value.(x)
 export factor, factor_value, CategoricalArrays
 
 
-precompile(factor, (Vector{Float64},))
 
 export levels
