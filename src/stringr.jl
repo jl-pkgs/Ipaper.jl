@@ -11,7 +11,7 @@ StringOrRegex = Union{AbstractString,Regex}
     str_extract_all(x::AbstractString, pattern::AbstractString)
 """
 function str_extract(x::AbstractString, pattern::StringOrRegex)
-    r = match(Regex(pattern), basename(x))
+    r = match(Regex(pattern), x)
     r === nothing ? "" : r.match
 end
 
@@ -20,7 +20,7 @@ function str_extract(x::Vector{<:AbstractString}, pattern::StringOrRegex)
 end
 
 function str_extract_all(x::AbstractString, pattern::StringOrRegex)
-    [x === nothing ? "" : x.match for x in eachmatch(Regex(pattern), basename(x))]
+    [x === nothing ? "" : x.match for x in eachmatch(Regex(pattern), x)]
 end
 
 str_extract_strip(x::AbstractString, pattern::StringOrRegex) =
