@@ -33,7 +33,6 @@ include("Pipe.jl")
 include("tools.jl")
 
 include("cmd.jl")
-include("tools_plot.jl")
 
 include("dates.jl")
 include("factor.jl")
