@@ -41,7 +41,7 @@ precompile(str_extract_strip, (String, String))
     writelines(strs, "tmp")
     rm("tmp")
 
-    fs = dir(".", ""; recursive=true)
+    # fs = dir(".", ""; recursive=true) # error exists
     check_dir(".")
     path_mnt(".")
 
