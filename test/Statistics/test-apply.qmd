@@ -1,0 +1,18 @@
+```{julia}
+using Ipaper
+
+## example 02
+dates = make_date(2010):Day(1):make_date(2013, 12, 31)
+n = 100
+ntime = length(dates)
+x = rand(n, n, ntime)
+
+years = year.(dates)
+res = apply(x, 3; by=years, fun=nanquantile, combine=true, probs=[0.05, 0.95])
+obj_size(res)
+# res = apply(x, (1, 2), by=years, fun=nanquantile, combine=false)
+# size(res) == (n, n, 12)
+# NanQuantile(x; dims=3)
+# res = apply(x, 3)
+# size(res) == (n, n)
+```

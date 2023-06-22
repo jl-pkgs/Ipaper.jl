@@ -25,20 +25,45 @@ size(res) == (n, n, 12)
 
 res = apply(x, 3)
 size(res) == (n, n)
+
+## example 03
+dates = make_date(2010):Day(1):make_date(2013, 12, 31)
+n = 100
+ntime = length(dates)
+x = rand(n, n, ntime)
+
+years = year.(dates)
+res = apply(x, 3; by=years, fun=nanquantile, combine=true, probs=[0.05, 0.95])
+obj_size(res)
 ```
 """
-function apply(x::AbstractArray, dims=3; by=nothing, fun::Function=mean)
+function apply(x::AbstractArray, dims=3, args...; by=nothing, fun::Function=mean, combine=true, kw...)
+  fun2(x) = fun(x, args...; kw...)
+
   if by === nothing
     res = mapslices(fun, x, dims=dims)
-    selectdim(res, dims, 1)
+    res = selectdim(res, dims, 1)
   else
     grps = unique(by)
     res = map(grp -> begin
         ind = by .== grp
-        mapslices(fun, selectdim(x, dims, ind), dims=dims)
+        data = selectdim(x, dims, ind)
+        # ans = fun(data, args...; kw...)
+        ans = mapslices(fun2, data, dims=dims)
+        ans
       end, grps)
-    cat(res..., dims=dims)
+    # permutedims(A, perm)
+    along = ndims(res[1]) + 1
+    combine && (res = cat(res..., dims=along))
   end
+  res
 end
 
 apply(x::AbstractArray, dims, by; kw...) = apply(x, dims; by = by, kw...)
+
+
+function abind(x::Vector{T}, dim=3) where {T<:AbstractArray}
+  cat(x..., dims=dim)
+end
+
+export abind
