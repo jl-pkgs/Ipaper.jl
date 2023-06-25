@@ -38,8 +38,8 @@ precompile(str_extract_strip, (String, String))
     grep(strs, "hello")
     grepl(strs, "hello")
     
-    writelines(strs, "tmp")
-    rm("tmp")
+    # writelines(strs, "tmp")
+    # rm("tmp")
 
     # fs = dir(".", ""; recursive=true) # error exists
     check_dir(".")

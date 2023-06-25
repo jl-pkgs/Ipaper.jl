@@ -35,6 +35,8 @@ x = rand(n, n, ntime)
 years = year.(dates)
 res = apply(x, 3; by=years, fun=nanquantile, combine=true, probs=[0.05, 0.95])
 obj_size(res)
+
+res = apply(x, 3; by=years, fun=nanmean, combine=true)
 ```
 """
 function apply(x::AbstractArray, dims=3, args...; by=nothing, fun::Function=mean, combine=true, kw...)
@@ -53,7 +55,8 @@ function apply(x::AbstractArray, dims=3, args...; by=nothing, fun::Function=mean
         ans
       end, grps)
     # permutedims(A, perm)
-    along = ndims(res[1]) + 1
+    # may have bug
+    along = size(res[1])[end] == 1 ? dims : ndims(res[1]) + 1
     combine && (res = cat(res..., dims=along))
   end
   res
