@@ -9,5 +9,5 @@ include("NanQuantile.jl")
 
 export mean, movmean, weighted_mean, weighted_movmean
 export apply
-export _nanquantile!, nanquantile, nanQuantile,NanQuantile, NanQuantile!
+export _nanquantile!, nanquantile, NanQuantile,NanQuantile_low, NanQuantile_low!
 export lm, linreg, linreg_fast, linreg_simple

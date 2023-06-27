@@ -63,10 +63,3 @@ function apply(x::AbstractArray, dims=3, args...; by=nothing, fun::Function=mean
 end
 
 apply(x::AbstractArray, dims, by; kw...) = apply(x, dims; by = by, kw...)
-
-
-function abind(x::Vector{T}, dim=3) where {T<:AbstractArray}
-  cat(x..., dims=dim)
-end
-
-export abind

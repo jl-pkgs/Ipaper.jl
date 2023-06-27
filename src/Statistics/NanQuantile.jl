@@ -1,13 +1,11 @@
-import NaNStatistics: _nanquantile!
 import Statistics: quantile!
 using Base: _unsafe_getindex!, _unsafe_setindex!, Slice
 
 include("quantile_base.jl")
 
 
-# 至强版NanQuantile!, 适用于任何多维array
-function NanQuantile!(R::AbstractArray{<:Real,N}, A::AbstractArray{<:Real,N};
-  probs::Vector=[0, 0.25, 0.5, 0.75, 1], dims::Integer=3, na_rm::Bool=true) where {N}
+function NanQuantile_low!(R::AbstractArray{<:Real,N}, A::AbstractArray{<:Real,N};
+  probs::Vector=[0, 0.25, 0.5, 0.75, 1], dims::Integer=N, na_rm::Bool=true) where {N}
 
   fun = na_rm ? _nanquantile! : quantile!
   itershape = ntuple(d -> d in dims ? Base.OneTo(1) : axes(A, d), ndims(A))
@@ -54,36 +52,36 @@ arr = rand(Float32, 140, 80, ntime)
 arr2 = copy(arr)
 
 # default `na_rm=true`
-@test nanQuantile([1, 2, 3, NaN]; probs=[0.5, 0.9], dims=1) == [2.0, 2.8]
+@test NanQuantile([1, 2, 3, NaN]; probs=[0.5, 0.9], dims=1) == [2.0, 2.8]
 
-@time r0 = nanquantile(arr, dims=3) # low version
-@time r2_0 = NanQuantile(arr; dims=3, na_rm=false)
-@time r2_1 = NanQuantile(arr; dims=3, na_rm=true)
+@time r0 = _nanquantile(arr, dims=3) # low version
+@time r2_0 = NanQuantile_low(arr; dims=3, na_rm=false)
+@time r2_1 = NanQuantile_low(arr; dims=3, na_rm=true)
 
 @test r2_0 == r2_1
 @test r2_0 == 20
 @test arr2 == arr
 ```
 
-!!!`NanQuantile(na_rm=true)` is 3~4 times faster than `nanquantile(na_rm=true)`
+!!!`NanQuantile_low(na_rm=rue)` is 3~4 times faster than `_nanquantile(na_rm=true)`
 """
-function NanQuantile(A::AbstractArray{<:Real};
-  probs::Vector=[0, 0.25, 0.5, 0.75, 1], dims::Integer=3, na_rm::Bool=true, dtype=nothing)
+function NanQuantile_low(A::AbstractArray{T,N};
+  probs::Vector=[0, 0.25, 0.5, 0.75, 1], dims::Integer=N, na_rm::Bool=true, dtype=nothing) where {T<:Real,N}
 
   dtype = dtype === nothing ? eltype(A) : dtype
   Size = size(A) |> collect
   Size[dims] = length(probs)
   R = zeros(dtype, Size...)
-  NanQuantile!(R, A; probs, dims, na_rm)
+  NanQuantile_low!(R, A; probs, dims, na_rm)
 end
 
 
-# 二者性能相当
-function nanQuantile(x::AbstractArray;
-  probs=[0, 0.25, 0.5, 0.75, 1], dims::Integer=3,
-  na_rm::Bool=true, dtype=nothing)
+# `NanQuantile`与`NanQuantile_low`性能相当
+function NanQuantile(x::AbstractArray{T,N};
+  probs=[0, 0.25, 0.5, 0.75, 1], dims::Integer=N,
+  na_rm::Bool=true, dtype=nothing) where {T<:Real, N}
 
-  dtype = dtype === nothing ? eltype(x) : dtype
+  dtype = dtype === nothing ? T : dtype
   fun! = na_rm ? _nanquantile! : quantile!
   ntime = size(x, dims)
   nprob = length(probs)
@@ -91,9 +89,13 @@ function nanQuantile(x::AbstractArray;
   qi = zeros(dtype, nprob)
 
   mapslices(xi -> begin
-      for t = eachindex(zi)
-        zi[t] = xi[t]
-      end
+      copyto!(zi, xi)
       fun!(qi, zi, probs)
     end, x; dims=dims)
+end
+
+function NanQuantile(x::AbstractArray{T,N}, probs;
+  dims::Integer=N, na_rm::Bool=true, dtype=nothing) where {T<:Real, N}
+  
+  NanQuantile(x; probs, dims, na_rm, dtype)
 end

@@ -5,7 +5,7 @@ using Test
 
 _print(x) = printstyled(x * "\n", color=:blue, bold=true, underline=true)
 
-@testset "NanQuantile" begin
+@testset "NanQuantile_low" begin
   # ## local test version
   # year_end = 2013
   # scale = 2 
@@ -20,25 +20,25 @@ _print(x) = printstyled(x * "\n", color=:blue, bold=true, underline=true)
 
   # default `na_rm=true`
   probs = [0.9, 0.99, 0.999, 0.9999]
-  nanQuantile([1, 2, 3, NaN]; probs, dims=1)# == [2.0, 2.8]
   NanQuantile([1, 2, 3, NaN]; probs, dims=1)# == [2.0, 2.8]
+  NanQuantile_low([1, 2, 3, NaN]; probs, dims=1)# == [2.0, 2.8]
 
   ## Rough time ----------------------------------------------------------------
   _print("Rough time =====================================================")
   _print("0. low version:")
-  @time r0 = nanquantile(arr; probs, dims=3); # low version
+  @time r0 = _nanquantile(arr; probs, dims=3); # low version
 
   _print("1. mapslices:")
-  @time r1_0 = nanQuantile(arr; probs, dims=3, na_rm=false);
-  @time r1_1 = nanQuantile(arr; probs, dims=3, na_rm=true)
+  @time r1_0 = NanQuantile(arr; probs, dims=3, na_rm=false);
+  @time r1_1 = NanQuantile(arr; probs, dims=3, na_rm=true)
 
   _print("2. for loop memory saved:")
-  @time r2_0 = nanQuantile_3d(arr; probs, dims=3, na_rm=false)
-  @time r2_1 = nanQuantile_3d(arr; probs, dims=3, na_rm=true)
+  @time r2_0 = NanQuantile_3d(arr; probs, dims=3, na_rm=false)
+  @time r2_1 = NanQuantile_3d(arr; probs, dims=3, na_rm=true)
 
   _print("3. for loop memory saved for any dimension:")
-  @time r3_0 = NanQuantile(arr; probs, dims=3, na_rm=false)
-  @time r3_1 = NanQuantile(arr; probs, dims=3, na_rm=true)
+  @time r3_0 = NanQuantile_low(arr; probs, dims=3, na_rm=false)
+  @time r3_1 = NanQuantile_low(arr; probs, dims=3, na_rm=true)
 
   @test maximum(abs.(r1_0 - r1_1)) <= 1e-6
   @test maximum(abs.(r2_0 - r2_1)) <= 1e-6
@@ -53,16 +53,16 @@ _print(x) = printstyled(x * "\n", color=:blue, bold=true, underline=true)
   # @btime r0 = nanquantile($arr, dims=3) # low version
 
   # _print("1. mapslices:")
-  # @btime r1_0 = nanQuantile($arr; dims=3, na_rm=false)
-  # @btime r1_1 = nanQuantile($arr; dims=3, na_rm=true)
+  # @btime r1_0 = NanQuantile($arr; dims=3, na_rm=false)
+  # @btime r1_1 = NanQuantile($arr; dims=3, na_rm=true)
 
   # _print("2. for loop memory saved:")
-  # @btime r2_0 = nanQuantile_3d($arr; dims=3, na_rm=false)
-  # @btime r2_1 = nanQuantile_3d($arr; dims=3, na_rm=true)
+  # @btime r2_0 = NanQuantile_3d($arr; dims=3, na_rm=false)
+  # @btime r2_1 = NanQuantile_3d($arr; dims=3, na_rm=true)
 
   # _print("3. for loop memory saved for any dimension:")
-  # @btime r3_0 = NanQuantile($arr; dims=3, na_rm=false)
-  # @btime r3_1 = NanQuantile($arr; dims=3, na_rm=true)
+  # @btime r3_0 = NanQuantile_low($arr; dims=3, na_rm=false)
+  # @btime r3_1 = NanQuantile_low($arr; dims=3, na_rm=true)
 end
 
 # Accurate time =====================================================

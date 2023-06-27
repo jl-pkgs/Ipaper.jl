@@ -53,6 +53,9 @@ precompile(str_extract_strip, (String, String))
       
       movmean(x)
       weighted_mean(x, w)
+
+      NanQuantile_low(x; probs=[0.1, 0.4])
+      NanQuantile(x; probs=[0.1, 0.4])
       # mat = rand(T, 10, 4)
       # movmean(mat)
       # weighted_mean(mat, w)

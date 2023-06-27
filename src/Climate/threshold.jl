@@ -64,10 +64,10 @@ function cal_mTRS_base!(Q::AbstractArray{T}, data::AbstractArray{T}, dates;
     # q = Q[:, :, doy, :]
     # x = data[:, :, ind]
     if method_q == "base"
-      nanQuantile_3d!(q, x; probs, dims=3, na_rm)
-      # NanQuantile!(q, x; probs, dims=3, na_rm)
+      NanQuantile_3d!(q, x; probs, dims=3, na_rm)
+      # NanQuantile_low!(q, x; probs, dims=3, na_rm)
     elseif method_q == "mapslices"
-      q = nanQuantile(x; probs, dims=3, na_rm) # mapslices is suppressed for 3d `nanQuantile`
+      q = NanQuantile(x; probs, dims=3, na_rm) # mapslices is suppressed for 3d `NanQuantile`
     end
   end
   Q

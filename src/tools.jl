@@ -132,13 +132,17 @@ end
 #   interp_linear_extrap.(xout) # outside grid: linear extrapolation
 # end
 
-array(val; dims) = reshape(val, dims...)
-array(val, dims) = array(val; dims)
-
 function meshgrid(x, y)
   X = repeat(x', length(y), 1)
   Y = repeat(y, 1, length(x))
   X, Y
+end
+
+array(val; dims) = reshape(val, dims...)
+array(val, dims) = array(val; dims)
+
+function abind(x::Vector{T}, dim=3) where {T<:AbstractArray}
+  cat(x..., dims=dim)
 end
 
 
@@ -149,6 +153,7 @@ export which_isna, which_notna,
   Range,
   length_unique, unique_sort, 
   squeeze, squeeze_tail, squeeze_head,
+  abind,
   set_seed;
 export isnan, all_isnan, any_isnan;
 export obj_size, r_summary
