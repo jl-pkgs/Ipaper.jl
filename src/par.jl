@@ -1,6 +1,6 @@
 import Base.Threads
 import Base.Threads: threading_run, threadid, _threadsfor, nthreads
-
+import MPI
 
 macro par(parallel, ex)
     ex_par = :(Threads.@threads for _ in 1:1; end)
@@ -20,4 +20,22 @@ end
 get_clusters() = Threads.nthreads()
 
 
-export get_clusters, @par
+"""
+  $(TYPEDSIGNATURES)
+
+# Example
+```julia
+if !isCurrentWorker(i); continue; end
+```
+"""
+function isCurrentWorker(i = 0)
+  MPI.Init()
+  comm = MPI.COMM_WORLD
+  cluster = MPI.Comm_rank(comm)
+  ncluster = MPI.Comm_size(comm)
+  # @show ncluster, cluster, i
+  mod(i, ncluster) == cluster
+end
+
+
+export @par, get_clusters, isCurrentWorker
