@@ -43,8 +43,11 @@ function apply(x::AbstractArray, dims=3, args...; by=nothing, fun::Function=mean
   fun2(x) = fun(x, args...; kw...)
 
   if by === nothing
-    res = mapslices(fun, x, dims=dims)
-    res = selectdim(res, dims, 1)
+    ans = mapslices(fun2, x, dims=dims)
+    # 除掉长度为1维度
+    inds_bad = findall(size(ans) .== 1)
+    length(inds_bad) >= 1 && (ans = dropdims(ans; dims=inds_bad[1]))
+    res = ans
   else
     grps = unique(by)
     res = map(grp -> begin
@@ -52,14 +55,14 @@ function apply(x::AbstractArray, dims=3, args...; by=nothing, fun::Function=mean
         data = selectdim(x, dims, ind)
         # ans = fun(data, args...; kw...)
         ans = mapslices(fun2, data, dims=dims)
+        inds_bad = findall(size(ans) .== 1)
+        length(inds_bad) >= 1 && (ans = dropdims(ans; dims=inds_bad[1]))
         ans
       end, grps)
     # permutedims(A, perm)
-    # may have bug
+    # ! may have bug
     along = size(res[1])[end] == 1 ? dims : ndims(res[1]) + 1
     combine && (res = cat(res..., dims=along))
   end
   res
 end
-
-apply(x::AbstractArray, dims, by; kw...) = apply(x, dims; by = by, kw...)
