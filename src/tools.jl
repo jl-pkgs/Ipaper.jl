@@ -75,7 +75,17 @@ function r_summary(x::AbstractArray{<:Real}; digits=2)
   nothing
 end
 
-
+function r_split(lst::Vector{<:Any}, by::Vector{<:Any})
+  grps = unique(by)
+  res = []
+  for grp in grps
+    inds = by .== grp
+    # ans = Dict(grp => lst[inds])
+    ans = lst[inds]
+    push!(res, ans)
+  end
+  res
+end
 
 function squeeze_TailOrHead(A::AbstractArray; type="tail")
   dims = size(A)
@@ -156,5 +166,5 @@ export which_isna, which_notna,
   abind,
   set_seed;
 export isnan, all_isnan, any_isnan;
-export obj_size, r_summary
+export obj_size, r_summary, r_split
 export zip_continue
