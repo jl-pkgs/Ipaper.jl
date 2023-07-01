@@ -14,6 +14,13 @@ import Dates
 # import CSV
 # import Statistics: quantile
 
+
+# This symbol is only defined on Julia versions that support extensions.
+@static if !isdefined(Base, :get_extension)
+  using Requires
+end
+
+
 using Reexport
 @reexport using NaNStatistics
 @reexport using TimerOutputs: reset_timer!, @timeit
@@ -49,8 +56,16 @@ include("IO.jl")
 
 include("precompile.jl")
 dim = size
+export dim
 # whos = varinfo
 
-export dim
+
+# Compatibility with pre-1.9 julia
+function __init__()
+  @static if !isdefined(Base, :get_extension)
+    @require Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80" include("tools_plot.jl")
+  end
+end
+
 
 end
