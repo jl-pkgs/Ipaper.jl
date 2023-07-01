@@ -1,16 +1,3 @@
-using Plots: plot!, savefig
-
-
-function write_fig(file="Rplot.pdf", width=10, height=5; show=true)
-  plot!(size=(width * 72, height * 72))
-  savefig(file)
-  if show
-    @show file
-    show_file(file)
-  end
-end
-
-
 """
     open pdf file in SumatraPDF
 """
@@ -59,4 +46,8 @@ function merge_pdf(input, outfile="Plot.pdf"; is_del=false, show=true)
 end
 
 
-export write_fig, show_pdf, merge_pdf
+# println("Please import `Plots` first!")
+function write_fig end
+
+
+export write_fig, show_pdf, show_file, merge_pdf
