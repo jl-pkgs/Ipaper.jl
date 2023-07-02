@@ -1,5 +1,7 @@
 import StatsBase: weights, mean, quantile
 import Random: seed!
+include("r_base.jl")
+
 
 set_seed(seed) = seed!(seed)
 
@@ -53,39 +55,6 @@ function obj_size(x)
   printstyled("$ans Mb\n"; color=:blue, bold=true, underline=true)
 end
 
-
-r_summary(x; digits=2) = nothing
-function r_summary(x::AbstractArray{<:Real}; digits=2)
-  T = eltype(x)
-  probs = [0, 0.25, 0.5, 0.75, 1]
-
-  x2 = filter(!isnan, x)
-  if (length(x2) == 0)
-    printstyled("empty array"; color=:red)
-    return
-  end
-
-  n_nan = length(x) - length(x2)
-  r = quantile(x2, probs)
-  insert!(r, 4, mean(x2))
-  r = round.(r, digits=digits)
-
-  printstyled("Min\t 1st.Qu\t Median\t Mean\t 3rd.Qu\t Max\t NA's\n"; color=:blue)
-  printstyled("$(r[1])\t $(r[2])\t $(r[3])\t $(r[4])\t $(r[5])\t $(r[6])\t $(n_nan)\n"; color=:blue)
-  nothing
-end
-
-function r_split(lst::Vector{<:Any}, by::Vector{<:Any})
-  grps = unique(by)
-  res = []
-  for grp in grps
-    inds = by .== grp
-    # ans = Dict(grp => lst[inds])
-    ans = lst[inds]
-    push!(res, ans)
-  end
-  res
-end
 
 function squeeze_TailOrHead(A::AbstractArray; type="tail")
   dims = size(A)
