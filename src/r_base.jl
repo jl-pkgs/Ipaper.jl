@@ -1,3 +1,7 @@
+function r_in(x::AbstractVector, y::AbstractVector)::BitVector
+  indexin(x, y) .!== nothing
+end
+
 function r_chunk(n::Int, nchunk=5)
   chunk = fld(n, nchunk) 
   map(i -> begin
@@ -68,4 +72,4 @@ function r_summary(x::AbstractArray{<:Real}; digits=2)
 end
 
 
-export r_chunk, r_map, r_split, r_summary
+export r_in, r_chunk, r_map, r_split, r_summary
