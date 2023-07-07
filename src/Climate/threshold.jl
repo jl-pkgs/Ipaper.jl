@@ -1,3 +1,15 @@
+# function find_adjacent_doy2(doy::Int; doy_max::Int=366, halfwin::Int=7)
+#   ind = (-halfwin:halfwin) .+ doy
+
+#   if ind[end] > doy_max
+#     [doy-halfwin:doy_max, 1:ind[end]-doy_max]
+#   elseif ind[1] < 1
+#     [1:ind[end], ind[1]+doy_max:doy_max]
+#   else
+#     [ind]
+#   end
+# end
+
 function find_adjacent_doy(doy::Int; doy_max::Int=366, halfwin::Int=7)
   ind = collect(-halfwin:halfwin) .+ doy
   for i = eachindex(ind)
@@ -10,6 +22,24 @@ function find_adjacent_doy(doy::Int; doy_max::Int=366, halfwin::Int=7)
   end
   ind
 end
+
+function filter_mds(mmdd::AbstractVector, doy::Int; doy_max::Int=366, halfwin::Int=7, use_mov=true)
+  !use_mov && (return mmdd .== doy)
+  
+  ind = (-halfwin:halfwin) .+ doy
+  if ind[end] > doy_max
+    # ind1, ind2 = doy-halfwin:doy_max, 1:ind[end]-doy_max
+    @.(doy - halfwin <= mmdd <= doy_max || 1 <= mmdd <= ind[end] - doy_max)
+  elseif ind[1] < 1
+    # ind1, ind2 = 1:ind[end], ind[1]+doy_max:doy_max
+    @.(1 <= mmdd <= ind[end] || ind[1] + doy_max <= mmdd <= doy_max)
+  else
+    @.(ind[1] <= mmdd <= ind[end])
+  end
+end
+
+
+export find_adjacent_doy, filter_mds
 
 
 """
@@ -51,14 +81,8 @@ function cal_mTRS_base!(Q::AbstractArray{T}, data::AbstractArray{T}, dates;
 
   # @timeit_all 
   @inbounds @par parallel for doy = doy_min:doy_max
-    doys_mov = use_mov ? find_adjacent_doy(doy; doy_max=doy_max, halfwin=halfwin) : [doy]
-    # ind = indexin(doys_mov, doys)
-    # if type == "doy"
-    #   ind = findall(indexin(doys, doys_mov) .!= nothing)
-    # else
-    md = @view mds[doys_mov]
-    ind = findall(r_in(mmdd, md)) # 这一步耗费内存
-    
+    ind = filter_mds(mmdd, doy; doy_max, halfwin, use_mov)
+
     q = @view Q[:, :, doy, :]
     x = @view data[:, :, ind] # 这一步耗费内存
     # q = Q[:, :, doy, :]
@@ -181,7 +205,7 @@ function cal_mTRS_full(arr::AbstractArray{T}, dates; width=15, verbose=true, use
 
         # @show year_beg, year_end
         # mTRS = cal_mTRS_base(_data, _dates; use_mov, probs, kw...)
-        cal_mTRS_base!(mTRS, _data, _dates; use_mov, probs, kw...) 
+        cal_mTRS_base!(mTRS, _data, _dates; use_mov, probs, kw...)
         _mTRS = mTRS # 366, 后面统一取ind
       end
     end

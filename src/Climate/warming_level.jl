@@ -17,7 +17,7 @@ function cal_yearly_Tair(arr::AbstractArray{<:Real, 3}, dates; only_summer=false
     T_year = apply(T_mon, 3, ys; fun=maximum) # 最热的3个月，作为每年的升温幅度
   else
     ys = format.(dates, "yyyy")
-    T_year = apply(arr, 3, ys)
+    T_year = apply(arr, 3; by=ys)
   end
   T_year
 end
