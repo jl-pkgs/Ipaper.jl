@@ -41,7 +41,7 @@ function cal_mTRS_base!(Q::AbstractArray{T}, data::AbstractArray{T}, dates;
     doy_max = maximum(doys)
     doy_min = 1
   else
-    mmdd = Dates.format.(dates, "mm-dd") |> factor
+    mmdd = format_md.(dates) |> factor
     mmdd = mmdd.refs
     mds = mmdd |> unique_sort
     # mds = levels(mmdd)
@@ -57,10 +57,10 @@ function cal_mTRS_base!(Q::AbstractArray{T}, data::AbstractArray{T}, dates;
     #   ind = findall(indexin(doys, doys_mov) .!= nothing)
     # else
     md = @view mds[doys_mov]
-    ind = findall(indexin(mmdd, md) .!= nothing) # 这一步耗费内存
+    ind = findall(r_in(mmdd, md)) # 这一步耗费内存
     
     q = @view Q[:, :, doy, :]
-    x = @view data[:, :, ind]
+    x = @view data[:, :, ind] # 这一步耗费内存
     # q = Q[:, :, doy, :]
     # x = data[:, :, ind]
     if method_q == "base"
@@ -88,7 +88,7 @@ function cal_mTRS_base(arr::AbstractArray{<:Real,3}, dates;
   dtype=nothing,
   p1::Int=1961, p2::Int=1990, kw...)
 
-  mmdd = Dates.format.(dates, "mm-dd")
+  mmdd = format_md.(dates)
   doy_max = length_unique(mmdd)
 
   dim = size(arr)
@@ -137,7 +137,7 @@ function cal_mTRS_full(arr::AbstractArray{T}, dates; width=15, verbose=true, use
   YEAR_MIN = minimum(grps)
   YEAR_MAX = maximum(grps)
 
-  mmdd = Dates.format.(dates, "mm-dd")
+  mmdd = format_md.(dates)
   mds = unique(mmdd) |> sort
   doy_max = length(mds)
 
@@ -162,7 +162,7 @@ function cal_mTRS_full(arr::AbstractArray{T}, dates; width=15, verbose=true, use
 
     inds_year = years .== year
     md = @view mmdd[inds_year]
-    inds = findall(indexin(mds, md) .!= nothing)
+    inds = findall(r_in(mds, md))
 
     year_beg = max(year - width, YEAR_MIN)
     year_end = min(year + width, YEAR_MAX)

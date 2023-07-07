@@ -25,7 +25,7 @@ function _cal_anomaly(
   dtype === nothing && (dtype = T)
   # res = BitArray(undef, size(arr))
 
-  mmdd = Dates.format.(dates, "mm-dd")
+  mmdd = format_md.(dates)
   mds = mmdd |> unique |> sort
   # doy_max = length(mds)
   

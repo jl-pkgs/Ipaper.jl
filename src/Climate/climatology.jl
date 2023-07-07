@@ -11,7 +11,7 @@ function cal_climatology_base!(Q::AbstractArray{T,3}, data::AbstractArray{T,3}, 
     doy_max = maximum(doys)
     doy_min = 1
   else
-    mmdd = Dates.format.(dates, "mm-dd")
+    mmdd = format_md.(dates)
     mds = mmdd |> unique |> sort
     doy_max = length(mds)
     doy_min = 1
@@ -46,7 +46,7 @@ function cal_climatology_base(arr::AbstractArray{<:Real,3}, dates;
   type=nothing,
   p1::Int=1961, p2::Int=1990, kw...)
 
-  mmdd = Dates.format.(dates, "mm-dd")
+  mmdd = format_md.(dates)
   doy_max = length_unique(mmdd)
 
   type = type === nothing ? eltype(arr) : type
@@ -77,7 +77,7 @@ function cal_climatology_full(arr::AbstractArray{T}, dates;
   YEAR_MIN = minimum(grps)
   YEAR_MAX = maximum(grps)
 
-  mmdd = Dates.format.(dates, "mm-dd")
+  mmdd = format_md.(dates)
   mds = unique(mmdd) |> sort
   doy_max = length(mds)
 
@@ -99,7 +99,7 @@ function cal_climatology_full(arr::AbstractArray{T}, dates;
 
     inds_year = years .== year
     md = @view mmdd[inds_year]
-    ind = findall(indexin(mds, md) .!= nothing)
+    ind = findall(r_in(mds, md))
 
     year_beg = max(year - width, YEAR_MIN)
     year_end = min(year + width, YEAR_MAX)

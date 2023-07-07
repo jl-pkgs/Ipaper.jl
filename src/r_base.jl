@@ -1,5 +1,27 @@
+using LoopVectorization: @turbo
+
+# function r_in(x::AbstractVector, y::AbstractVector)::BitVector
+#   indexin(x, y) .!== nothing
+# end
+
 function r_in(x::AbstractVector, y::AbstractVector)::BitVector
-  indexin(x, y) .!== nothing
+  res = falses(length(x))
+  y_set = Set(y)
+
+  @inbounds for i ∈ eachindex(x)
+    res[i] = x[i] in y_set
+  end
+  return res
+end
+
+function r_in_low(x::AbstractVector, y::AbstractVector)::BitVector
+  y_set = Set(y)
+  in_y = falses(length(x))
+
+  @inbounds for (i, xi) in enumerate(x)
+    in_y[i] = xi in y_set
+  end
+  return in_y
 end
 
 function r_chunk(n::Int, nchunk=5)
@@ -72,4 +94,4 @@ function r_summary(x::AbstractArray{<:Real}; digits=2)
 end
 
 
-export r_in, r_chunk, r_map, r_split, r_summary
+export r_in, r_in_low, r_chunk, r_map, r_split, r_summary

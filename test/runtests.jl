@@ -19,6 +19,7 @@ include("test-apply.jl")
 include("test-movmean.jl")
 include("test-linreg.jl")
 include("test-anomaly.jl")
+include("test-r_in.jl")
 
 include("test-timeit_all.jl")
 # include("test-smooth_whit.jl")

@@ -10,7 +10,7 @@ import StatsBase: countmap
 mds = [1, 4, 3, 5]
 md = [1, 5, 6]
 
-findall(indexin(mds, md) .!= nothing)
+findall(r_in(mds, md))
 indexin(md, mds)
 
 ## modern version
