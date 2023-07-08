@@ -1,6 +1,6 @@
 using Test
 using Ipaper
-
+using Ipaper: NanQuantile_low, NanQuantile_low!
 # println(dirname(@__FILE__))
 # println(pwd())
 
@@ -8,23 +8,17 @@ using Ipaper
 
 include("test-Ipaper.jl")
 include("test-missing.jl")
-include("test-quantile.jl")
 include("test-Pipe.jl")
-# include("test-dt.jl")
-# include("test-dt_pipe.jl")
 include("test-string.jl")
 include("test-list.jl")
 include("test-date.jl")
-include("test-apply.jl")
-include("test-movmean.jl")
-include("test-linreg.jl")
-include("test-anomaly.jl")
 include("test-r_in.jl")
-
 include("test-timeit_all.jl")
-# include("test-smooth_whit.jl")
-# include("test-smooth_SG.jl")
-# include("test_wTSM.jl")
-# include("test_whittaker.jl")
-# include("test-lambda_init.jl")
+
+include("test-stat_linreg.jl")
+include("test-stat_quantile.jl")
+include("test-stat_apply.jl")
+include("test-stat_movmean.jl")
+include("test-stat_anomaly.jl")
+include("test-stat_threshold.jl")
 # end

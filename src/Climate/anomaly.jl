@@ -80,17 +80,17 @@ $(TYPEDSIGNATURES)
 
 """
 function cal_anomaly_quantile(
-  arr::AbstractArray{T,3},
-  dates;
+  arr::AbstractArray{T,3}, dates;
   parallel::Bool=false, 
   use_mov=true, na_rm=true,
   method = "full", 
   p1=1981, p2=2010,
   fun = _exceed, 
-  probs=0.5
+  probs=0.5, 
+  options...
 ) where {T<:Real}
   
-  kw = (;probs=[probs], use_mov, na_rm, parallel)
+  kw = (;probs=[probs], use_mov, na_rm, parallel, options...)
   # TODO: 多个阈值，需要再嵌套for循环了
   if method == "base"
     mTRS = cal_mTRS_base(arr, dates; p1, p2, kw...) |> squeeze_tail

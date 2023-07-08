@@ -64,7 +64,7 @@ function cal_mTRS_base!(Q::AbstractArray{T}, data::AbstractArray{T}, dates;
   halfwin::Int=7,
   parallel::Bool=true,
   method_q="base", na_rm=false,
-  type="md") where {T<:Real}
+  type="md", ignore...) where {T<:Real}
 
   if type == "doy"
     doys = dayofyear.(dates)
@@ -91,7 +91,7 @@ function cal_mTRS_base!(Q::AbstractArray{T}, data::AbstractArray{T}, dates;
       NanQuantile_3d!(q, x; probs, dims=3, na_rm)
       # NanQuantile_low!(q, x; probs, dims=3, na_rm)
     elseif method_q == "mapslices"
-      q = NanQuantile(x; probs, dims=3, na_rm) # mapslices is suppressed for 3d `NanQuantile`
+      q .= NanQuantile(x; probs, dims=3, na_rm) # mapslices is suppressed for 3d `NanQuantile`
     end
   end
   Q
@@ -180,17 +180,16 @@ function cal_mTRS_full(arr::AbstractArray{T}, dates; width=15, verbose=true, use
   TRS_head = cal_mTRS_base(arr, dates; p1=YEAR_MIN, p2=YEAR_MIN + width * 2, use_mov, probs, kw...)
   TRS_tail = cal_mTRS_base(arr, dates; p1=YEAR_MAX - width * 2, p2=YEAR_MAX, use_mov, probs, kw...)
 
-  reset_timer!(to)
+  # reset_timer!(to)
   for year = grps
-    verbose && mod(year, 5) == 0 && println("running [year=$year]")
+    verbose && mod(year, 20) == 0 && println("running [year=$year]")
 
     inds_year = years .== year
-    md = @view mmdd[inds_year]
-    inds = findall(r_in(mds, md))
+    md = @view(mmdd[inds_year]) |> unique
+    inds = findall(r_in(mds, md)) # this for mTRS
 
     year_beg = max(year - width, YEAR_MIN)
     year_end = min(year + width, YEAR_MAX)
-
     # @show year, YEAR_MIN + width, YEAR_MAX - width
     if year <= YEAR_MIN + width
       _mTRS = TRS_head
@@ -203,7 +202,6 @@ function cal_mTRS_full(arr::AbstractArray{T}, dates; width=15, verbose=true, use
         _data = selectdim(arr, 3, inds_data)
         _dates = @view dates[inds_data]
 
-        # @show year_beg, year_end
         # mTRS = cal_mTRS_base(_data, _dates; use_mov, probs, kw...)
         cal_mTRS_base!(mTRS, _data, _dates; use_mov, probs, kw...)
         _mTRS = mTRS # 366, 后面统一取ind

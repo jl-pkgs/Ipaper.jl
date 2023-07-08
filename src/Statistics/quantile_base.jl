@@ -48,7 +48,6 @@ function NanQuantile_3d!(q::AbstractArray{T,3}, x::AbstractArray{T,3};
   _zi = zeros(T, ntime)
   _qi = zeros(T, nprob)
   
-  # @inbounds 
   @inbounds for i = 1:nrow, j = 1:ncol
     for t = 1:ntime
       _zi[t] = x[i, j, t]

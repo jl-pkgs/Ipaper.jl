@@ -49,3 +49,4 @@ backup/
 
 *debug*
 *.vdoc.jl
+*.qmd
