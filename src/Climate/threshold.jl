@@ -25,7 +25,7 @@ end
 
 function filter_mds(mmdd::AbstractVector, doy::Int; doy_max::Int=366, halfwin::Int=7, use_mov=true)
   !use_mov && (return mmdd .== doy)
-  
+
   ind = (-halfwin:halfwin) .+ doy
   if ind[end] > doy_max
     # ind1, ind2 = doy-halfwin:doy_max, 1:ind[end]-doy_max
@@ -66,21 +66,15 @@ function cal_mTRS_base!(Q::AbstractArray{T}, data::AbstractArray{T}, dates;
   method_q="base", na_rm=false,
   type="md", ignore...) where {T<:Real}
 
-  if type == "doy"
-    doys = dayofyear.(dates)
-    doy_max = maximum(doys)
-    doy_min = 1
-  else
-    mmdd = format_md.(dates) |> factor
-    mmdd = mmdd.refs
-    mds = mmdd |> unique_sort
-    # mds = levels(mmdd)
-    doy_max = length(mds)
-    doy_min = 1
-  end
+  # if type == "doy"
+  #   doys = dayofyear.(dates)
+  #   doy_max = maximum(doys)
+  # else
+  mmdd = factor(format_md.(dates)).refs
+  mds = mmdd |> unique_sort
+  doy_max = length(mds)
 
-  # @timeit_all 
-  @inbounds @par parallel for doy = doy_min:doy_max
+  @inbounds @par parallel for doy = 1:doy_max
     ind = filter_mds(mmdd, doy; doy_max, halfwin, use_mov)
 
     q = @view Q[:, :, doy, :]

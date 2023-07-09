@@ -3,40 +3,29 @@ $(TYPEDSIGNATURES)
 """
 function cal_climatology_base!(Q::AbstractArray{T,3}, data::AbstractArray{T,3}, dates;
   use_mov=true, halfwin::Int=7,
-  parallel::Bool=true, fun=nanmean, 
+  parallel::Bool=true, fun=nanmean,
   type="md") where {T<:Real}
-  
-  if type == "doy"
-    doys = dayofyear.(dates)
-    doy_max = maximum(doys)
-    doy_min = 1
-  else
-    mmdd = format_md.(dates)
-    mds = mmdd |> unique |> sort
-    doy_max = length(mds)
-    doy_min = 1
-  end
+
+  # if type == "doy"
+  #   doys = dayofyear.(dates)
+  #   doy_max = maximum(doys)
+  # else
+  mmdd = factor(format_md.(dates)).refs
+  mds = mmdd |> unique_sort
+  doy_max = length(mds)
 
   nlon, nlat, ntime = size(data)
-  # @timeit_all 
-  @inbounds @par parallel for doy = doy_min:doy_max
-    doys_mov = use_mov ? find_adjacent_doy(doy; doy_max=doy_max, halfwin=halfwin) : [doy]
-    # ind = indexin(doys_mov, doys)
-    if type == "doy"
-      ind = findall(indexin(doys, doys_mov) .!= nothing)
-    else
-      md = mds[doys_mov]
-      ind = findall(indexin(mmdd, md) .!= nothing)
-    end
-    
+  @inbounds @par parallel for doy = 1:doy_max
+    ind = filter_mds(mmdd, doy; doy_max, halfwin, use_mov)
     # q = @view Q[:, :, doy, :]
-    for i=1:nlon, j=1:nlat
+    for i = 1:nlon, j = 1:nlat
       x = @view data[i, j, ind]
       Q[i, j, doy] = fun(x)
     end
   end
   Q
 end
+
 
 """
 $(TYPEDSIGNATURES)
@@ -56,7 +45,8 @@ function cal_climatology_base(arr::AbstractArray{<:Real,3}, dates;
   # constrain date in [p1, p2]
   years = year.(dates)
   ind = findall(p1 .<= years .<= p2)
-  _data = @view arr[:, :, ind]
+
+  _data = arr[:, :, ind]
   _dates = @view dates[ind]
   cal_climatology_base!(Q, _data, _dates; kw...)
 end
@@ -67,7 +57,7 @@ end
   
 $(TYPEDSIGNATURES)
 """
-function cal_climatology_full(arr::AbstractArray{T}, dates; 
+function cal_climatology_full(arr::AbstractArray{T}, dates;
   width=15, verbose=true, use_mov=true,
   kw...) where {T<:Real}
 
@@ -86,11 +76,11 @@ function cal_climatology_full(arr::AbstractArray{T}, dates;
     printstyled("running: 15d moving average first ... ")
     @time arr = movmean(arr, 7; dims=3, FT=Float32)
   end
-  
+
   dim = size(arr)
   mTRS_full = zeros(T, dim[1:3]...)
   mTRS = zeros(T, dim[1:2]..., doy_max)
-  
+
   TRS_head = cal_climatology_base(arr, dates; p1=YEAR_MIN, p2=YEAR_MIN + width * 2, use_mov, kw...)
   TRS_tail = cal_climatology_base(arr, dates; p1=YEAR_MAX - width * 2, p2=YEAR_MAX, use_mov, kw...)
 

@@ -58,13 +58,13 @@ end
 # end
 
 
-function r_split(lst::Vector{<:Any}, by::Vector{<:Any})
+function r_split(lst::AbstractVector, by::AbstractVector)
   grps = unique(by)
   res = []
   for grp in grps
     inds = by .== grp
     # ans = Dict(grp => lst[inds])
-    ans = lst[inds]
+    ans = lst[inds]    
     push!(res, ans)
   end
   res
