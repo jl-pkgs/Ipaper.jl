@@ -32,7 +32,7 @@ function r_chunk(n::Int, nchunk=5)
     else
       _inds = (i-1)*chunk+1:n
     end
-  end, 1:chunk)
+  end, 1:nchunk)
 end
 
 function r_chunk(x::AbstractVector, nchunk=5)

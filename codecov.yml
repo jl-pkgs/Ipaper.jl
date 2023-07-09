@@ -2,3 +2,4 @@ ignore:
   - "src/back/*"
   - "src/*/deprecated"
   - "src/*/temp"
+  - "src/tools_plot.jl"
