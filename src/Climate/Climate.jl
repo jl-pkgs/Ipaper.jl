@@ -1,14 +1,9 @@
-using Dates
-using Printf: @sprintf
-
-# format_md(date) = @sprintf("%02d-%02d", month(date), day(date))
-format_md(date) = month(date)*100 + day(date)
-
-
+include("base.jl")
 include("threshold.jl")
 include("climatology.jl")
 include("anomaly.jl")
 include("warming_level.jl")
+# include("threshold_vec.jl")
 
 # export cal_mTRS_base, cal_mTRS_season, cal_mTRS_full
 export format_md

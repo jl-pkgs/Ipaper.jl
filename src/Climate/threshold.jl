@@ -10,37 +10,6 @@
 #   end
 # end
 
-function find_adjacent_doy(doy::Int; doy_max::Int=366, halfwin::Int=7)
-  ind = collect(-halfwin:halfwin) .+ doy
-  for i = eachindex(ind)
-    if ind[i] > doy_max
-      ind[i] = ind[i] - doy_max
-    end
-    if ind[i] <= 0
-      ind[i] = ind[i] + doy_max
-    end
-  end
-  ind
-end
-
-function filter_mds(mmdd::AbstractVector, doy::Int; doy_max::Int=366, halfwin::Int=7, use_mov=true)
-  !use_mov && (return mmdd .== doy)
-
-  ind = (-halfwin:halfwin) .+ doy
-  if ind[end] > doy_max
-    # ind1, ind2 = doy-halfwin:doy_max, 1:ind[end]-doy_max
-    @.(doy - halfwin <= mmdd <= doy_max || 1 <= mmdd <= ind[end] - doy_max)
-  elseif ind[1] < 1
-    # ind1, ind2 = 1:ind[end], ind[1]+doy_max:doy_max
-    @.(1 <= mmdd <= ind[end] || ind[1] + doy_max <= mmdd <= doy_max)
-  else
-    @.(ind[1] <= mmdd <= ind[end])
-  end
-end
-
-
-export find_adjacent_doy, filter_mds
-
 
 """
 Moving Threshold for Heatwaves Definition
@@ -64,16 +33,12 @@ function cal_mTRS_base!(Q::AbstractArray{T}, data::AbstractArray{T}, dates;
   halfwin::Int=7,
   parallel::Bool=true,
   method_q="base", na_rm=false,
-  type="md", ignore...) where {T<:Real}
-
-  # if type == "doy"
-  #   doys = dayofyear.(dates)
-  #   doy_max = maximum(doys)
-  # else
+  ignore...) where {T<:Real}
+  
   mmdd = factor(format_md.(dates)).refs
   mds = mmdd |> unique_sort
   doy_max = length(mds)
-
+  
   @inbounds @par parallel for doy = 1:doy_max
     ind = filter_mds(mmdd, doy; doy_max, halfwin, use_mov)
 
