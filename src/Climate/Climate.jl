@@ -3,7 +3,7 @@ include("threshold.jl")
 include("climatology.jl")
 include("anomaly.jl")
 include("warming_level.jl")
-# include("threshold_vec.jl")
+include("threshold_vec.jl")
 
 # export cal_mTRS_base, cal_mTRS_season, cal_mTRS_full
 export format_md

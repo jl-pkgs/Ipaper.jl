@@ -8,9 +8,12 @@
   arr = rand(Float32, 4, 4, n)
 
   probs = [0.90, 0.95, 0.99, 0.999, 0.9999]
-  na_rm = true
+  kw = (; probs, na_rm=true, parallel=false)
 
-  @time r1 = cal_mTRS_base(arr, dates; probs, na_rm, method_q="mapslices")
-  @time r2 = cal_mTRS_base(arr, dates; probs, na_rm, method_q="base")
+  @time r1 = cal_mTRS_base(arr, dates; kw..., method_q="mapslices")
+  @time r2 = cal_mTRS_base(arr, dates; kw..., method_q="base")
+  @time r3 = Threshold.cal_mTRS_base(arr, dates; kw...)
+
   @test r1 == r2
+  @test r1 == r3
 end

@@ -8,6 +8,11 @@ function NaNStatistics._nanquantile!(q::AbstractVector, x::AbstractVector,
   q
 end
 
+# export nanquantile2
+# function nanquantile2(x::AbstractVector, probs::Vector{<:Real}=[0, 0.25, 0.5, 0.75, 1])
+#   map(p -> NaNStatistics.nanquantile(x, p), probs)
+# end
+
 # nanquantile -> _nanquantile
 # ! Deprecated, 运行效率极低，比`NanQuantile`慢6-7倍
 function _nanquantile(x::AbstractArray{T,N};

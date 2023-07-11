@@ -50,3 +50,6 @@ backup/
 *debug*
 *.vdoc.jl
 *.qmd
+
+*.html
+*.py

@@ -1,14 +1,4 @@
-# function find_adjacent_doy2(doy::Int; doy_max::Int=366, halfwin::Int=7)
-#   ind = (-halfwin:halfwin) .+ doy
-
-#   if ind[end] > doy_max
-#     [doy-halfwin:doy_max, 1:ind[end]-doy_max]
-#   elseif ind[1] < 1
-#     [1:ind[end], ind[1]+doy_max:doy_max]
-#   else
-#     [ind]
-#   end
-# end
+export cal_mTRS_base
 
 
 """
@@ -38,14 +28,12 @@ function cal_mTRS_base!(Q::AbstractArray{T}, data::AbstractArray{T}, dates;
   mmdd = factor(format_md.(dates)).refs
   mds = mmdd |> unique_sort
   doy_max = length(mds)
-  
+
   @inbounds @par parallel for doy = 1:doy_max
     ind = filter_mds(mmdd, doy; doy_max, halfwin, use_mov)
 
     q = @view Q[:, :, doy, :]
     x = @view data[:, :, ind] # 这一步耗费内存
-    # q = Q[:, :, doy, :]
-    # x = data[:, :, ind]
     if method_q == "base"
       NanQuantile_3d!(q, x; probs, dims=3, na_rm)
       # NanQuantile_low!(q, x; probs, dims=3, na_rm)
