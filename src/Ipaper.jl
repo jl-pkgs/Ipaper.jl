@@ -4,24 +4,18 @@
 
 module Ipaper
 # using Ipaper
-# @reexport using Z: x, y
-using DocStringExtensions: TYPEDSIGNATURES, METHODLIST
+using Reexport
+@reexport using DocStringExtensions: TYPEDSIGNATURES, METHODLIST
 
 import Dates
 # using Pipe
 # using DimensionalData
-# using DataFrames
-# import CSV
-# import Statistics: quantile
-
 
 # This symbol is only defined on Julia versions that support extensions
 if !isdefined(Base, :get_extension)
 using Requires
 end
 
-
-using Reexport
 @reexport using NaNStatistics
 @reexport using TimerOutputs: reset_timer!, @timeit
 
@@ -48,7 +42,7 @@ include("list.jl")
 include("match2.jl")
 include("par.jl")
 include("stringr.jl")
-# include("DimensionalData.jl")
+
 include("missing.jl")
 include("Statistics/Statistics.jl")
 include("Climate/Climate.jl")

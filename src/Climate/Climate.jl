@@ -1,6 +1,5 @@
 include("base.jl")
 include("threshold.jl")
-include("threshold_3d.jl")
 include("climatology.jl")
 include("anomaly.jl")
 include("warming_level.jl")

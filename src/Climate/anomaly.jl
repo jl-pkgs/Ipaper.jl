@@ -36,7 +36,7 @@ function _cal_anomaly(
     
   else option == 2
     res = zeros(dtype, size(arr))
-    nlon, nlat, ntime = size(arr)
+    nlon, nlat, _ = size(arr)
 
     years = year.(dates)
     year_grps = unique(years) |> sort
