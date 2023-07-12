@@ -1,4 +1,4 @@
-export cal_mTRS_base
+export cal_mTRS_base, cal_mTRS_full
 
 
 """
@@ -24,7 +24,7 @@ function cal_mTRS_base!(Q::AbstractArray{T}, data::AbstractArray{T}, dates;
   parallel::Bool=true,
   method_q="base", na_rm=false,
   ignore...) where {T<:Real}
-  
+
   mmdd = factor(format_md.(dates)).refs
   mds = mmdd |> unique_sort
   doy_max = length(mds)
@@ -143,16 +143,14 @@ function cal_mTRS_full(arr::AbstractArray{T}, dates; width=15, verbose=true, use
     elseif year >= YEAR_MAX - width
       _mTRS = TRS_tail
     else
-      # @timeit_all 
-      begin
-        inds_data = @.(years >= year_beg && year <= year_end)
-        _data = selectdim(arr, 3, inds_data)
-        _dates = @view dates[inds_data]
 
-        # mTRS = cal_mTRS_base(_data, _dates; use_mov, probs, kw...)
-        cal_mTRS_base!(mTRS, _data, _dates; use_mov, probs, kw...)
-        _mTRS = mTRS # 366, 后面统一取ind
-      end
+      inds_data = @.(years >= year_beg && year <= year_end)
+      _data = selectdim(arr, 3, inds_data)
+      _dates = @view dates[inds_data]
+
+      # mTRS = cal_mTRS_base(_data, _dates; use_mov, probs, kw...)
+      cal_mTRS_base!(mTRS, _data, _dates; use_mov, probs, kw...)
+      _mTRS = mTRS # 366, 后面统一取ind
     end
 
     @views copy!(mTRS_full[:, :, inds_year, :], _mTRS[:, :, inds, :])

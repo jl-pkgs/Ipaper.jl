@@ -1,4 +1,3 @@
-# 计算warming_level
 """
 Seasonally moving thresholds
 

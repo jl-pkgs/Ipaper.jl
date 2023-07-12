@@ -6,15 +6,12 @@ function cal_climatology_base!(Q::AbstractArray{T,3}, data::AbstractArray{T,3}, 
   parallel::Bool=true, fun=nanmean,
   type="md") where {T<:Real}
 
-  # if type == "doy"
-  #   doys = dayofyear.(dates)
-  #   doy_max = maximum(doys)
-  # else
+  
   mmdd = factor(format_md.(dates)).refs
   mds = mmdd |> unique_sort
   doy_max = length(mds)
 
-  nlon, nlat, ntime = size(data)
+  nlon, nlat, _ = size(data)
   @inbounds @par parallel for doy = 1:doy_max
     ind = filter_mds(mmdd, doy; doy_max, halfwin, use_mov)
     # q = @view Q[:, :, doy, :]
@@ -46,7 +43,7 @@ function cal_climatology_base(arr::AbstractArray{<:Real,3}, dates;
   years = year.(dates)
   ind = findall(p1 .<= years .<= p2)
 
-  _data = arr[:, :, ind]
+  _data = selectdim(arr, 3, ind)
   _dates = @view dates[ind]
   cal_climatology_base!(Q, _data, _dates; kw...)
 end

@@ -120,7 +120,7 @@ end
 array(val; dims) = reshape(val, dims...)
 array(val, dims) = array(val; dims)
 
-function abind(x::Vector{T}, dim=3) where {T<:AbstractArray}
+function abind(x::AbstractVector, dim=3)
   cat(x..., dims=dim)
 end
 
