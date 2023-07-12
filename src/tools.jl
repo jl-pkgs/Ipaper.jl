@@ -42,10 +42,10 @@ length_unique(x::AbstractVector) = length(unique(x))
 
 unique_sort(x) = sort(unique(x))
 
-seq_along(x) = 1:length(x)
+seq_along(x) = seq_len(length(x))
 seq_len(n) = 1:n
 
-Range(x) = [minimum(x), maximum(x)]
+r_range(x) = [minimum(x), maximum(x)]
 
 
 function obj_size(x)
@@ -129,7 +129,8 @@ export which_isna, which_notna,
   is_empty, not_empty,
   mean, weighted_mean, weighted_sum,
   seq_along, seq_len,
-  Range,
+  r_range,
+  nth, 
   length_unique, unique_sort, 
   squeeze, squeeze_tail, squeeze_head,
   abind,

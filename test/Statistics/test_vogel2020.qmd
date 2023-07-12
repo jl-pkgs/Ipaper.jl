@@ -46,7 +46,7 @@ arr2 = replaceMiss(arr)
 ```
 
 ```{julia}
-Range(dates)
+r_range(dates)
 # size(arr)
 # length(dates)
 # dates[[1, end]]

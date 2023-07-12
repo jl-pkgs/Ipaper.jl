@@ -21,8 +21,8 @@ end
 
 @testset "Threshold_nd" begin
 
-  kw = (; parallel=false, p1=1961, p2=1965, na_rm=true)
-  dates = make_date(1961, 1, 1):Day(1):make_date(1970, 12, 31) |> collect
+  kw = (; parallel=true, p1=1961, p2=1965, na_rm=true)
+  dates = make_date(1961, 1, 1):Day(1):make_date(2000, 12, 31) #|> collect
   n = length(dates)
   set_seed(1)
 

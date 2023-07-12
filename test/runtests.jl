@@ -13,6 +13,7 @@ include("test-string.jl")
 include("test-list.jl")
 include("test-date.jl")
 include("test-r_base.jl")
+include("test-tools.jl")
 include("test-timeit_all.jl")
 
 include("test-stat_linreg.jl")

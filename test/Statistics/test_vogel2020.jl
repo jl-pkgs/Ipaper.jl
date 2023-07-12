@@ -19,7 +19,7 @@ lat = nc_read(f, "lat")
 
 dates = nc_date(f)
 @time arr = nc_read(f);
-Range(dates)
+r_range(dates)
 # size(arr)
 # length(dates)
 # dates[[1, end]]

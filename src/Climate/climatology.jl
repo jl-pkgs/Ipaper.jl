@@ -4,7 +4,7 @@ $(TYPEDSIGNATURES)
 function cal_climatology_base!(Q::AbstractArray{T,3}, data::AbstractArray{T,3}, dates;
   use_mov=true, halfwin::Int=7,
   parallel::Bool=true, fun=nanmean,
-  type="md") where {T<:Real}
+  ignored...) where {T<:Real}
 
   
   mmdd = factor(format_md.(dates)).refs

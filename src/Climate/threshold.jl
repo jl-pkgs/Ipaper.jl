@@ -1,106 +1,65 @@
-export cal_mTRS_base, cal_mTRS_full
+export Threshold
+
+module Threshold
+
+export cal_mTRS_base
+using Ipaper
 
 
-"""
-Moving Threshold for Heatwaves Definition
-
-$(TYPEDSIGNATURES)
-
-# Arguments
-
-- `method_q`: method to calculate quantile, one of `base`, `mapslices`.
-  `base` is about 3 times faster and reduce used memory in 20 times. 
-
-# References
-1. Vogel, M. M., Zscheischler, J., Fischer, E. M., & Seneviratne, S. I. (2020).
-  Development of Future Heatwaves for Different Hazard Thresholds. Journal of
-  Geophysical Research: Atmospheres, 125(9).
-  https://doi.org/10.1029/2019JD032070
-"""
-function cal_mTRS_base!(Q::AbstractArray{T}, data::AbstractArray{T}, dates;
+function cal_mTRS_base!(Q::AbstractArray{T}, 
+  arr::AbstractArray{T,N}, mmdd;
+  dims=N,
   probs::Vector=[0.90, 0.95, 0.99, 0.999, 0.9999],
-  use_mov=true,
-  halfwin::Int=7,
-  parallel::Bool=true,
-  method_q="base", na_rm=false,
-  ignore...) where {T<:Real}
+  parallel=true, halfwin=7, use_mov=true,
+  kw...) where {T<:Real, N}
 
-  mmdd = factor(format_md.(dates)).refs
-  mds = mmdd |> unique_sort
-  doy_max = length(mds)
-
+  doy_max = maximum(mmdd)
+  
   @inbounds @par parallel for doy = 1:doy_max
     ind = filter_mds(mmdd, doy; doy_max, halfwin, use_mov)
-
-    q = @view Q[:, :, doy, :]
-    x = @view data[:, :, ind] # 这一步耗费内存
-    if method_q == "base"
-      NanQuantile_3d!(q, x; probs, dims=3, na_rm)
-      # NanQuantile_low!(q, x; probs, dims=3, na_rm)
-    elseif method_q == "mapslices"
-      q .= NanQuantile(x; probs, dims=3, na_rm) # mapslices is suppressed for 3d `NanQuantile`
-    end
+    # idx = ntuple(i -> i == dims ? ind : Colon(), N)
+    # ridx = ntuple(i -> i == dims ? doy : Colon(), N + 1)
+    # x = @view(arr[idx...])
+    # q = @view(Q[ridx...])
+    x = selectdim(arr, dims, ind)
+    q = selectdim(Q, dims, doy)
+    q .= NanQuantile(x; probs, dims) # mapslices 
   end
   Q
 end
 
 
-"""
-  $(TYPEDSIGNATURES)
-
-# Arguments
-- `type`: The matching type of the moving `doys`, "md" (default) or "doy".
-
-# Return
-- `TRS`: in the dimension of `[nlat, nlon, ndoy, nprob]`
-"""
-function cal_mTRS_base(arr::AbstractArray{<:Real,3}, dates;
+function cal_mTRS_base(arr::AbstractArray{T,N}, dates;
+  dims=N,
   probs::Vector=[0.90, 0.95, 0.99, 0.999, 0.9999],
-  dtype=nothing,
-  p1::Int=1961, p2::Int=1990, kw...)
+  dtype=nothing, 
+  p1::Int=1961, p2::Int=1990, kw...) where {T<:Real,N}
 
-  mmdd = format_md.(dates)
-  doy_max = length_unique(mmdd)
+  mmdd = factor(format_md.(dates)).refs
+  doy_max = maximum(mmdd)
 
-  dim = size(arr)
   nprob = length(probs)
   dtype = dtype === nothing ? eltype(arr) : dtype
-  Q = zeros(dtype, dim[1:2]..., doy_max, nprob)
+
+  dims_r = map(d -> d in dims ? [doy_max, nprob] : size(arr, d), 1:N)
+  dims_r = cat(dims_r..., dims=1)
+  Q = zeros(dtype, dims_r...)
 
   # constrain date in [p1, p2]
   years = year.(dates)
   ind = findall(p1 .<= years .<= p2)
-  _data = @view arr[:, :, ind]
-  _dates = @view dates[ind]
+  _data = selectdim(arr, dims, ind)
+  _mmdd = @view mmdd[ind]
 
-  cal_mTRS_base!(Q, _data, _dates; probs, kw...)
+  cal_mTRS_base!(Q, _data, _mmdd; dims, probs, kw...)
 end
 
-cal_mTRS = cal_mTRS_base;
 
 
-"""
-Moving Threshold for Heatwaves Definition
-
-$(TYPEDSIGNATURES)
-
-# Arguments
-
-- `use_mov`: Boolean (default true). 
-  + if `true`, 31*15 values will be used to calculate threshold for each grid; 
-  + if `false`, the input `arr` is smoothed first, then only 15 values will be 
-    used to calculate threshold.
-
-!!! 必须是完整的年份，不然会出错
-
-# References
-1. Vogel, M. M., Zscheischler, J., Fischer, E. M., & Seneviratne, S. I. (2020).
-  Development of Future Heatwaves for Different Hazard Thresholds. Journal of
-  Geophysical Research: Atmospheres, 125(9).
-  https://doi.org/10.1029/2019JD032070
-"""
-function cal_mTRS_full(arr::AbstractArray{T}, dates; width=15, verbose=true, use_mov=true,
-  probs=[0.90, 0.95, 0.99, 0.999, 0.9999], kw...) where {T<:Real}
+function cal_mTRS_full(arr::AbstractArray{T,N}, dates;
+  dims=N,
+  width=15, verbose=true, use_mov=true,
+  probs=[0.90, 0.95, 0.99, 0.999, 0.9999], kw...) where {T<:Real,N}
 
   years = year.(dates)
   grps = unique(years)
@@ -108,32 +67,33 @@ function cal_mTRS_full(arr::AbstractArray{T}, dates; width=15, verbose=true, use
   YEAR_MIN = minimum(grps)
   YEAR_MAX = maximum(grps)
 
-  mmdd = format_md.(dates)
+  mmdd = factor(format_md.(dates)).refs
   mds = unique(mmdd) |> sort
   doy_max = length(mds)
-
+  
   # 滑动平均两种不同的做法
   if !use_mov
     printstyled("running: 15d moving average first ... ")
-    @time arr = movmean(arr, 7; dims=3, FT=Float32)
+    @time arr = movmean(arr, 7; dims, FT=Float32)
   end
 
-  dim = size(arr)
   nprob = length(probs)
 
-  mTRS_full = zeros(T, dim[1:3]..., nprob)
-  mTRS = zeros(T, dim[1:2]..., doy_max, nprob)
+  dim_full = map(d -> d in dims ? [size(arr, d), nprob] : size(arr, d), 1:N) |> x -> vcat(x...)
+  dim_mTRS = map(d -> d in dims ? [doy_max, nprob] : size(arr, d), 1:N) |> x -> vcat(x...)
+
+  mTRS_full = zeros(T, dim_full...)
+  mTRS      = zeros(T, dim_mTRS...)
 
   TRS_head = cal_mTRS_base(arr, dates; p1=YEAR_MIN, p2=YEAR_MIN + width * 2, use_mov, probs, kw...)
   TRS_tail = cal_mTRS_base(arr, dates; p1=YEAR_MAX - width * 2, p2=YEAR_MAX, use_mov, probs, kw...)
 
-  # reset_timer!(to)
   for year = grps
     verbose && mod(year, 20) == 0 && println("running [year=$year]")
 
     inds_year = years .== year
     md = @view(mmdd[inds_year]) |> unique
-    inds = findall(r_in(mds, md)) # this for mTRS
+    inds_md = findall(r_in(mds, md)) # this for mTRS
 
     year_beg = max(year - width, YEAR_MIN)
     year_end = min(year + width, YEAR_MAX)
@@ -143,17 +103,21 @@ function cal_mTRS_full(arr::AbstractArray{T}, dates; width=15, verbose=true, use
     elseif year >= YEAR_MAX - width
       _mTRS = TRS_tail
     else
-
       inds_data = @.(years >= year_beg && year <= year_end)
-      _data = selectdim(arr, 3, inds_data)
-      _dates = @view dates[inds_data]
-
-      # mTRS = cal_mTRS_base(_data, _dates; use_mov, probs, kw...)
-      cal_mTRS_base!(mTRS, _data, _dates; use_mov, probs, kw...)
+      _data = selectdim(arr, dims, inds_data)
+      _mmdd = @view mmdd[inds_data]
+      
+      cal_mTRS_base!(mTRS, _data, _mmdd; use_mov, probs, kw...)
       _mTRS = mTRS # 366, 后面统一取ind
     end
-
-    @views copy!(mTRS_full[:, :, inds_year, :], _mTRS[:, :, inds, :])
+    idx_year = ntuple(d -> d in dims ? inds_year : Colon(), N + 1)
+    idx_md = ntuple(d -> d in dims ? inds_md : Colon(), N + 1)
+    @views copy!(mTRS_full[idx_year...], _mTRS[idx_md...])
+    # 两种方式表现差别不大
+    # copy!(selectdim(mTRS_full, dims, inds_year), selectdim(_mTRS, dims, inds_md))
   end
   mTRS_full
+end
+
+
 end
