@@ -12,6 +12,29 @@
 end
 
 
+@testset "_cal_anomaly_3d" begin
+  set_seed(1)
+  ny = 10
+  dates = Date(2010):Day(1):Date(2010 + ny - 1, 12, 31)
+  ntime = length(dates)
+
+  dims = (100, 100)
+  set_seed(1)
+  nprob = ()
+
+  arr = rand(dims..., ntime)
+  TRS = rand(dims..., 366, nprob...)
+  T_wl = rand(dims..., ny)
+
+  r1 = _cal_anomaly(arr, TRS, dates; T_wl)
+  r3 = _cal_anomaly_3d(arr, TRS, dates; T_wl)
+
+  @time r1 = _cal_anomaly(arr, TRS, dates; T_wl)
+  @time r3 = _cal_anomaly_3d(arr, TRS, dates; T_wl)
+  @test r1 == r3
+end
+
+
 @testset "cal_anomaly 3d" begin
   dates = make_date(1961, 1, 1):Day(1):make_date(2000, 12, 31) |> collect
   n = length(dates)

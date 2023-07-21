@@ -28,6 +28,6 @@ date_ym(dates) = make_date.(year.(dates), month.(dates))
 
 
 export dates_miss, dates_nmiss,
-    DateTime, year, month, day, Year, Month, Day, format, 
+    DateTime, Date, year, month, day, Year, Month, Day, format, 
     make_datetime, make_date, 
     date_year, date_ym

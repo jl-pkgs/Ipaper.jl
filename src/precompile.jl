@@ -27,7 +27,8 @@ precompile(str_extract_strip, (String, String))
 @setup_workload begin
   str = "hello world! hello world!"
   strs = [str, "hello", "world"]
-
+  dates = make_date(1960, 1, 1):Day(1):make_date(1961, 12, 31) |> collect
+  
   @compile_workload begin
     str_extract(str, "hello")
     str_extract(strs, "hello")
@@ -61,5 +62,29 @@ precompile(str_extract_strip, (String, String))
     end
 
     @pipe str |> _
+
+    ## precompile for cal_anomaly_quantile
+    function test_anomaly2(; T=Float32, dims=(4,))
+      ntime = length(dates)
+
+      A = rand(T, dims..., ntime)
+      kw = (; parallel=true, p1=1960, p2=1960, na_rm=false, probs=[0.5, 0.9])
+
+      @time anom_season = cal_anomaly_quantile(A, dates; kw..., method="season")
+      @time anom_base = cal_anomaly_quantile(A, dates; kw..., method="base")
+      @time anom_full = cal_anomaly_quantile(A, dates; kw..., method="full")
+
+      @assert size(anom_base) == (dims..., ntime, length(kw.probs))
+      @assert size(anom_base) == size(anom_full)
+      @assert size(anom_base) == size(anom_season)
+    end
+    # set_seed(1)
+    l_dims = [(), (4,), (4, 4), (4, 4, 4)]
+    for T in (Float32, Float64)
+      for dims = l_dims
+        test_anomaly2(; T, dims)
+      end
+    end
+
   end
 end

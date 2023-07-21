@@ -56,7 +56,7 @@ function apply(x::AbstractArray, dims=3, args...; by=nothing, fun::Function=mean
         # ans = fun(data, args...; kw...)
         ans = mapslices(fun2, data, dims=dims)
         inds_bad = findall(size(ans) .== 1)
-        length(inds_bad) >= 1 && (ans = dropdims(ans; dims=inds_bad[1]))
+        length(inds_bad) >= 1 && ndims(ans) > 1 && (ans = dropdims(ans; dims=inds_bad[1]))
         ans
       end, grps)
     # permutedims(A, perm)

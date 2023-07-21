@@ -2,13 +2,16 @@
 Calculate yearly air temperature.
 
 # Description
-we use the fixed thresholds and add the seasonal warming signal. 
-Thus, thresholds are defined as a fixed baseline (such as for the fixed threshold) plus
-seasonally moving mean warming of the corresponding future climate based on the
-31-year moving mean of the warmest three months.
+we use the fixed thresholds and add the seasonal warming signal. Thus,
+thresholds are defined as a fixed baseline (such as for the fixed threshold)
+plus seasonally moving mean warming of the corresponding future climate based on
+the 31-year moving mean of the warmest three months.
 
 # Details
-This function calculates the yearly air temperature based on the input temperature data and dates. If `only_summer` is true, it only calculates the temperature for summer months. The function applies the calculation along the specified dimensions.
+This function calculates the yearly air temperature based on the input
+temperature data and dates. If `only_summer` is true, it only calculates the
+temperature for summer months. The function applies the calculation along the
+specified dimensions.
 
 # Arguments
 - `A::AbstractArray{T,N}`: input array of temperature data.
@@ -57,6 +60,6 @@ function cal_warming_level(A::AbstractArray{T,N}, dates;
 
   T_year_clim = selectdim(T_year, dims, inds_clim)
   T_clim = apply(T_year_clim, dims; fun=nanmean)
-  
+
   T_year .- T_clim
 end
