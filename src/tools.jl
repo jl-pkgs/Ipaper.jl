@@ -125,12 +125,23 @@ function abind(x::AbstractVector, dim=3)
 end
 
 
+function selectdim_deep(A, dims::Integer, i; deep=true)
+  if deep
+    inds = ntuple(d -> d in dims ? i : (:), ndims(A))
+    A[inds...]
+  else
+    selectdim(A, dims, i)
+  end
+end
+
+
 export which_isna, which_notna,
   is_empty, not_empty,
   mean, weighted_mean, weighted_sum,
   seq_along, seq_len,
   r_range,
   nth, 
+  selectdim_deep,
   length_unique, unique_sort, 
   squeeze, squeeze_tail, squeeze_head,
   abind,
