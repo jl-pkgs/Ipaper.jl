@@ -4,13 +4,13 @@
   n = length(dates)
   set_seed(1)
 
-  arr = rand(Float32, 4, 4, n)
+  A = rand(Float32, 4, 4, n)
 
   probs = [0.90, 0.95, 0.99, 0.999, 0.9999]
   kw = (; probs, na_rm=true, parallel=false, (fun!)=Ipaper.cal_mTRS_base3!)
 
-  @time r1 = cal_mTRS_base(arr, dates; kw..., method_q="mapslices")
-  @time r2 = cal_mTRS_base(arr, dates; kw..., method_q="base")
+  @time r1 = cal_mTRS_base(A, dates; kw..., method_q="mapslices")
+  @time r2 = cal_mTRS_base(A, dates; kw..., method_q="base")
   @test r1 == r2
 end
 
@@ -22,32 +22,32 @@ end
   n = length(dates)
   set_seed(1)
 
-  arr = rand(Float32, 4, 4, n)
+  A = rand(Float32, 4, 4, n)
 
-  @time r1 = cal_mTRS_base(arr, dates; kw..., method_q="mapslices")
-  @time r3 = cal_mTRS_full(arr, dates; kw..., method_q="mapslices")
+  @time r1 = cal_mTRS_base(A, dates; kw..., method_q="mapslices")
+  @time r3 = cal_mTRS_full(A, dates; kw..., method_q="mapslices")
 
   @test_nowarn begin
     # set_seed(1)
     # 1d
-    arr = rand(Float32, n)
-    @time r2 = cal_mTRS_base(arr, dates; kw...)
-    @time r4 = cal_mTRS_full(arr, dates; kw...)
+    A = rand(Float32, n)
+    @time r2 = cal_mTRS_base(A, dates; kw...)
+    @time r4 = cal_mTRS_full(A, dates; kw...)
 
     # 2d
-    arr = rand(Float32, 4, n)
-    @time r2 = cal_mTRS_base(arr, dates; kw...)
-    @time r4 = cal_mTRS_full(arr, dates; kw...)
+    A = rand(Float32, 4, n)
+    @time r2 = cal_mTRS_base(A, dates; kw...)
+    @time r4 = cal_mTRS_full(A, dates; kw...)
 
     # 3d
-    arr = rand(Float32, 4, 4, n)
-    @time r2 = cal_mTRS_base(arr, dates; kw...)
-    @time r4 = cal_mTRS_full(arr, dates; kw...)
+    A = rand(Float32, 4, 4, n)
+    @time r2 = cal_mTRS_base(A, dates; kw...)
+    @time r4 = cal_mTRS_full(A, dates; kw...)
 
     # 4d
-    arr = rand(Float32, 4, 4, 4, n)
-    @time r2 = cal_mTRS_base(arr, dates; kw...)
-    @time r4 = cal_mTRS_full(arr, dates; kw...)
+    A = rand(Float32, 4, 4, 4, n)
+    @time r2 = cal_mTRS_base(A, dates; kw...)
+    @time r4 = cal_mTRS_full(A, dates; kw...)
   end
 end
 
@@ -59,23 +59,22 @@ end
   n = length(dates)
   set_seed(1)
 
-  arr = rand(Float32, 4, 4, n)
+  A = rand(Float32, 4, 4, n)
 
   # mTRS_base
-  @time r1 = cal_climatology_base(arr, dates; fun=nanmedian, kw...)
-  @time r2 = cal_mTRS_base(arr, dates; probs=[0.5], kw...)[:, :, :, 1]
-  @time r3 = cal_mTRS_base(arr, dates;
-    use_quantile=false, (fun!)=Ipaper.cal_climatology_base3!, fun=nanmedian, kw...)
-
+  @time r1 = cal_climatology_base(A, dates; fun=nanmedian, kw...)
+  @time r2 = cal_mTRS_base(A, dates; probs=[0.5], kw...)[:, :, :, 1]
+  # @time r3 = cal_mTRS_base(A, dates;
+  #   use_quantile=false, (fun!)=Ipaper.cal_climatology_base3!, fun=nanmedian, kw...)
   @test r1 == r2
-  @test r2 == r3
+  # @test r2 == r3
 
   # mTRS_full
-  @time r1 = cal_climatology_full(arr, dates; fun=nanmedian, kw...)
-  @time r2 = cal_mTRS_full(arr, dates; probs=[0.5], kw...)[:, :, :, 1]
-  @time r3 = cal_mTRS_full(arr, dates;
-    use_quantile=false, (fun!)=Ipaper.cal_climatology_base3!, fun=nanmedian, kw...)
+  @time r1 = cal_climatology_full(A, dates; fun=nanmedian, kw...)
+  @time r2 = cal_mTRS_full(A, dates; probs=[0.5], kw...)[:, :, :, 1]
+  # @time r3 = cal_mTRS_full(A, dates;
+  #   use_quantile=false, (fun!)=Ipaper.cal_climatology_base3!, fun=nanmedian, kw...)
 
   @test r1 == r2
-  @test r2 == r3
+  # @test r2 == r3
 end

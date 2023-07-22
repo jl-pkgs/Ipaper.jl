@@ -13,7 +13,6 @@ end
 
 
 @testset "_cal_anomaly_3d" begin
-  set_seed(1)
   ny = 10
   dates = Date(2010):Day(1):Date(2010 + ny - 1, 12, 31)
   ntime = length(dates)
@@ -22,15 +21,16 @@ end
   set_seed(1)
   nprob = ()
 
-  arr = rand(dims..., ntime)
+  set_seed(1)
+  A = rand(dims..., ntime)
   TRS = rand(dims..., 366, nprob...)
   T_wl = rand(dims..., ny)
 
-  r1 = _cal_anomaly(arr, TRS, dates; T_wl)
-  r3 = _cal_anomaly_3d(arr, TRS, dates; T_wl)
+  r1 = _cal_anomaly(A, TRS, dates; T_wl)
+  r3 = _cal_anomaly_3d(A, TRS, dates; T_wl)
 
-  @time r1 = _cal_anomaly(arr, TRS, dates; T_wl)
-  @time r3 = _cal_anomaly_3d(arr, TRS, dates; T_wl)
+  @time r1 = _cal_anomaly(A, TRS, dates; T_wl)
+  @time r3 = _cal_anomaly_3d(A, TRS, dates; T_wl)
   @test r1 == r3
 end
 
@@ -40,26 +40,22 @@ end
   n = length(dates)
   set_seed(1)
 
-  arr = rand(Float32, 4, 4, n)
-  obj_size(arr)
+  A = rand(Float32, 4, 4, n)
+  obj_size(A)
 
   ## 采用`quantile`计算
   kw = (; parallel=true, p1=1961, p2=1980, na_rm=false)
-  @time anom_base = cal_anomaly_quantile(arr, dates; kw..., method="base")
+  @time anom_base = cal_anomaly_quantile(A, dates; kw..., method="base")
 
-  @time anom_season = cal_anomaly_quantile(arr, dates; kw..., method="season")
-  @time anom_full = cal_anomaly_quantile(arr, dates; kw..., method="full")
-  # @test size(anom_base) == size(anom_full)
-  # @test size(anom_base) == size(anom_season)
+  @time anom_season = cal_anomaly_quantile(A, dates; kw..., method="season")
+  @time anom_full = cal_anomaly_quantile(A, dates; kw..., method="full")
 
   ## 采用`fun_clim`:`nanmean`计算
   kw = (; parallel=true, p1=1961, p2=1980, fun_clim=nanmedian)
-  @time anom_base2 = cal_anomaly(arr, dates; kw..., method="base")
-  @time anom_season2 = cal_anomaly(arr, dates; kw..., method="season")
-  @time anom_full2 = cal_anomaly(arr, dates; kw..., method="full")
+  @time anom_base2 = cal_anomaly(A, dates; kw..., method="base")
+  @time anom_season2 = cal_anomaly(A, dates; kw..., method="season")
+  @time anom_full2 = cal_anomaly(A, dates; kw..., method="full")
 
-  # @test size(anom_base) == size(anom_full)
-  # @test size(anom_base) == size(anom_season)
   @test anom_base == anom_base2
   @test anom_season == anom_season2
   @test anom_full ≈ anom_full2
@@ -67,31 +63,56 @@ end
 
 
 
-# @testset "cal_anomaly 1d" begin
-#   dates = make_date(1961, 1, 1):Day(1):make_date(2000, 12, 31) |> collect
-#   n = length(dates)
-#   set_seed(1)
+## Test for multi-dimension array  ---------------------------------------------
+function test_climatology(; dims=(), T=Float32)
+  A = rand(T, dims..., ntime)
+  kw = (; p1=2010, p2=2015, parallel=true, use_mov=true, fun=nanmean) # 
 
-#   x = rand(Float32, n)
-#   obj_size(x)
+  @time r_base = cal_climatology_base(A, dates; kw...)
+  @time r_full = cal_climatology_full(A, dates; kw...)
 
-#   ## 采用`quantile`计算
-#   kw = (; parallel=true, p1=1961, p2=1980, na_rm=false)
-#   @time anom_base = cal_anomaly_quantile(x, dates; kw..., method="base")
-#   @time anom_season = cal_anomaly_quantile(x, dates; kw..., method="season")
-#   @time anom_full = cal_anomaly_quantile(x, dates; kw..., method="full")
-#   # @test size(anom_base) == size(anom_full)
-#   # @test size(anom_base) == size(anom_season)
+  @test size(r_base) == (dims..., 366)
+  @test size(r_full) == size(A)
+end
 
-#   ## 采用`fun_clim`:`nanmean`计算
-#   kw = (; parallel=true, p1=1961, p2=1980, fun_clim=nanmedian)
-#   @time anom_base2 = cal_anomaly(x, dates; kw..., method="base")
-#   @time anom_season2 = cal_anomaly(x, dates; kw..., method="season")
-#   @time anom_full2 = cal_anomaly(x, dates; kw..., method="full")
+function test_anomaly(; dims=(), T=Float32)
+  A = rand(T, dims..., ntime)
+  kw = (; p1=2010, p2=2015, parallel=true, use_mov=true, fun_clim=nanmean)
 
-#   # @test size(anom_base) == size(anom_full)
-#   # @test size(anom_base) == size(anom_season)
-#   @test anom_base == anom_base2
-#   @test anom_season == anom_season2
-#   @test anom_full ≈ anom_full2
-# end
+  r_base = cal_anomaly(A, dates; kw..., method="base")
+  r_seas = cal_anomaly(A, dates; kw..., method="season")
+  r_full = cal_anomaly(A, dates; kw..., method="full")
+
+  @test size(r_base) == size(A)
+  @test size(r_seas) == size(A)
+  @test size(r_full) == size(A)
+end
+
+function test_anomaly_quantile(; T=Float32, dims=(4,))
+  A = rand(T, dims..., ntime)
+  kw = (; parallel=true, p1=2010, p2=2015, na_rm=false, probs=[0.5, 0.9])
+
+  anom_season = cal_anomaly_quantile(A, dates; kw..., method="season")
+  anom_base = cal_anomaly_quantile(A, dates; kw..., method="base")
+  anom_full = cal_anomaly_quantile(A, dates; kw..., method="full")
+
+  @test size(anom_base) == (dims..., ntime, length(kw.probs))
+  @test size(anom_base) == size(anom_full)
+  @test size(anom_base) == size(anom_season)
+end
+
+ny = 10
+dates = Date(2010):Day(1):Date(2010 + ny - 1, 12, 31)
+ntime = length(dates)
+dims = (4, 4)
+
+@testset "climatology and anomaly in multiple dimension" begin
+  l_dims = [(), (4,), (4, 4), (4, 4, 4)]
+  for T in (Float32, Float64)
+    for dims = l_dims
+      test_climatology(; T, dims)
+      test_anomaly(; T, dims)
+      test_anomaly_quantile(; T, dims)
+    end
+  end
+end

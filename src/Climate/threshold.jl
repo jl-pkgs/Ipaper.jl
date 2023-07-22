@@ -159,9 +159,6 @@ function cal_mTRS_full(arr::AbstractArray{T,N}, dates;
   else
     dim_full = size(arr)
     dim_mTRS = map(d -> d in dims ? doy_max : size(arr, d), 1:N) |> x -> vcat(x...)
-
-    @show(dim_full)
-    @show(dim_mTRS)
   end
 
   mTRS_full = zeros(T, dim_full...)
