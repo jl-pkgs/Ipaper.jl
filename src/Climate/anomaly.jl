@@ -1,12 +1,6 @@
 ## 计算anomaly的3种方法，考虑每年的升温幅度
 export _cal_anomaly_3d, _cal_anomaly
 
-# some CMIP6 model not use 366 calendar |> "solved"
-# DateType = Union{Date,DateTime,AbstractCFDateTime,Nothing}
-_gte(x::T, trs::T, wl::T=T(0)) where {T<:Real} = x >= trs + wl
-_gt(x::T, trs::T, wl::T=T(0)) where {T<:Real} = x > trs + wl
-_exceed(x::T, trs::T, wl::T=T(0)) where {T<:Real} = x - trs + wl
-
 
 """
 $(TYPEDSIGNATURES)
@@ -65,7 +59,7 @@ Calculate the anomaly of a 3D array of temperature data.
 
 # Arguments
 
-- `arr`      : the 3D array of temperature data
+- `A`      : the 3D array of temperature data
 - `dates`    : an array of dates corresponding to the temperature data
 - `parallel` : whether to use parallel processing (default `false`)
 - `use_mov`  : whether to use a moving window to calculate the threshold (default `true`)
@@ -73,11 +67,11 @@ Calculate the anomaly of a 3D array of temperature data.
 - `probs`    : default `[0.5]`
 - `p1`       : the start year for the reference period (default `1981`)
 - `p2`       : the end year for the reference period (default `2010`)
-- `fun_clim` : the function to use for calculating the climate state, one of `nanmean` or `nanmedian` (default `nanmean`)
+- `fun`      : the function used to calculate the anomaly (default `_exceed`)
 
 # Returns
 
-An array of the same shape as `arr` containing the temperature anomaly.
+An array of the same shape as `A` containing the temperature anomaly.
 
 # References
 
@@ -88,7 +82,7 @@ An array of the same shape as `arr` containing the temperature anomaly.
 
 """
 function cal_anomaly_quantile(
-  arr::AbstractArray{T}, dates;
+  A::AbstractArray{T}, dates;
   parallel::Bool=false,
   use_mov=true, na_rm=true,
   method="full",
@@ -101,24 +95,53 @@ function cal_anomaly_quantile(
   kw = (; probs, use_mov, na_rm, parallel, options...)
   # TODO: 多个阈值，需要再嵌套for循环了
   if method == "base"
-    mTRS = cal_mTRS_base(arr, dates; p1, p2, kw...) |> squeeze_tail
-    anom = _cal_anomaly(arr, mTRS, dates; option=1)
+    mTRS = cal_mTRS_base(A, dates; p1, p2, kw...) |> squeeze_tail
+    anom = _cal_anomaly(A, mTRS, dates; option=1)
   elseif method == "season"
-    mTRS = cal_mTRS_base(arr, dates; p1, p2, kw...) |> squeeze_tail
-    T_wl = cal_warming_level(arr, dates; p1, p2)
-    anom = _cal_anomaly(arr, mTRS, dates; option=2, T_wl)
+    mTRS = cal_mTRS_base(A, dates; p1, p2, kw...) |> squeeze_tail
+    T_wl = cal_warming_level(A, dates; p1, p2)
+    anom = _cal_anomaly(A, mTRS, dates; option=2, T_wl)
   elseif method == "full"
-    TRS_full = cal_mTRS_full(arr, dates; kw...) |> squeeze_tail
-    anom = fun.(arr, TRS_full)
+    TRS_full = cal_mTRS_full(A, dates; kw...) |> squeeze_tail
+    anom = fun.(A, TRS_full)
   end
   anom
 end
 
 
-# 气候态用的是median的方法，如果想计算均值则需要另一套独立的方法
+"""
+Calculate the anomaly of an array relative to its climatology.
 
-function cal_anomaly(
-  arr::AbstractArray{T},
+# Arguments
+
+- `A::AbstractArray{T}`: The input array to calculate the anomaly of.
+- `dates`: The dates corresponding to the input array.
+
+- `parallel::Bool=false`: Whether to use parallel processing.
+- `use_mov=true`: Whether to use a moving window to calculate the climatology.
+- `method="full"`: The method to use for calculating the climatology. Can be "base", "season", or "full".
+- `p1=1981`: The start year for the period to use for calculating the climatology.
+- `p2=2010`: The end year for the period to use for calculating the climatology.
+- `fun_clim=nanmean`: The function to use for calculating the climatology.
+- `fun_anom=_exceed`: The function to use for calculating the anomaly.
+
+# Returns
+- `anom`: The anomaly of the input array relative to its climatology.
+
+# Example
+```julia
+using Ipaper
+
+# Generate some sample data
+A = rand(365, 10)
+dates = Date(2000, 1, 1):Day(1):Date(2000, 12, 31)
+
+# Calculate the anomaly relative to the climatology
+anom = cal_anomaly_clim(A, dates; method="base")
+```
+"""
+function cal_anomaly_clim(
+  A::AbstractArray{T},
   dates;
   parallel::Bool=false,
   use_mov=true,
@@ -131,15 +154,79 @@ function cal_anomaly(
   kw = (; use_mov, parallel, fun=fun_clim)
 
   if method == "base"
-    mTRS = cal_climatology_base(arr, dates; p1, p2, kw...) |> squeeze_tail
-    anom = _cal_anomaly(arr, mTRS, dates; fun_anom)
+    mTRS = cal_climatology_base(A, dates; p1, p2, kw...) |> squeeze_tail
+    anom = _cal_anomaly(A, mTRS, dates; fun_anom)
   elseif method == "season"
-    mTRS = cal_climatology_base(arr, dates; p1, p2, kw...) |> squeeze_tail
-    T_wl = cal_warming_level(arr, dates; p1, p2)
-    anom = _cal_anomaly(arr, mTRS, dates; T_wl, fun_anom)
+    mTRS = cal_climatology_base(A, dates; p1, p2, kw...) |> squeeze_tail
+    T_wl = cal_warming_level(A, dates; p1, p2)
+    anom = _cal_anomaly(A, mTRS, dates; T_wl, fun_anom)
   elseif method == "full"
-    TRS_full = cal_climatology_full(arr, dates; kw...) |> squeeze_tail
-    anom = fun_anom.(arr, TRS_full)
+    TRS_full = cal_climatology_full(A, dates; kw...) |> squeeze_tail
+    anom = fun_anom.(A, TRS_full)
   end
   anom
+end
+
+
+"""
+  cal_threshold(
+    A::AbstractArray{T}, dates;
+    parallel::Bool=false,
+    use_mov=true, na_rm=true,
+    method="full",
+    p1=1981, p2=2010,
+    probs::Vector=[0.90, 0.95, 0.99, 0.999, 0.9999],
+    options...
+  )
+
+Calculate the threshold value for a given dataset `A` and dates. The threshold value is calculated based on the specified method.
+
+# Arguments
+- `A::AbstractArray{T}`: The input data array.
+- `dates`: The dates corresponding to the input data array.
+
+- `parallel::Bool=true`: Whether to use parallel computation.
+- `use_mov::Bool=true`: Whether to use moving window.
+- `na_rm::Bool=true`: Whether to remove missing values.
+- `method::String="full"`: Possible values are "base", "season", and "full".
+- `p1::Int=1981`: The start year for the reference period.
+- `p2::Int=2010`: The end year for the reference period.
+- `probs::Vector{Float64}=[0.5]`: The probability levels to use for calculating the threshold value.
+- `options...`: Additional options to pass to the underlying functions.
+
+# Returns
+
+For different methods: 
+
+- `full`: Array with the dimension of `(dims..., ntime, nprob)`
+- `base`: Array with the dimension of `(dims..., 366, nprob)`
+- `season`: Array with the dimension of `(dims..., nyear)`
+
+# Examples
+```julia
+dates = Date(2010, 1):Day(1):Date(2020, 12, 31);
+ntime = length(dates)
+data = rand(10, ntime);
+cal_threshold(data, dates; p1=2010, p2=2015, method="full")
+```
+"""
+function cal_threshold(
+  A::AbstractArray{T}, dates;
+  parallel::Bool=true,
+  use_mov=true, na_rm=true,
+  method="full",
+  p1=1981, p2=2010,
+  probs::Vector=[0.90, 0.95, 0.99, 0.999, 0.9999],
+  options...
+) where {T<:Real}
+
+  kw = (; probs, use_mov, na_rm, parallel, options...)
+  if method == "base"
+    cal_mTRS_base(A, dates; p1, p2, kw...) |> squeeze_tail
+  elseif method == "season"
+    # mTRS = cal_mTRS_base(A, dates; p1, p2, kw...) |> squeeze_tail
+    cal_warming_level(A, dates; p1, p2)
+  elseif method == "full"
+    cal_mTRS_full(A, dates; kw...) |> squeeze_tail # full
+  end
 end

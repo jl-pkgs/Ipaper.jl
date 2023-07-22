@@ -78,3 +78,17 @@ end
   @test r1 == r2
   # @test r2 == r3
 end
+
+
+@testset "cal_threshold" begin
+  dates = Date(2010, 1):Day(1):Date(2020, 12, 31)
+  ntime = length(dates)
+  data = rand(10, ntime)
+  r_full = cal_threshold(data, dates; p1=2010, p2=2015, method="full")
+  r_base = cal_threshold(data, dates; p1=2010, p2=2015, method="base")
+  r_seas = cal_threshold(data, dates; p1=2010, p2=2015, method="season")
+
+  @test size(r_full) == (10, ntime, 5)
+  @test size(r_base) == (10, 366, 5)
+  @test size(r_seas) == (10, 11)
+end

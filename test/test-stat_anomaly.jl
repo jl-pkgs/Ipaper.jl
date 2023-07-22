@@ -35,7 +35,7 @@ end
 end
 
 
-@testset "cal_anomaly 3d" begin
+@testset "cal_anomaly_clim 3d" begin
   dates = make_date(1961, 1, 1):Day(1):make_date(2000, 12, 31) |> collect
   n = length(dates)
   set_seed(1)
@@ -52,9 +52,9 @@ end
 
   ## 采用`fun_clim`:`nanmean`计算
   kw = (; parallel=true, p1=1961, p2=1980, fun_clim=nanmedian)
-  @time anom_base2 = cal_anomaly(A, dates; kw..., method="base")
-  @time anom_season2 = cal_anomaly(A, dates; kw..., method="season")
-  @time anom_full2 = cal_anomaly(A, dates; kw..., method="full")
+  @time anom_base2 = cal_anomaly_clim(A, dates; kw..., method="base")
+  @time anom_season2 = cal_anomaly_clim(A, dates; kw..., method="season")
+  @time anom_full2 = cal_anomaly_clim(A, dates; kw..., method="full")
 
   @test anom_base == anom_base2
   @test anom_season == anom_season2
@@ -79,9 +79,9 @@ function test_anomaly(; dims=(), T=Float32)
   A = rand(T, dims..., ntime)
   kw = (; p1=2010, p2=2015, parallel=true, use_mov=true, fun_clim=nanmean)
 
-  r_base = cal_anomaly(A, dates; kw..., method="base")
-  r_seas = cal_anomaly(A, dates; kw..., method="season")
-  r_full = cal_anomaly(A, dates; kw..., method="full")
+  r_base = cal_anomaly_clim(A, dates; kw..., method="base")
+  r_seas = cal_anomaly_clim(A, dates; kw..., method="season")
+  r_full = cal_anomaly_clim(A, dates; kw..., method="full")
 
   @test size(r_base) == size(A)
   @test size(r_seas) == size(A)

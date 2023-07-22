@@ -64,7 +64,7 @@ precompile(str_extract_strip, (String, String))
     @pipe str |> _
 
     ## precompile for cal_anomaly_quantile
-    function test_anomaly2(; T=Float32, dims=(4,))
+    function test_anomaly2(; T=Float32, dims=(2,))
       ntime = length(dates)
 
       A = rand(T, dims..., ntime)
@@ -79,12 +79,11 @@ precompile(str_extract_strip, (String, String))
       @assert size(anom_base) == size(anom_season)
     end
     # set_seed(1)
-    l_dims = [(), (4,), (4, 4), (4, 4, 4)]
+    l_dims = [(), (2,), (2, 2), (2, 2, 2)]
     for T in (Float32, Float64)
       for dims = l_dims
         test_anomaly2(; T, dims)
       end
     end
-
   end
 end
