@@ -15,6 +15,9 @@ makedocs(
   ),
   pages=[
     "Introduction" => "index.md"
+    "R Base"       => "RBase.md"
+    "Statistics"   => "Statistics.md"
+    "Climate"      => "Climate.md"
   ],
   sitename="Ipaper.jl",
   strict=false,
