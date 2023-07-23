@@ -2,9 +2,9 @@ using Dates
 using Printf: @sprintf
 
 # DateType = Union{Date,DateTime,AbstractCFDateTime,Nothing}
-_gte(x::T, trs::T, wl::T=T(0)) where {T<:Real} = x >= trs + wl
-_gt(x::T, trs::T, wl::T=T(0)) where {T<:Real} = x > trs + wl
-_exceed(x::T, trs::T, wl::T=T(0)) where {T<:Real} = x - trs + wl
+_gte(x::T, trs::T, wl::T=T(0)) where {T<:Real} = x >= (trs + wl)
+_gt(x::T, trs::T, wl::T=T(0)) where {T<:Real} = x > (trs + wl)
+_exceed(x::T, trs::T, wl::T=T(0)) where {T<:Real} = x - (trs + wl)
 
 
 # format_md(date) = @sprintf("%02d-%02d", month(date), day(date))

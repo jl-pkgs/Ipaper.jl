@@ -93,14 +93,13 @@ function cal_anomaly_quantile(
 ) where {T<:Real}
 
   kw = (; probs, use_mov, na_rm, parallel, options...)
-  # TODO: 多个阈值，需要再嵌套for循环了
   if method == "base"
     mTRS = cal_mTRS_base(A, dates; p1, p2, kw...) |> squeeze_tail
-    anom = _cal_anomaly(A, mTRS, dates; option=1)
+    anom = _cal_anomaly(A, mTRS, dates)
   elseif method == "season"
     mTRS = cal_mTRS_base(A, dates; p1, p2, kw...) |> squeeze_tail
     T_wl = cal_warming_level(A, dates; p1, p2)
-    anom = _cal_anomaly(A, mTRS, dates; option=2, T_wl)
+    anom = _cal_anomaly(A, mTRS, dates; T_wl)
   elseif method == "full"
     TRS_full = cal_mTRS_full(A, dates; kw...) |> squeeze_tail
     anom = fun.(A, TRS_full)
