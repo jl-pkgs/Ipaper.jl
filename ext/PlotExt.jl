@@ -1,13 +1,13 @@
 export PlotExt
 module PlotExt
 
-@static if isdefined(Base, :get_extension) # julia < 1.9
+# @static if isdefined(Base, :get_extension) # julia < 1.9
   using Ipaper
   using Plots: plot!, savefig
-else
-  using ..Ipaper
-  using ..Plots: plot!, savefig
-end
+# else
+#   using ..Ipaper
+#   using ..Plots: plot!, savefig
+# end
 
 
 # println("Please import `Plots` first!")

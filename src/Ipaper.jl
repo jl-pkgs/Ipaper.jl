@@ -46,6 +46,7 @@ include("stringr.jl")
 include("missing.jl")
 include("Statistics/Statistics.jl")
 include("Climate/Climate.jl")
+include("Slope/Slope.jl")
 
 include("precompile.jl")
 include("tools_plot.jl")
@@ -53,14 +54,5 @@ include("tools_plot.jl")
 dim = size
 export dim
 # whos = varinfo
-
-
-# Compatibility with pre-1.9 julia
-function __init__()
-  @static if !isdefined(Base, :get_extension)
-    @require Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80" include("../ext/PlotExt.jl")
-  end
-end
-
 
 end

@@ -1,14 +1,3 @@
-using LinearAlgebra
-# https://discourse.julialang.org/t/efficient-way-of-doing-linear-regression/31232/33
-
-function valid_input(y::AbstractVector{T}, x::AbstractVector{T}) where {T<:Real}
-  inds = @.(!isnan(y) && !isnan(x))
-
-  y = @view y[inds]
-  x = @view x[inds]
-  x, y
-end
-
 # function linreg1(y, X)
 #   β_hat = (X' * X) \ X' * y
 #   return (β_hat)
@@ -20,9 +9,9 @@ end
 # end
 
 """
-$(TYPEDSIGNATURES)
+    linreg_simple(y::AbstractVector, x::AbstractVector; na_rm=false) 
 """
-function linreg_simple(y::AbstractVector{T}, x::AbstractVector{T}; na_rm=false) where {T<:Real}
+function linreg_simple(y::AbstractVector, x::AbstractVector; na_rm=false) 
   (length(x)) == length(y) || throw(DimensionMismatch())
 
   if na_rm
@@ -32,12 +21,14 @@ function linreg_simple(y::AbstractVector{T}, x::AbstractVector{T}; na_rm=false) 
   x̄ = mean(x)
   ȳ = mean(y)
 
-  sum_a = T(0.0)
-  sum_b = T(0.0)
-  @inbounds for i = 1:length(y)
+  sum_a = 0.0
+  sum_b = 0.0
+
+  @inbounds for i = eachindex(y)
     sum_a += (x[i] - x̄) * (y[i] - ȳ)
     sum_b += (x[i] - x̄) * (x[i] - x̄)
   end
+
   β1 = sum_a / sum_b
   β0 = ȳ - β1 * x̄
   # β1 = sum((x .- x̄) .* (y .- ȳ)) / sum((x .- x̄) .^ 2)
@@ -51,9 +42,9 @@ end
 
 
 """
-$(TYPEDSIGNATURES)
+    linreg_fast(y::AbstractVector, x::AbstractVector; na_rm=false)
 """
-function linreg_fast(y::AbstractVector{T}, x::AbstractVector{T}; na_rm=false) where {T<:Real}
+function linreg_fast(y::AbstractVector, x::AbstractVector; na_rm=false) 
   (length(x)) == length(y) || throw(DimensionMismatch())
   
   if na_rm
@@ -62,7 +53,7 @@ function linreg_fast(y::AbstractVector{T}, x::AbstractVector{T}; na_rm=false) wh
   
   N = length(y)
   ldiv!(
-    cholesky!(Symmetric([T(N) sum(x); zero(T) sum(abs2, x)], :U)),
+    cholesky!(Symmetric([N sum(x); 0 sum(abs2, x)], :U)),
     [sum(y), dot(x, y)])
 end
 
@@ -73,4 +64,13 @@ function linreg_fast(y::AbstractVector{T}; kw...) where {T<:Real}
 end
 
 
+function lm_resid(y::AbstractVector, x::AbstractVector)
+  β0, β1 = linreg_simple(y, x)
+  ysim = β0 .+ β1 .* x
+  y .- ysim
+end
+
 lm = linreg = linreg_fast
+
+export lm, linreg, linreg_fast, linreg_simple
+export lm_resid

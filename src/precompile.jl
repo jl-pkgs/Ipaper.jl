@@ -79,11 +79,11 @@ precompile(str_extract_strip, (String, String))
       # @assert size(anom_base) == size(anom_full)
     end
     # set_seed(1)
-    l_dims = [(), (2,), (2, 2), (2, 2, 2)]
-    for T in (Float32, Float64)
-      for dims = l_dims
-        test_anomaly2(; T, dims)
-      end
-    end
+    # l_dims = [(), (2,), (2, 2), (2, 2, 2)]
+    # for T in (Float32, Float64)
+    #   for dims = l_dims
+    #     test_anomaly2(; T, dims)
+    #   end
+    # end
   end
 end
