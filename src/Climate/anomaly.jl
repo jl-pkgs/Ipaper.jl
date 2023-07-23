@@ -61,9 +61,11 @@ Calculate the anomaly of a 3D array of temperature data.
 
 - `A`      : the 3D array of temperature data
 - `dates`    : an array of dates corresponding to the temperature data
-- `parallel` : whether to use parallel processing (default `false`)
-- `use_mov`  : whether to use a moving window to calculate the threshold (default `true`)
-- `method`   : the method to use for calculating the threshold, one of `["full", "season", "base"]` (default `"full"`)
+- `parallel` : whether to use parallel processing (default `true`)
+- `use_mov`  : whether to use a moving window to calculate the threshold
+  (default `true`)
+- `method`   : the method to use for calculating the threshold, one of `["full",
+  "season", "base"]` (default `"full"`)
 - `probs`    : default `[0.5]`
 - `p1`       : the start year for the reference period (default `1981`)
 - `p2`       : the end year for the reference period (default `2010`)
@@ -76,14 +78,14 @@ An array of the same shape as `A` containing the temperature anomaly.
 # References
 
 1. Vogel, M. M., Zscheischler, J., Fischer, E. M., & Seneviratne, S. I. (2020).
-  Development of Future Heatwaves for Different Hazard Thresholds. Journal of
-  Geophysical Research: Atmospheres, 125(9).
-  https://doi.org/10.1029/2019JD032070
+   Development of Future Heatwaves for Different Hazard Thresholds. Journal of
+   Geophysical Research: Atmospheres, 125(9).
+   <https://doi.org/10.1029/2019JD032070>
 
 """
 function cal_anomaly_quantile(
   A::AbstractArray{T}, dates;
-  parallel::Bool=false,
+  parallel::Bool=true,
   use_mov=true, na_rm=true,
   method="full",
   p1=1981, p2=2010,
@@ -109,6 +111,8 @@ end
 
 
 """
+$(TYPEDSIGNATURES)
+
 Calculate the anomaly of an array relative to its climatology.
 
 # Arguments
@@ -116,7 +120,7 @@ Calculate the anomaly of an array relative to its climatology.
 - `A::AbstractArray{T}`: The input array to calculate the anomaly of.
 - `dates`: The dates corresponding to the input array.
 
-- `parallel::Bool=false`: Whether to use parallel processing.
+- `parallel::Bool=true`: Whether to use parallel processing.
 - `use_mov=true`: Whether to use a moving window to calculate the climatology.
 - `method="full"`: The method to use for calculating the climatology. Can be "base", "season", or "full".
 - `p1=1981`: The start year for the period to use for calculating the climatology.
@@ -142,7 +146,7 @@ anom = cal_anomaly_clim(A, dates; method="base")
 function cal_anomaly_clim(
   A::AbstractArray{T},
   dates;
-  parallel::Bool=false,
+  parallel::Bool=true,
   use_mov=true,
   method="full",
   p1=1981, p2=2010,
@@ -168,15 +172,7 @@ end
 
 
 """
-  cal_threshold(
-    A::AbstractArray{T}, dates;
-    parallel::Bool=false,
-    use_mov=true, na_rm=true,
-    method="full",
-    p1=1981, p2=2010,
-    probs::Vector=[0.90, 0.95, 0.99, 0.999, 0.9999],
-    options...
-  )
+$(TYPEDSIGNATURES)
 
 Calculate the threshold value for a given dataset `A` and dates. The threshold value is calculated based on the specified method.
 

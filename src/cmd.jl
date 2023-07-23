@@ -7,7 +7,7 @@ is_windows() = Sys.iswindows()
 is_linux() = Sys.islinux()
 
 """
-  path_mnt(path = ".")
+    path_mnt(path = ".")
 
 Relative path will kept the original format.
 """

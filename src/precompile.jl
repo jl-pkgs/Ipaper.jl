@@ -72,11 +72,11 @@ precompile(str_extract_strip, (String, String))
 
       @time anom_season = cal_anomaly_quantile(A, dates; kw..., method="season")
       @time anom_base = cal_anomaly_quantile(A, dates; kw..., method="base")
-      @time anom_full = cal_anomaly_quantile(A, dates; kw..., method="full")
+      # @time anom_full = cal_anomaly_quantile(A, dates; kw..., method="full")
 
       @assert size(anom_base) == (dims..., ntime, length(kw.probs))
-      @assert size(anom_base) == size(anom_full)
       @assert size(anom_base) == size(anom_season)
+      # @assert size(anom_base) == size(anom_full)
     end
     # set_seed(1)
     l_dims = [(), (2,), (2, 2), (2, 2, 2)]

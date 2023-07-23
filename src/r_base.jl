@@ -95,7 +95,7 @@ end
 
 
 """
-  $(TYPEDSIGNATURES)
+    $(TYPEDSIGNATURES)
 
 # Arguments
 

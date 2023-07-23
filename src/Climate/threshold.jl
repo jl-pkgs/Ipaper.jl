@@ -30,10 +30,7 @@ end
 
 
 """
-# Arguments
-
-- `method_q`: method to calculate quantile, one of `base`, `mapslices`.
-  `base` is about 3 times faster and reduce used memory in 20 times. 
+$(TYPEDSIGNATURES)
 """
 function cal_mTRS_base!(Q::AbstractArray{T},
   arr::AbstractArray{T,N}, mmdd;
@@ -61,9 +58,9 @@ end
 
 
 """
-Moving Threshold for Heatwaves Definition
+    $(TYPEDSIGNATURES)
 
-  $(TYPEDSIGNATURES)
+Moving Threshold for Heatwaves Definition
 
 # Arguments
 - `type`: The matching type of the moving `doys`, "md" (default) or "doy".
@@ -73,9 +70,9 @@ Moving Threshold for Heatwaves Definition
 
 # References
 1. Vogel, M. M., Zscheischler, J., Fischer, E. M., & Seneviratne, S. I. (2020).
-  Development of Future Heatwaves for Different Hazard Thresholds. Journal of
-  Geophysical Research: Atmospheres, 125(9).
-  https://doi.org/10.1029/2019JD032070
+   Development of Future Heatwaves for Different Hazard Thresholds. Journal of
+   Geophysical Research: Atmospheres, 125(9).
+   <https://doi.org/10.1029/2019JD032070>
 """
 function cal_mTRS_base(arr::AbstractArray{T,N}, dates;
   dims=N,
@@ -110,9 +107,9 @@ cal_mTRS = cal_mTRS_base
 
 
 """
-Moving Threshold for Heatwaves Definition
-
 $(TYPEDSIGNATURES)
+
+Moving Threshold for Heatwaves Definition
 
 # Arguments
 
@@ -125,9 +122,9 @@ $(TYPEDSIGNATURES)
 
 # References
 1. Vogel, M. M., Zscheischler, J., Fischer, E. M., & Seneviratne, S. I. (2020).
-  Development of Future Heatwaves for Different Hazard Thresholds. Journal of
-  Geophysical Research: Atmospheres, 125(9).
-  https://doi.org/10.1029/2019JD032070
+   Development of Future Heatwaves for Different Hazard Thresholds. Journal of
+   Geophysical Research: Atmospheres, 125(9).
+   <https://doi.org/10.1029/2019JD032070>
 """
 function cal_mTRS_full(arr::AbstractArray{T,N}, dates;
   dims=N,

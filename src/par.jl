@@ -21,7 +21,7 @@ get_clusters() = Threads.nthreads()
 
 
 """
-  $(TYPEDSIGNATURES)
+    $(TYPEDSIGNATURES)
 
 # Example
 ```julia

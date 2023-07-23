@@ -34,9 +34,13 @@ end
 
 
 """
-  $(TYPEDSIGNATURES)
+    NanQuantile_low(A::AbstractArray{T,N};
+        probs::Vector=[0, 0.25, 0.5, 0.75, 1], dims::Integer=N, na_rm::Bool=true, dtype=nothing) where {T<:Real,N}
+
+`NanQuantile_low(na_rm=rue)` is 3~4 times faster than `_nanquantile(na_rm=true)`
 
 # Examples
+
 ```julia
 using Test
 
@@ -56,8 +60,6 @@ arr2 = copy(arr)
 @test r2_0 == 20
 @test arr2 == arr
 ```
-
-!!!`NanQuantile_low(na_rm=rue)` is 3~4 times faster than `_nanquantile(na_rm=true)`
 """
 function NanQuantile_low(A::AbstractArray{T,N};
   probs::Vector=[0, 0.25, 0.5, 0.75, 1], dims::Integer=N, na_rm::Bool=true, dtype=nothing) where {T<:Real,N}
