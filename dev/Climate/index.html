@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Climate · Ipaper.jl</title><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">Ipaper.jl</a></span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Introduction</a></li><li><a class="tocitem" href="../RBase/">R Base</a></li><li><a class="tocitem" href="../Statistics/">Statistics</a></li><li class="is-active"><a class="tocitem" href>Climate</a><ul class="internal"><li><a class="tocitem" href="#Thresholds"><span>Thresholds</span></a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Climate</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Climate</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/jl-spatial/Ipaper.jl/blob/master/docs/src/Climate.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><ul><li><a href="../#Ipaper-in-Julia-(R-base-for-Julia)">Ipaper in Julia (R base for Julia)</a></li><li class="no-marker"><ul><li><a href="../#Installation">Installation</a></li></ul></li></ul><h2 id="Thresholds"><a class="docs-heading-anchor" href="#Thresholds">Thresholds</a><a id="Thresholds-1"></a><a class="docs-heading-anchor-permalink" href="#Thresholds" title="Permalink"></a></h2><article class="docstring"><header><a class="docstring-binding" id="Ipaper.cal_anomaly_quantile" href="#Ipaper.cal_anomaly_quantile"><code>Ipaper.cal_anomaly_quantile</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">cal_anomaly_quantile(
+    A::AbstractArray{T&lt;:Real},
+    dates;
+    parallel,
+    use_mov,
+    na_rm,
+    method,
+    p1,
+    p2,
+    fun,
+    probs,
+    options...
+) -&gt; Any
+</code></pre><p>Calculate the anomaly of a 3D array of temperature data.</p><p><strong>Arguments</strong></p><ul><li><code>A</code>      : the 3D array of temperature data</li><li><code>dates</code>    : an array of dates corresponding to the temperature data</li><li><code>parallel</code> : whether to use parallel processing (default <code>true</code>)</li><li><code>use_mov</code>  : whether to use a moving window to calculate the threshold (default <code>true</code>)</li><li><code>method</code>   : the method to use for calculating the threshold, one of <code>[&quot;full&quot;, &quot;season&quot;, &quot;base&quot;]</code> (default <code>&quot;full&quot;</code>)</li><li><code>probs</code>    : default <code>[0.5]</code></li><li><code>p1</code>       : the start year for the reference period (default <code>1981</code>)</li><li><code>p2</code>       : the end year for the reference period (default <code>2010</code>)</li><li><code>fun</code>      : the function used to calculate the anomaly (default <code>_exceed</code>)</li></ul><p><strong>Returns</strong></p><p>An array of the same shape as <code>A</code> containing the temperature anomaly.</p><p><strong>References</strong></p><ol><li>Vogel, M. M., Zscheischler, J., Fischer, E. M., &amp; Seneviratne, S. I. (2020). Development of Future Heatwaves for Different Hazard Thresholds. Journal of Geophysical Research: Atmospheres, 125(9). <a href="https://doi.org/10.1029/2019JD032070">https://doi.org/10.1029/2019JD032070</a></li></ol></div><a class="docs-sourcelink" target="_blank" href="https://github.com/jl-spatial/Ipaper.jl/blob/18c138b17a09487623aa3709976347790a866179/src/Climate/anomaly.jl#L55">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Ipaper.cal_anomaly_clim" href="#Ipaper.cal_anomaly_clim"><code>Ipaper.cal_anomaly_clim</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">cal_anomaly_clim(
+    A::AbstractArray{T&lt;:Real},
+    dates;
+    parallel,
+    use_mov,
+    method,
+    p1,
+    p2,
+    fun_clim,
+    fun_anom
+) -&gt; Any
+</code></pre><p>Calculate the anomaly of an array relative to its climatology.</p><p><strong>Arguments</strong></p><ul><li><p><code>A::AbstractArray{T}</code>: The input array to calculate the anomaly of.</p></li><li><p><code>dates</code>: The dates corresponding to the input array.</p></li><li><p><code>parallel::Bool=true</code>: Whether to use parallel processing.</p></li><li><p><code>use_mov=true</code>: Whether to use a moving window to calculate the climatology.</p></li><li><p><code>method=&quot;full&quot;</code>: The method to use for calculating the climatology. Can be &quot;base&quot;, &quot;season&quot;, or &quot;full&quot;.</p></li><li><p><code>p1=1981</code>: The start year for the period to use for calculating the climatology.</p></li><li><p><code>p2=2010</code>: The end year for the period to use for calculating the climatology.</p></li><li><p><code>fun_clim=nanmean</code>: The function to use for calculating the climatology.</p></li><li><p><code>fun_anom=_exceed</code>: The function to use for calculating the anomaly.</p></li></ul><p><strong>Returns</strong></p><ul><li><code>anom</code>: The anomaly of the input array relative to its climatology.</li></ul><p><strong>Example</strong></p><pre><code class="language-julia hljs">using Ipaper
+
+# Generate some sample data
+A = rand(365, 10)
+dates = Date(2000, 1, 1):Day(1):Date(2000, 12, 31)
+
+# Calculate the anomaly relative to the climatology
+anom = cal_anomaly_clim(A, dates; method=&quot;base&quot;)</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/jl-spatial/Ipaper.jl/blob/18c138b17a09487623aa3709976347790a866179/src/Climate/anomaly.jl#L113">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Ipaper.cal_threshold" href="#Ipaper.cal_threshold"><code>Ipaper.cal_threshold</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">cal_threshold(
+    A::AbstractArray{T&lt;:Real},
+    dates;
+    parallel,
+    use_mov,
+    na_rm,
+    method,
+    p1,
+    p2,
+    probs,
+    options...
+) -&gt; Any
+</code></pre><p>Calculate the threshold value for a given dataset <code>A</code> and dates. The threshold value is calculated based on the specified method.</p><p><strong>Arguments</strong></p><ul><li><p><code>A::AbstractArray{T}</code>: The input data array.</p></li><li><p><code>dates</code>: The dates corresponding to the input data array.</p></li><li><p><code>parallel::Bool=true</code>: Whether to use parallel computation.</p></li><li><p><code>use_mov::Bool=true</code>: Whether to use moving window.</p></li><li><p><code>na_rm::Bool=true</code>: Whether to remove missing values.</p></li><li><p><code>method::String=&quot;full&quot;</code>: Possible values are &quot;base&quot;, &quot;season&quot;, and &quot;full&quot;.</p></li><li><p><code>p1::Int=1981</code>: The start year for the reference period.</p></li><li><p><code>p2::Int=2010</code>: The end year for the reference period.</p></li><li><p><code>probs::Vector{Float64}=[0.5]</code>: The probability levels to use for calculating the threshold value.</p></li><li><p><code>options...</code>: Additional options to pass to the underlying functions.</p></li></ul><p><strong>Returns</strong></p><p>For different methods: </p><ul><li><code>full</code>: Array with the dimension of <code>(dims..., ntime, nprob)</code></li><li><code>base</code>: Array with the dimension of <code>(dims..., 366, nprob)</code></li><li><code>season</code>: Array with the dimension of <code>(dims..., nyear)</code></li></ul><p><strong>Examples</strong></p><pre><code class="language-julia hljs">dates = Date(2010, 1):Day(1):Date(2020, 12, 31);
+ntime = length(dates)
+data = rand(10, ntime);
+cal_threshold(data, dates; p1=2010, p2=2015, method=&quot;full&quot;)</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/jl-spatial/Ipaper.jl/blob/18c138b17a09487623aa3709976347790a866179/src/Climate/anomaly.jl#L174">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Ipaper._cal_anomaly_3d" href="#Ipaper._cal_anomaly_3d"><code>Ipaper._cal_anomaly_3d</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">_cal_anomaly_3d(
+    A::AbstractArray{T&lt;:Real, 3},
+    TRS::AbstractArray{T&lt;:Real, 3},
+    dates;
+    T_wl,
+    fun_anom,
+    ignored...
+) -&gt; Any
+</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/jl-spatial/Ipaper.jl/blob/18c138b17a09487623aa3709976347790a866179/src/Climate/anomaly.jl#L5">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Ipaper.cal_mTRS_base" href="#Ipaper.cal_mTRS_base"><code>Ipaper.cal_mTRS_base</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">cal_mTRS_base(
+    arr::AbstractArray{T&lt;:Real, N},
+    dates;
+    dims,
+    use_quantile,
+    fun!,
+    probs,
+    dtype,
+    p1,
+    p2,
+    kw...
+) -&gt; AbstractArray{T} where T&lt;:Real
+</code></pre><p>Moving Threshold for Heatwaves Definition</p><p><strong>Arguments</strong></p><ul><li><code>type</code>: The matching type of the moving <code>doys</code>, &quot;md&quot; (default) or &quot;doy&quot;.</li></ul><p><strong>Return</strong></p><ul><li><code>TRS</code>: in the dimension of <code>[nlat, nlon, ndoy, nprob]</code></li></ul><p><strong>References</strong></p><ol><li>Vogel, M. M., Zscheischler, J., Fischer, E. M., &amp; Seneviratne, S. I. (2020). Development of Future Heatwaves for Different Hazard Thresholds. Journal of Geophysical Research: Atmospheres, 125(9). <a href="https://doi.org/10.1029/2019JD032070">https://doi.org/10.1029/2019JD032070</a></li></ol></div><a class="docs-sourcelink" target="_blank" href="https://github.com/jl-spatial/Ipaper.jl/blob/18c138b17a09487623aa3709976347790a866179/src/Climate/threshold.jl#L60-L76">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Ipaper.cal_mTRS_full" href="#Ipaper.cal_mTRS_full"><code>Ipaper.cal_mTRS_full</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">cal_mTRS_full(
+    arr::AbstractArray{T&lt;:Real, N},
+    dates;
+    dims,
+    width,
+    verbose,
+    use_quantile,
+    fun!,
+    use_mov,
+    probs,
+    kw...
+) -&gt; Any
+</code></pre><p>Moving Threshold for Heatwaves Definition</p><p><strong>Arguments</strong></p><ul><li><code>use_mov</code>: Boolean (default true). <ul><li>if <code>true</code>, 31*15 values will be used to calculate threshold for each grid; </li><li>if <code>false</code>, the input <code>arr</code> is smoothed first, then only 15 values will be  used to calculate threshold.</li></ul></li></ul><p>!!! 必须是完整的年份，不然会出错</p><p><strong>References</strong></p><ol><li>Vogel, M. M., Zscheischler, J., Fischer, E. M., &amp; Seneviratne, S. I. (2020). Development of Future Heatwaves for Different Hazard Thresholds. Journal of Geophysical Research: Atmospheres, 125(9). <a href="https://doi.org/10.1029/2019JD032070">https://doi.org/10.1029/2019JD032070</a></li></ol></div><a class="docs-sourcelink" target="_blank" href="https://github.com/jl-spatial/Ipaper.jl/blob/18c138b17a09487623aa3709976347790a866179/src/Climate/threshold.jl#L109">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Ipaper.cal_climatology_base" href="#Ipaper.cal_climatology_base"><code>Ipaper.cal_climatology_base</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">cal_climatology_base(
+    A::AbstractArray{T&lt;:Real},
+    dates;
+    fun!,
+    kw...
+) -&gt; AbstractArray{T} where T&lt;:Real
+</code></pre><p>Calculate the climatology of a dataset <code>A</code> based on the <code>dates</code>.</p><p>The climatology is the long-term average of a variable over a specific period of time. This function calculates the climatology of the input dataset <code>A</code> based on the dates <code>dates</code>. The calculation is performed by applying a function <code>fun!</code> to a moving window of the data.</p><p>Arguments:</p><ul><li><code>A            : :AbstractArray{T}</code>: the input dataset, where <code>T</code> is a subtype of <code>Real</code>.</li><li><code>dates</code>       : the dates associated with the input dataset, as a vector of <code>Date</code> objects.</li><li><code>fun!</code>        : the function to apply to the moving window of the data. It should take an input array and return a scalar.</li><li><code>use_quantile</code>: default false, a boolean indicating whether to use a quantile-based filter to remove outliers.</li><li><code>p1</code>, <code>p2</code>    : the references period</li></ul><p>Returns:</p><ul><li>a matrix of the same size as <code>A</code>, containing the climatology values.</li></ul><p>Example:</p><pre><code class="language-julia hljs">using Dates
+A = rand(365, 10)  # simulate a year of daily data for 10 variables
+dates = Date(2022, 1, 1):Day(1):Date(2022, 12, 31)
+clim = cal_climatology_base(A, dates; fun! = mean)</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/jl-spatial/Ipaper.jl/blob/18c138b17a09487623aa3709976347790a866179/src/Climate/climatology.jl#L42">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Ipaper.cal_climatology_full" href="#Ipaper.cal_climatology_full"><code>Ipaper.cal_climatology_full</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">cal_climatology_full(
+    A::AbstractArray{T&lt;:Real},
+    dates;
+    fun!,
+    kw...
+) -&gt; Any
+</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/jl-spatial/Ipaper.jl/blob/18c138b17a09487623aa3709976347790a866179/src/Climate/climatology.jl#L76-L79">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Ipaper.cal_mTRS_base!" href="#Ipaper.cal_mTRS_base!"><code>Ipaper.cal_mTRS_base!</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">cal_mTRS_base!(
+    Q::AbstractArray{T&lt;:Real},
+    arr::AbstractArray{T&lt;:Real, N},
+    mmdd;
+    dims,
+    fun,
+    probs,
+    parallel,
+    halfwin,
+    use_mov,
+    ignore...
+) -&gt; AbstractArray{T} where T&lt;:Real
+</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/jl-spatial/Ipaper.jl/blob/18c138b17a09487623aa3709976347790a866179/src/Climate/threshold.jl#L32">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Ipaper.cal_mTRS_base3!" href="#Ipaper.cal_mTRS_base3!"><code>Ipaper.cal_mTRS_base3!</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">cal_mTRS_base3!(
+    Q::AbstractArray,
+    data::AbstractArray{T&lt;:Real, 3},
+    mmdd;
+    dims,
+    probs,
+    parallel,
+    halfwin,
+    use_mov,
+    method_q,
+    na_rm,
+    ignore...
+) -&gt; AbstractArray
+</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/jl-spatial/Ipaper.jl/blob/18c138b17a09487623aa3709976347790a866179/src/Climate/threshold.jl#L4">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Ipaper.NanQuantile_low" href="#Ipaper.NanQuantile_low"><code>Ipaper.NanQuantile_low</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">NanQuantile_low(A::AbstractArray{T,N};
+    probs::Vector=[0, 0.25, 0.5, 0.75, 1], dims::Integer=N, na_rm::Bool=true, dtype=nothing) where {T&lt;:Real,N}</code></pre><p><code>NanQuantile_low(na_rm=rue)</code> is 3~4 times faster than <code>_nanquantile(na_rm=true)</code></p><p><strong>Examples</strong></p><pre><code class="language-julia hljs">using Test
+
+dates = make_date(2010, 1, 1):Day(1):make_date(2010, 12, 31)
+ntime = length(dates)
+arr = rand(Float32, 140, 80, ntime)
+arr2 = copy(arr)
+
+# default `na_rm=true`
+@test NanQuantile([1, 2, 3, NaN]; probs=[0.5, 0.9], dims=1) == [2.0, 2.8]
+
+@time r0 = _nanquantile(arr, dims=3) # low version
+@time r2_0 = NanQuantile_low(arr; dims=3, na_rm=false)
+@time r2_1 = NanQuantile_low(arr; dims=3, na_rm=true)
+
+@test r2_0 == r2_1
+@test r2_0 == 20
+@test arr2 == arr</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/jl-spatial/Ipaper.jl/blob/18c138b17a09487623aa3709976347790a866179/src/Statistics/NanQuantile_low.jl#L36-L63">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Ipaper.cal_yearly_Tair" href="#Ipaper.cal_yearly_Tair"><code>Ipaper.cal_yearly_Tair</code></a> — <span class="docstring-category">Function</span></header><section><div><p>Calculate yearly air temperature.</p><p><strong>Description</strong></p><p>we use the fixed thresholds and add the seasonal warming signal. Thus, thresholds are defined as a fixed baseline (such as for the fixed threshold) plus seasonally moving mean warming of the corresponding future climate based on the 31-year moving mean of the warmest three months.</p><p><strong>Details</strong></p><p>This function calculates the yearly air temperature based on the input temperature data and dates. If <code>only_summer</code> is true, it only calculates the temperature for summer months. The function applies the calculation along the specified dimensions.</p><p><strong>Arguments</strong></p><ul><li><code>A::AbstractArray{T,N}</code>: input array of temperature data.</li><li><code>dates</code>: array of dates corresponding to the temperature data.</li><li><code>dims=N</code>: dimensions to apply the function along.</li><li><code>only_summer=false</code>: if true, only calculate temperature for summer months.</li></ul><p><strong>Returns</strong></p><ul><li><code>T_year</code>: array of yearly temperature data.</li></ul></div><a class="docs-sourcelink" target="_blank" href="https://github.com/jl-spatial/Ipaper.jl/blob/18c138b17a09487623aa3709976347790a866179/src/Climate/warming_level.jl#L1-L24">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Ipaper.cal_warming_level" href="#Ipaper.cal_warming_level"><code>Ipaper.cal_warming_level</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">cal_warming_level(
+    A::AbstractArray{T&lt;:Real, N},
+    dates;
+    p1,
+    p2,
+    dims,
+    only_summer
+) -&gt; Any
+</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/jl-spatial/Ipaper.jl/blob/18c138b17a09487623aa3709976347790a866179/src/Climate/warming_level.jl#L47">source</a></section></article></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../Statistics/">« Statistics</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.25 on <span class="colophon-date" title="Sunday 23 July 2023 05:17">Sunday 23 July 2023</span>. Using Julia version 1.9.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
