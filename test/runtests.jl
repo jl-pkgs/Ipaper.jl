@@ -6,6 +6,8 @@ using Ipaper: NanQuantile_low, NanQuantile_low!
 
 # cd(dirname(@__FILE__)) do
 
+include("test-slope.jl")
+
 include("test-Ipaper.jl")
 include("test-missing.jl")
 include("test-Pipe.jl")
@@ -24,4 +26,3 @@ include("test-stat_movmean.jl")
 include("test-stat_anomaly.jl")
 include("test-stat_threshold.jl")
 include("test-stat_warmingLevel.jl")
-# end

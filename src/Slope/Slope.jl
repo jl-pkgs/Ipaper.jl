@@ -2,7 +2,10 @@ include("base.jl")
 include("linreg.jl")
 # include("mktrend.jl")
 
-function trend_mk end
+function mkTrend end
+function slope_mk end
+function slope_p end
 
 
-export trend_mk
+export mkTrend,
+  slope_mk, slope_p

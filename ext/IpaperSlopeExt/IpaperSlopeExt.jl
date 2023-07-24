@@ -7,9 +7,9 @@ using StatsBase: autocor, tiedrank
 using Distributions: ccdf, Normal
 
 using Ipaper
-using Ipaper: lm_resid
-# , trend_mk
+using Ipaper: lm_resid, slope_mk, slope_p, mkTrend
 
-include("mktrend.jl")
+include("mkTrend.jl")
+include("slope_fun.jl")
 
 end
