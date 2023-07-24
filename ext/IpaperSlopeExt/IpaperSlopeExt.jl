@@ -3,13 +3,20 @@ module IpaperSlopeExt
 
 
 using Statistics: mean, median, quantile
-using StatsBase: autocor, tiedrank
-using Distributions: ccdf, Normal
+using StatsBase: cov, var, autocor, tiedrank
+using Distributions: ccdf, Normal, TDist, cdf
+
+
+sqrt2(x) = x < 0 ? NaN : sqrt(x)
+pnorm(z) = cdf(Normal(), z)
+pt(x, df::Int) = cdf(TDist(df), x)
+
 
 using Ipaper
-using Ipaper: lm_resid, slope_mk, slope_p, mkTrend
+using Ipaper: lm_resid, slope_mk, slope_p
 
-include("mkTrend.jl")
-include("slope_fun.jl")
+
+include("slope_mk.jl")
+include("slope_p.jl")
 
 end

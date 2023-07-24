@@ -1,11 +1,4 @@
-using Distributions: TDist, cdf
-using StatsBase: cov, var
 
-
-function pt(x::Float64, df::Int)
-  t = TDist(df)
-  cdf(t, x)
-end
 
 
 """
@@ -38,11 +31,11 @@ function Ipaper.slope_p(y::AbstractVector, x::AbstractVector=1:length(y); ignore
   pvalue = 2 * (1 - pt(abs(tval), df))
 
   # (; slope, se, tval, pvalue)
-  (; slope, pvalue) #, sd = se
+  # (; slope, pvalue) #, sd = se
+  [slope, pvalue]
 end
 
-
-function Ipaper.slope_mk(y::AbstractVector, x::AbstractVector=1:length(y); ci=0.95, ignored...)
-  r = mkTrend(y, x; ci)
-  (;slope = r.slope, pvalue = r.pvalue)
-end
+# function Ipaper.slope_mk(y::AbstractVector, x::AbstractVector=1:length(y); ci=0.95, ignored...)
+#   r = mkTrend(y, x; ci)
+#   (;slope = r.slope, pvalue = r.pvalue)
+# end

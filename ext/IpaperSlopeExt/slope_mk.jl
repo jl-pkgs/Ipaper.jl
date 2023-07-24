@@ -51,7 +51,7 @@ julia> mkTrend([4.81, 4.17, 4.41, 3.59, 5.87, 3.83, 6.03, 4.89, 4.32, 4.69])
 (z0 = 0.35777087639996635, pval0 = 0.7205147871362552, z = 0.35777087639996635, pval = 0.7205147871362552, slope = 0.040000000000000036, intercept = 4.441)
 ```
 """
-function Ipaper.mkTrend(y::AbstractVector, x::AbstractVector; ci=0.95)
+function Ipaper.slope_mk(y::AbstractVector, x::AbstractVector=1:length(y); ci=0.95)
   z0 = z = pval0 = pval = slp = intercept = NaN
 
   # y = dropmissing(y)
@@ -98,20 +98,19 @@ function Ipaper.mkTrend(y::AbstractVector, x::AbstractVector; ci=0.95)
     z = 0.0
     z0 = 0.0
   elseif S > 0
-    z = (S - 1) / sqrt(VS)
+    z = (S - 1) / sqrt2(VS)
     z0 = (S - 1) / sqrt(var_S)
   else
-    z = (S + 1) / sqrt(VS)
+    z = (S + 1) / sqrt2(VS)
     z0 = (S + 1) / sqrt(var_S)
   end
 
-  pvalue = 2 * ccdf(Normal(), abs(z))
-  pvalue0 = 2 * ccdf(Normal(), abs(z0))
+  # pvalue0 = 2 * pnorm(-abs(z0))
+  pvalue = 2 * pnorm(-abs(z))
   # Tau = S / (0.5 * n * (n - 1))
   slope = _slope_sen(y, x)
   intercept = mean(y .- slope .* (1:n))
 
-  (; z0, pvalue0, z, pvalue, slope, intercept)
+  [slope, pvalue]
+  # (; slope, pvalue, z, pvalue0, z0, intercept)
 end
-
-# export trend_mk
