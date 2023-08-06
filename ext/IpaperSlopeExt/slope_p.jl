@@ -1,6 +1,3 @@
-
-
-
 """
     slope_p(y::AbstractVector, x::AbstractVector=1:length(y))
 
