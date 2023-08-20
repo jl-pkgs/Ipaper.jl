@@ -3,21 +3,20 @@
 # For a copy, see <https://opensource.org/licenses/MIT>.
 
 module Ipaper
+
+import Dates
 # using Ipaper
 using Reexport
 @reexport using DocStringExtensions: TYPEDSIGNATURES, METHODLIST
 
-import Dates
-# using Pipe
+include("Pipe.jl")
+@reexport using .Pipe: @pipe
+
 # using DimensionalData
-
-# This symbol is only defined on Julia versions that support extensions
-if !isdefined(Base, :get_extension)
-using Requires
-end
-
 # @reexport using NaNStatistics
+
 # @reexport using TimerOutputs: reset_timer!, @timeit
+# include("timeit_all.jl")
 
 using Printf
 export @sprintf
@@ -27,12 +26,8 @@ using LambdaFn
 @eval const $(Symbol("@f")) = $(Symbol("@λ"))
 export @λ, @lf, @f
 
-# include("timeit_all.jl")
-include("Pipe.jl")
-@reexport using .Pipe
 
 include("tools.jl")
-
 include("cmd.jl")
 
 include("dates.jl")
