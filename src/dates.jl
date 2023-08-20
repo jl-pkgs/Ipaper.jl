@@ -27,6 +27,11 @@ date_year(dates) = make_date.(year.(dates))
 date_ym(dates) = make_date.(year.(dates), month.(dates))
 
 
+Dates.year(x::AbstractString) = parse(Int, x[1:4])
+Dates.month(x::AbstractString) = parse(Int, x[6:7])
+Dates.day(x::AbstractString) = parse(Int, x[9:10])
+
+
 export dates_miss, dates_nmiss,
     DateTime, Date, year, month, day, Year, Month, Day, format, 
     make_datetime, make_date, 

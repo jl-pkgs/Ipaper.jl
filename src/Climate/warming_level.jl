@@ -26,14 +26,17 @@ function cal_yearly_Tair(A::AbstractArray{T,N}, dates;
   dims=N, only_summer=false) where {T<:Real,N}
 
   if only_summer
-    yms = format.(dates, "yyyy-mm")
-    ys = SubString.(unique(yms), 1, 4)
+    years = year.(dates)
+    months = month.(dates)
+    yms = years .* 100 .+ months
+    # yms = format.(dates, "yyyy-mm")
     T_mon = apply(A, dims; by=yms)
     T_mon = movmean(T_mon, 1; dims) #3个月滑动平均
     
+    ys = fld.(unique(yms), 100) # convert `year * 100 + month` to `year`
     T_year = apply(T_mon, dims; by=ys, fun=maximum) # 最热的3个月，作为每年的升温幅度
   else
-    ys = format.(dates, "yyyy")
+    ys = year.(dates)
     T_year = apply(A, dims; by=ys)
   end
   T_year

@@ -65,7 +65,7 @@ Calculate the anomaly of a 3D array of temperature data.
 - `use_mov`  : whether to use a moving window to calculate the threshold
   (default `true`)
 - `method`   : the method to use for calculating the threshold, one of `["full",
-  "season", "base"]` (default `"full"`)
+  "season", "base", "pTRS"]` (default `"full"`)
 - `probs`    : default `[0.5]`
 - `p1`       : the start year for the reference period (default `1981`)
 - `p2`       : the end year for the reference period (default `2010`)
@@ -105,6 +105,17 @@ function cal_anomaly_quantile(
   elseif method == "full"
     TRS_full = cal_mTRS_full(A, dates; kw...) |> squeeze_tail
     anom = fun.(A, TRS_full)
+
+  elseif method == "pTRS"
+    # 最基础的方法
+    years = year.(dates)
+    inds = p1 .<= years .<= p2
+    data = selectdim(A, ndims(A), inds)
+    anom = map(prob -> begin  
+      TRS = NanQuantile(data, [prob])
+      fun.(A, TRS)
+    end, probs)
+    anom = cat(anom..., dims=ndims(A) + 1) |> squeeze_tail
   end
   anom
 end

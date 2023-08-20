@@ -16,8 +16,8 @@ if !isdefined(Base, :get_extension)
 using Requires
 end
 
-@reexport using NaNStatistics
-@reexport using TimerOutputs: reset_timer!, @timeit
+# @reexport using NaNStatistics
+# @reexport using TimerOutputs: reset_timer!, @timeit
 
 using Printf
 export @sprintf
@@ -27,7 +27,7 @@ using LambdaFn
 @eval const $(Symbol("@f")) = $(Symbol("@λ"))
 export @λ, @lf, @f
 
-include("timeit_all.jl")
+# include("timeit_all.jl")
 include("Pipe.jl")
 @reexport using .Pipe
 
@@ -50,6 +50,7 @@ include("Slope/Slope.jl")
 
 include("precompile.jl")
 include("tools_plot.jl")
+include("tools_TidyTable2.jl")
 
 dim = size
 export dim

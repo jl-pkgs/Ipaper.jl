@@ -63,6 +63,8 @@ end
 Moving Threshold for Heatwaves Definition
 
 # Arguments
+- `arr` : `time` should be in the last dimension.
+
 - `type`: The matching type of the moving `doys`, "md" (default) or "doy".
 
 # Return

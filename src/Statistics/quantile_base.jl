@@ -1,16 +1,14 @@
-import NaNStatistics: _nanquantile!
+function _nanquantile! end
 
-function NaNStatistics._nanquantile!(q::AbstractVector, x::AbstractVector,
-  probs::Vector{<:Real}=[0, 0.25, 0.5, 0.75, 1])
-  for k = eachindex(probs)
-    q[k] = NaNStatistics._nanquantile!(x, probs[k], (1,))[1]
-  end
-  q
-end
-
-# export nanquantile2
-# function nanquantile2(x::AbstractVector, probs::Vector{<:Real}=[0, 0.25, 0.5, 0.75, 1])
-#   map(p -> NaNStatistics.nanquantile(x, p), probs)
+# function Ipaper._nanquantile!(q::AbstractVector, x::AbstractVector,
+#   probs::Vector{<:Real}=[0, 0.25, 0.5, 0.75, 1])
+#   for k = eachindex(probs)
+#     q[k] = NaNStatistics._nanquantile!(x, probs[k], (1,))[1]
+#   end
+#   q
+# end
+# function Ipaper._nanquantile!(A, q::Real, dims::Int64)
+#   NaNStatistics._nanquantile!(A, q, dims)
 # end
 
 # nanquantile -> _nanquantile
@@ -31,6 +29,10 @@ function _nanquantile(x::AbstractArray{T,N};
   q
 end
 
+# export nanquantile2
+# function nanquantile2(x::AbstractVector, probs::Vector{<:Real}=[0, 0.25, 0.5, 0.75, 1])
+#   map(p -> NaNStatistics.nanquantile(x, p), probs)
+# end
 
 # 两次@view的嵌套会导致速度变慢；避免这种操作，可以获得极致的速度
 # 3d版本提速不大，意义不大

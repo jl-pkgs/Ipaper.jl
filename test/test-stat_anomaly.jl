@@ -45,11 +45,13 @@ end
 
   ## 采用`quantile`计算
   kw = (; parallel=true, p1=1961, p2=1980, na_rm=false)
+  @time anom_pTRS = cal_anomaly_quantile(A, dates; kw..., method="pTRS")
   @time anom_base = cal_anomaly_quantile(A, dates; kw..., method="base")
-
   @time anom_season = cal_anomaly_quantile(A, dates; kw..., method="season")
   @time anom_full = cal_anomaly_quantile(A, dates; kw..., method="full")
 
+  @test size(anom_pTRS) == size(anom_base)
+  
   ## 采用`fun_clim`:`nanmean`计算
   kw = (; parallel=true, p1=1961, p2=1980, fun_clim=nanmedian)
   @time anom_base2 = cal_anomaly_clim(A, dates; kw..., method="base")

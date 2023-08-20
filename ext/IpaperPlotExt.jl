@@ -1,5 +1,5 @@
-export PlotExt
-module PlotExt
+export IpaperPlotExt
+module IpaperPlotExt
 
 # @static if isdefined(Base, :get_extension) # julia < 1.9
   using Ipaper

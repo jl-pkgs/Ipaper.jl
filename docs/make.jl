@@ -1,4 +1,5 @@
 using Documenter, Ipaper
+using DataFrames
 
 CI = get(ENV, "CI", nothing) == "true"
 
@@ -7,9 +8,9 @@ CI = get(ENV, "CI", nothing) == "true"
 # Make the docs, without running the tests again
 # We need to explicitly add all the extensions here
 makedocs(
-  modules=[
-    Ipaper
-  ],
+  # modules=[
+  #   Ipaper, TidyTable2
+  # ],
   format=Documenter.HTML(
     prettyurls=CI,
   ),

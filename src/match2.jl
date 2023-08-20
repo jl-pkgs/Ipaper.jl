@@ -1,4 +1,5 @@
 import StatsBase: countmap
+table = countmap
 
 
 """
@@ -33,8 +34,6 @@ end
 
 unique_length(x) = length(unique(x))
 uniqueN = unique_length
-
-table = countmap
 
 """
     duplicated(x::Vector{<:Real})

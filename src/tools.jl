@@ -1,3 +1,6 @@
+function nanmean end
+
+
 import StatsBase: weights, mean, quantile
 import Random: seed!
 include("r_base.jl")
@@ -120,9 +123,10 @@ end
 array(val; dims) = reshape(val, dims...)
 array(val, dims) = array(val; dims)
 
-function abind(x::AbstractVector, dim=3)
-  cat(x..., dims=dim)
-end
+# function abind(x::AbstractVector, dim=3)
+#   cat(x..., dims=dim)
+# end
+abind(args...; along=3) = cat(args..., dims=along)
 
 
 function selectdim_deep(A, dims::Integer, i; deep=true)
