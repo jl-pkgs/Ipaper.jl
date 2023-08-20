@@ -50,7 +50,6 @@ include("Slope/Slope.jl")
 
 include("precompile.jl")
 include("tools_plot.jl")
-include("tools_TidyTable2.jl")
 
 dim = size
 export dim

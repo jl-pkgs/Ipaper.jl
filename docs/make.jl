@@ -1,5 +1,4 @@
 using Documenter, Ipaper
-using DataFrames
 
 CI = get(ENV, "CI", nothing) == "true"
 
