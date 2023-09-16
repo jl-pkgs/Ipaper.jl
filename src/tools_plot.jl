@@ -41,7 +41,7 @@ function merge_pdf(input, outfile="Plot.pdf"; is_del=false, show=true)
 
   run(`pdftk $files cat output $outfile`)
   show && show_file(outfile)
-  is_del && run(`rm $files`)
+  is_del && rm.(files)
   nothing
 end
 

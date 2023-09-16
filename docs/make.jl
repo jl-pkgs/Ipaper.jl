@@ -20,7 +20,7 @@ makedocs(
     "Climate"      => "Climate.md"
   ],
   sitename="Ipaper.jl",
-  strict=false,
+  warnonly=true,
   clean=false,
 )
 
