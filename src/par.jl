@@ -29,13 +29,22 @@ if !isCurrentWorker(i); continue; end
 ```
 """
 function isCurrentWorker(i = 0)
-  MPI.Init()
-  comm = MPI.COMM_WORLD
-  cluster = MPI.Comm_rank(comm)
-  ncluster = MPI.Comm_size(comm)
+  cluster = mpi_id()
+  ncluster = mpi_nwork()
   # @show ncluster, cluster, i
   mod(i, ncluster) == cluster
 end
 
+function mpi_id()
+  MPI.Init()
+  comm = MPI.COMM_WORLD
+  MPI.Comm_rank(comm) # id
+end
 
-export @par, get_clusters, isCurrentWorker
+function mpi_nwork()
+  MPI.Init()
+  comm = MPI.COMM_WORLD
+  MPI.Comm_size(comm)
+end
+
+export @par, get_clusters, isCurrentWorker, mpi_id, mpi_nwork
