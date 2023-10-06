@@ -34,6 +34,10 @@ function str_replace(x::AbstractString, pattern::StringOrRegex, replacement::Abs
     replace(x, pattern => replacement)
 end
 
+function str_replace(x::Vector{<:AbstractString}, pattern::StringOrRegex, replacement::AbstractString="")
+  str_replace.(x, pattern, replacement)
+end
+
 gsub = str_replace
 
 

@@ -28,13 +28,15 @@ export @λ, @lf, @f
 
 
 include("tools.jl")
+include("match2.jl")
+
 include("cmd.jl")
+include("aria2c.jl")
 
 include("dates.jl")
 include("factor.jl")
 include("file_operation.jl")
 include("list.jl")
-include("match2.jl")
 include("par.jl")
 include("stringr.jl")
 
@@ -45,6 +47,7 @@ include("Slope/Slope.jl")
 
 include("precompile.jl")
 include("tools_plot.jl")
+
 
 dim = size
 export dim

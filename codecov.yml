@@ -3,3 +3,4 @@ ignore:
   - "src/*/deprecated"
   - "src/*/temp"
   - "src/tools_plot.jl"
+  - "src/aria2c.jl"
