@@ -43,24 +43,36 @@ Possible Values: 1-16, Default: 1, Tags: #basic, #http, #ftp
 
 ```julia
 using Ipaper
+using NetCDFTools.CMIP
 
 infile = "/mnt/z/CMIP6/CMIP6_global_WB/urls.txt"
 outdir = "/mnt/z/CMIP6/CMIP6_global_WB/raw"
 
-infile_rem = aria2c_rem(infile; outdir)
-aria2c(infile_rem, outdir; check_rem=false)
+@time f_rem = aria2c_rem(infile; outdir)
+
+# hostS_bad = []
+hosts_bad = ["esg-dn1.nsc.liu.se", "esg-dn2.nsc.liu.se", "esgf.bsc.es"]
+f_left = aria2c(f_rem; outdir, check_rem=false, run=false, hosts_bad, timeout=10)
+kill_app()
+
+urls = readlines(f_rem)
+hosts = get_host.(urls)
+table(hosts)
+
+info = CMIPFiles_info(urls)
+s = CMIPFiles_summary(info)
 ```
 """
 function aria2c(infile="", args="";
-  j=5, s=5, x=5, outdir=".",
+  j=5, s=5, x=5, outdir="OUTPUT",
   check_rem=true,
   hosts_bad=[],
   timeout=10,
-  verbose=false, run=true)
+  verbose=true, run=true)
 
-  if (isa(infile, String) && isfile(infile))
+  check_dir(outdir)
+  if isfile(infile)
     check_rem && (infile = aria2c_rem(infile; outdir))
-
     # rm bad hosts
     if !is_empty(hosts_bad)
       urls = readlines(infile)
@@ -70,10 +82,12 @@ function aria2c(infile="", args="";
 
       infile = gsub(infile, r".txt$", "_good.txt")
       writelines(urls, infile)
+      printstyled("[info] $(length(urls)) files left! \n", color=:blue, bold=true)
     end
-    infile = "-i $infile"
+    cmd = `$exe_aria2c -j$j -s$s -x$x -t$timeout -c -i $infile -d $outdir $args`
+  else
+    cmd = `$exe_aria2c $infile -j$j -s$s -x$x -t$timeout -c -d $outdir $args`
   end
-  cmd = `$exe_aria2c -j$j -s$s -x$x -t$timeout -c $infile -d $outdir $args`
 
   # Base.run(`$exe_aria2c --version`)
   !run && (verbose = true)
@@ -82,7 +96,6 @@ function aria2c(infile="", args="";
 
   infile
 end
-
 
 
 file_exists(f) = filesize(f) > 1024 # > 1kb
@@ -101,9 +114,7 @@ function aria2c_file_finished(indir; subfix=r".nc$|.nc4$", subfix_temp=r".aria2$
   fs_finished
 end
 
-
 function aria2c_rem(infile; outdir=".", verbose=true)
-
   fs_finished = aria2c_file_finished(outdir)
   infile_rem = gsub(infile, r".txt$", "_rem.txt")
 
@@ -127,13 +138,16 @@ function aria2c_rem(infile; outdir=".", verbose=true)
   infile_rem
 end
 
-function kill_app(app="aria2")
-  run(`pkill -f $app -9`)
+
+function kill_app(app="aria2c")
+  if is_linux()
+    run(`pkill -f $app -9`)
+  elseif  is_windows()
+    run(`taskkill /f /im $app.exe`)
+  end
   nothing
 end
 
 
-
 export file_exists
 export aria2c, aria2c_rem, kill_app
-
