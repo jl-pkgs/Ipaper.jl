@@ -51,10 +51,29 @@ seq_len(n) = 1:n
 r_range(x) = [minimum(x), maximum(x)]
 
 
+"""
+    obj_size(x)
+    obj_size(dims, T)
+
+# Examples
+```julia
+dims = (100, 100, 200)
+x = zeros(Float32, dims)
+obj_size(x)
+obj_size(dims, Float32)
+```
+"""
 function obj_size(x)
   ans = Base.summarysize(x) / 1024^2
   ans = round(ans, digits=2)
   print(typeof(x), " | ", size(x), " | ")
+  printstyled("$ans Mb\n"; color=:blue, bold=true, underline=true)
+end
+
+function obj_size(dims, T)
+  ans = Base.summarysize(T(0)) * prod(dims) / 1024^2
+  ans = round(ans, digits=2)
+  print(T, " | ", dims, " | ")
   printstyled("$ans Mb\n"; color=:blue, bold=true, underline=true)
 end
 
@@ -63,13 +82,13 @@ function squeeze_TailOrHead(A::AbstractArray; type="tail")
   dims = size(A)
   n = length(dims)
 
-  dims_drop = []  
+  dims_drop = []
   if type == "head"
     inds = 1:n
   elseif type == "tail"
     inds = n:-1:1
   end
-  
+
   for i = inds
     if dims[i] == 1
       push!(dims_drop, i)
@@ -77,7 +96,7 @@ function squeeze_TailOrHead(A::AbstractArray; type="tail")
       break
     end
   end
-  
+
   if !isempty(dims_drop)
     dropdims(A, dims=tuple(dims_drop...))
   else
@@ -97,7 +116,7 @@ function zip_continue(x::AbstractVector{<:Integer})
   flag = cumsum([true; diff(x) .!= 1])
   grps = unique(flag)
   n = grps[end]
-  
+
   res = []
   for i = 1:n
     inds = findall(flag .== grps[i])
@@ -144,9 +163,9 @@ export which_isna, which_notna,
   mean, weighted_mean, weighted_sum,
   seq_along, seq_len,
   r_range,
-  nth, 
+  nth,
   selectdim_deep,
-  length_unique, unique_sort, 
+  length_unique, unique_sort,
   squeeze, squeeze_tail, squeeze_head,
   abind,
   set_seed;
