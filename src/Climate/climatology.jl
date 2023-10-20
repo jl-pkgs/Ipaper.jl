@@ -61,9 +61,12 @@ Returns:
 Example:
 ```julia
 using Dates
-A = rand(365, 10)  # simulate a year of daily data for 10 variables
+using Statistics
+# using NaNStatistics
+
+A = rand(365, 10) |> transpose # simulate a year of daily data for 10 variables
 dates = Date(2022, 1, 1):Day(1):Date(2022, 12, 31)
-clim = cal_climatology_base(A, dates; fun! = mean)
+clim = cal_climatology_base(A, dates; p1=2022, p2=2022)
 ```
 """
 function cal_climatology_base(A::AbstractArray{T}, dates;
