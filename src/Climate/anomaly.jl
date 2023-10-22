@@ -234,5 +234,7 @@ function cal_threshold(
     cal_warming_level(A, dates; p1, p2)
   elseif method == "full"
     cal_mTRS_full(A, dates; kw...) |> squeeze_tail # full
+  elseif method == "pTRS"
+    cal_pTRS(A, dates; p1, p2, probs, options...)
   end
 end

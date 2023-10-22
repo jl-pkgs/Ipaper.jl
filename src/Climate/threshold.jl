@@ -200,3 +200,12 @@ function cal_mTRS_full(arr::AbstractArray{T,N}, dates;
   end
   mTRS_full
 end
+
+
+cal_pTRS(A; kw...) = NanQuantile(A; kw...)
+
+function cal_pTRS(A, dates; p1=1981, p2=2010, probs=[0.90, 0.95, 0.99, 0.999, 0.9999], kw...)
+  inds = p1 .<= year.(dates) .<= p2
+  data = selectdim(A, ndims(A), inds)
+  NanQuantile(data; probs, kw...)
+end
