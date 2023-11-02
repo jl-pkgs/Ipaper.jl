@@ -1,7 +1,7 @@
 name = "Ipaper"
 uuid = "e58298cb-69f7-4186-aecd-5834b6793426"
 authors = ["Dongdong Kong <kongdd@users.noreply.github.com>"]
-version = "0.1.12"
+version = "0.1.13"
 
 [deps]
 CategoricalArrays = "324d7699-5711-5eae-9e2f-1d82baa6b597"
