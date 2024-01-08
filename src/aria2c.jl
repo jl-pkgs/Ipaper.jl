@@ -138,6 +138,26 @@ function aria2c_rem(infile; outdir=".", verbose=true)
   infile_rem
 end
 
+"""
+    files_rem(urls; outdir=".")
+
+# Examples
+```
+urls_rem = files_rem(urls; outdir)
+# writelines(urls_rem, "urls_rem.txt")
+```
+"""
+function files_rem(urls; outdir=".")
+  fs_finished = aria2c_file_finished(outdir)
+  
+  _, inds_x, inds_y = match2(basename.(fs_finished), basename.(urls))
+  
+  inds_rem = setdiff(1:length(urls), inds_y)
+  urls_rem = urls[inds_rem]
+  urls_rem
+  # writelines(urls_rem, infile_rem)
+end
+
 
 function kill_app(app="aria2c")
   if is_linux()
@@ -150,4 +170,4 @@ end
 
 
 export file_exists
-export aria2c, aria2c_rem, kill_app
+export aria2c, files_rem, aria2c_rem, kill_app
