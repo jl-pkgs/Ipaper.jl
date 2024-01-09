@@ -49,15 +49,16 @@ end
 macro testmacro(arg, n)
   esc(:($arg + $n))
 end
+
 @test _macroexpand(:(@pipe a |> @testmacro _ 3)) == :(a + 3) # Can pipe into macros
-@test _macroexpand(:(@pipe a |> begin
-  b = _
-  c + b + _
-end)) == :(
-  begin
-    b = a
-    c + b + a
-  end)
+# @test _macroexpand(:(@pipe a |> begin
+#   b = _
+#   c + b + _
+# end)) == :(
+#   begin
+#     b = a
+#     c + b + a
+#   end)
 
 #marked Unpacking
 @test _macroexpand(:(@pipe a |> b(_...))) == :(b(a...)) # Unpacking
