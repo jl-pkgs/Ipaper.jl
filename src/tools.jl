@@ -145,8 +145,23 @@ array(val, dims) = array(val; dims)
 # function abind(x::AbstractVector, dim=3)
 #   cat(x..., dims=dim)
 # end
-abind(args...; along=3) = cat(args..., dims=along)
+# abind(args...; along=3) = cat(args..., dims=along)
+"""
+    abind(args; along=nothing)
 
+# Arguments
+- `last`: 
+  If along is not specified.
+  + `true`: cat along the last dim
+  + `false`: cat along the last dim + 1
+"""
+function abind(args; along=nothing, last=false)
+  if along === nothing 
+    n = ndims(args[1])
+    along = last ? n : n+1
+  end
+  cat(args..., dims=along)
+end
 
 function selectdim_deep(A, dims::Integer, i; deep=true)
   if deep
