@@ -38,6 +38,7 @@ include("dates.jl")
 include("factor.jl")
 include("list.jl")
 include("par.jl")
+include("par_mapslices.jl")
 include("stringr.jl")
 
 include("missing.jl")
