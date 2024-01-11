@@ -11,7 +11,7 @@ y = [2, 4, 5, 4, 6];
 slope_p(y)
 ```
 """
-function Ipaper.slope_p(y::AbstractVector, x::AbstractVector=1:length(y); ignored...)
+function slope_p(y::AbstractVector, x::AbstractVector=1:length(y); ignored...)
   n = length(x)
   df = n - 2
 

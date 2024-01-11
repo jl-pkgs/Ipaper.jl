@@ -13,3 +13,7 @@
 using Pkg
 Pkg.add(url="https://github.com/jl-pkgs/Ipaper.jl")
 ```
+
+# Functions 
+
+- `slope_mk`: 50X faster than R `rtrend::mkTrend_r`, and 10X faster than the Rcpp version `rtrend::mkTrend`

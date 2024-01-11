@@ -13,7 +13,7 @@ pt(x, df::Int) = cdf(TDist(df), x)
 
 
 using Ipaper
-using Ipaper: lm_resid, slope_mk, slope_p
+import Ipaper: lm_resid, slope_mk, slope_p
 
 
 include("slope_mk.jl")

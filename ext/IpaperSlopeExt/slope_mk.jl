@@ -1,8 +1,8 @@
-function _slope_sen(y::AbstractVector, x::AbstractVector=1:length(y))
+function slope_sen!(V::AbstractVector, y::AbstractVector, x::AbstractVector=1:length(y))
   n = length(x)
-  V = fill(NaN, Int((n^2 - n) / 2))
+  # V = fill(NaN, Int((n^2 - n) / 2))
   k = 0
-  for i in 2:n
+  @inbounds for i in 2:n
     for j in 1:(i-1)
       k += 1
       V[k] = (y[i] - y[j]) / (x[i] - x[j])
@@ -11,6 +11,11 @@ function _slope_sen(y::AbstractVector, x::AbstractVector=1:length(y))
   median(V)
 end
 
+function slope_sen(y::AbstractVector, x::AbstractVector=1:length(y))
+  n = length(x)
+  V = fill(NaN, Int((n^2 - n) / 2))
+  slope_sen!(V, y, x)
+end
 
 """
     trend_mk(y::AbstractVector{T}; ci=0.95) where {T<:Real}
@@ -47,45 +52,46 @@ end
 
 # Example
 ```julia
-julia> mkTrend([4.81, 4.17, 4.41, 3.59, 5.87, 3.83, 6.03, 4.89, 4.32, 4.69])
-(z0 = 0.35777087639996635, pval0 = 0.7205147871362552, z = 0.35777087639996635, pval = 0.7205147871362552, slope = 0.040000000000000036, intercept = 4.441)
+slope_mk([4.81, 4.17, 4.41, 3.59, 5.87, 3.83, 6.03, 4.89, 4.32, 4.69])
+
+A = rand(100, 100, 30, 4)
+@time r = mapslices(slope_mk, A; dims=3);
 ```
 """
-function Ipaper.slope_mk(y::AbstractVector, x::AbstractVector=1:length(y); ci=0.95)
-  z0 = z = pval0 = pval = slp = intercept = NaN
-
+function slope_mk(y::AbstractVector, x::AbstractVector=1:length(y); ci=0.95)
+  # z0 = z = pval0 = pval = slp = intercept = NaN
   # y = dropmissing(y)
   n = length(y)
   if n < 5
-    return (; z0, pval0, z, pval, slp, intercept)
+    return [NaN, NaN] # [slope, pvalue]
   end
-  
+
   S = 0
-  for i in 1:(n-1)
+  @inbounds for i in 1:(n-1)
     for j in (i+1):n
       S += sign(y[j] - y[i])
     end
   end
-  
+
   sig = quantile(Normal(), (1 + ci) / 2) / sqrt(n) # qnorm((1 + ci)/2)/sqrt(n)
 
   rank = tiedrank(lm_resid(y, 1:n))
   ro = autocor(rank, 1:n-1)
-  ro[abs.(ro) .<= sig] .= 0.0 # modified by dongdong Kong, 2017-04-03
-  
+  ro[abs.(ro).<=sig] .= 0.0 # modified by dongdong Kong, 2017-04-03
+
   cte = 2 / (n * (n - 1) * (n - 2))
 
   ess = 0.0
-  for i in 1:n-1
+  @inbounds for i in 1:n-1
     ess += (n - i) * (n - i - 1) * (n - i - 2) * ro[i]
   end
 
   essf = 1 + ess * cte
   var_S = n * (n - 1) * (2n + 5) * (1.0 / 18)
-  
-  if length(unique(y)) < n
-    aux = unique(y)
-    for i in eachindex(aux)
+
+  aux = unique(y)
+  if length(aux) < n
+    @inbounds for i in eachindex(aux)
       tie = count(y .== aux[i])
       if tie > 1
         var_S -= tie * (tie - 1) * (2tie + 5) * (1 / 18)
@@ -106,10 +112,10 @@ function Ipaper.slope_mk(y::AbstractVector, x::AbstractVector=1:length(y); ci=0.
   end
 
   # pvalue0 = 2 * pnorm(-abs(z0))
-  pvalue = 2 * pnorm(-abs(z))
   # Tau = S / (0.5 * n * (n - 1))
-  slope = _slope_sen(y, x)
-  intercept = mean(y .- slope .* (1:n))
+  pvalue = 2 * pnorm(-abs(z))
+  slope = slope_sen(y, x)
+  # intercept = mean(y .- slope .* (1:n))
 
   [slope, pvalue]
   # (; slope, pvalue, z, pvalue0, z0, intercept)
