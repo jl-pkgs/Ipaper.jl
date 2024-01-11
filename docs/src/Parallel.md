@@ -10,4 +10,6 @@ par_map
 par_mapslices
 ```
 
-
+```@docs
+isCurrentWorker
+```

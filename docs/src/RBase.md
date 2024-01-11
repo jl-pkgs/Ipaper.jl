@@ -43,9 +43,3 @@ match2
 drop_missing
 to_missing
 ```
-
-## Parallel
-
-```@docs
-isCurrentWorker
-```
