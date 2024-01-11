@@ -18,7 +18,7 @@ function slope_sen(y::AbstractVector, x::AbstractVector=1:length(y))
 end
 
 """
-    trend_mk(y::AbstractVector{T}; ci=0.95) where {T<:Real}
+    slope_mk(y::AbstractVector, x::AbstractVector=1:length(y); ci=0.95)
 
 # Arguments
 
