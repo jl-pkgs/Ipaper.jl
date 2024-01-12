@@ -1,5 +1,5 @@
-# using Ipaper
-# using Test
+using Ipaper
+using Test
 
 @testset "filter_mds" begin
   function check_mds(doy=1)

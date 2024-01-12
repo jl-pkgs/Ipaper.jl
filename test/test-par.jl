@@ -7,7 +7,7 @@ end
 
 @testset "par_mapslices" begin
   A = rand(10, 10, 30, 4)
-  r = mapslices(mean, A; dims = 3) |> squeeze
+  r = mapslices(mean, A; dims = 3) #|> squeeze
   r1 = par_mapslices(mean, A; dims = 3)
   @test r ≈ r1
 end

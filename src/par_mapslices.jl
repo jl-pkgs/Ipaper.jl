@@ -86,7 +86,7 @@ function par_mapslices(f, A::AbstractArray{<:Real,N}, args...;
     r = f(Aslice, args...; kw...)
     concatenate_setindex!(R, r, ridx...)
   end
-  R |> squeeze
+  R #|> squeeze
 end
 
 # if option == 1

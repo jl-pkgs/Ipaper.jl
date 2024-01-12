@@ -52,8 +52,12 @@ function apply(x::AbstractArray, dims_by=3, args...; dims=dims_by, by=nothing, f
   if by === nothing
     ans = mapslices(fun2, x, dims=dims)
     # 除掉长度为1维度
-    inds_bad = findall(size(ans) .== 1)
-    length(inds_bad) >= 1 && (ans = dropdims(ans; dims=inds_bad[1]))
+    if ndims(ans) > 1
+      inds_bad = findall(size(ans) .== 1)
+      n1 = length(inds_bad)
+      
+      1 <= n1 < ndims(ans) && (ans = dropdims(ans; dims=inds_bad[1]))
+    end
     res = ans
   else
     grps = unique(by)
@@ -67,9 +71,12 @@ function apply(x::AbstractArray, dims_by=3, args...; dims=dims_by, by=nothing, f
         ans
       end, grps)
     # permutedims(A, perm)
-    # ! may have bug
-    along = size(res[1])[end] == 1 ? dims : ndims(res[1]) + 1
-    combine && (res = cat(res..., dims=along))
+    if combine
+      # res = abind(res; last=false)
+      r = res[1]
+      along = size(r)[end] == 1 ? dims_by : ndims(r) + 1
+      res = cat(res..., dims=along)
+    end
   end
   res
 end
