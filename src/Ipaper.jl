@@ -52,6 +52,8 @@ include("Slope/Slope.jl")
 include("precompile.jl")
 include("tools_plot.jl")
 
+include("apply.jl")
+
 
 dim = size
 export dim

@@ -1,13 +1,14 @@
 function _nanquantile! end
 
-# function Ipaper._nanquantile!(q::AbstractVector, x::AbstractVector,
+# function _nanquantile!(q::AbstractVector, x::AbstractVector,
 #   probs::Vector{<:Real}=[0, 0.25, 0.5, 0.75, 1])
 #   for k = eachindex(probs)
 #     q[k] = NaNStatistics._nanquantile!(x, probs[k], (1,))[1]
 #   end
 #   q
 # end
-# function Ipaper._nanquantile!(A, q::Real, dims::Int64)
+
+# function _nanquantile!(A, q::Real, dims::Int64)
 #   NaNStatistics._nanquantile!(A, q, dims)
 # end
 
@@ -82,21 +83,18 @@ end
 
 
 ## LOW EFFICIENT VERSION -------------------------------------------------------
-"""
-  nanquantile(x::AbstractArray{T,N}, probs::Vector{<:Real}; 
-    dims::Integer=1, dtype = Float64) where {T,N}
+# """
+#   nanquantile(x::AbstractArray{T,N}, probs::Vector{<:Real}; 
+#     dims::Integer=1, dtype = Float64) where {T,N}
 
-# Examples
-```julia
-x = rand(4, 4, 201);
-probs = [0.9, 0.99, 0.9999]
-
-r = nanquantile(x; probs, dims=3);
-r1 = NanQuantile(x; probs, dims=3);
-
-r == r1
-```
-"""
+# # Examples
+# ```julia
+# x = rand(4, 4, 201);
+# probs = [0.9, 0.99, 0.9999]
+# r = nanquantile(x; probs, dims=3);
+# r1 = NanQuantile(x; probs, dims=3);
+# ```
+# """
 
 export
   _nanquantile, _nanquantile!,
