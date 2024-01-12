@@ -24,9 +24,11 @@ function nth(x, n)
   x[n]
 end
 
-which_isna(x) = findall(x .== nothing)
-which_notna(x) = findall(x .!= nothing)
+which_isnull(x) = findall(x .== nothing)
+which_notnull(x) = findall(x .!= nothing)
 
+which_isnan(x) = findall(isnan(x))
+which_notnan(x) = findall(.!isnan(x))
 
 Base.isnan(x::AbstractArray) = isnan.(x)
 
@@ -147,18 +149,18 @@ array(val, dims) = array(val; dims)
 # end
 # abind(args...; along=3) = cat(args..., dims=along)
 """
-    abind(args; along=nothing)
+    abind(args; along=nothing, increase=true)
 
 # Arguments
-- `last`: 
+- `increase`: 
   If along is not specified.
-  + `true`: cat along the last dim
-  + `false`: cat along the last dim + 1
+  + `false`: cat along the last dim
+  + `true`: cat along the last dim + 1
 """
-function abind(args; along=nothing, last=false)
+function abind(args; along=nothing, increase=true)
   if along === nothing 
     n = ndims(args[1])
-    along = last ? n : n+1
+    along = increase ? n + 1 : n
   end
   cat(args..., dims=along)
 end
@@ -173,7 +175,8 @@ function selectdim_deep(A, dims::Integer, i; deep=true)
 end
 
 
-export which_isna, which_notna,
+export which_isnull, which_notnull,
+  which_isnan, which_notnan,
   is_empty, not_empty,
   mean, weighted_mean, weighted_sum,
   seq_along, seq_len,

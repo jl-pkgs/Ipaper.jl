@@ -79,3 +79,7 @@ end
   r = zip_continue([1, 2, 3, 5, 6])
   @test r_map(r, @f(_.index)) == [[1, 3], [4, 5]]
 end
+
+@testset "obj_size" begin
+  @test_nowarn obj_size((4, 4, 2), Float32)
+end

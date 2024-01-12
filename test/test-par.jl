@@ -1,6 +1,11 @@
 using Test
 using Ipaper
 
+@testset "mpi" begin
+  @test_nowarn get_clusters()
+  @test_nowarn isCurrentWorker()
+end
+
 @testset "par_map" begin
   @test par_map(x -> x, 1:10) == collect(1:10)
 end

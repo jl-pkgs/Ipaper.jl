@@ -72,7 +72,7 @@ function apply(x::AbstractArray, dims_by=3, args...; dims=dims_by, by=nothing, f
       end, grps)
     # permutedims(A, perm)
     if combine
-      # res = abind(res; last=false)
+      # res = abind(res; increase=true)
       r = res[1]
       along = size(r)[end] == 1 ? dims_by : ndims(r) + 1
       res = cat(res..., dims=along)

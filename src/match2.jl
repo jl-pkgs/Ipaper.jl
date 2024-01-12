@@ -25,7 +25,7 @@ match2(x, y)
 function match2(x, y)
   # find x in y
   ind = indexin(x, y)
-  I_x = which_notna(ind)
+  I_x = which_notnull(ind)
   I_y = something.(ind[I_x])
   # use `something` to suppress nothing `Union`
   (; value=x[I_x], I_x, I_y)
