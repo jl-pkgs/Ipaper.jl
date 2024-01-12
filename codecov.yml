@@ -4,3 +4,4 @@ ignore:
   - "src/*/temp"
   - "src/tools_plot.jl"
   - "src/aria2c.jl"
+  - "ext/*/test"
