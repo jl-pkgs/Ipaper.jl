@@ -6,8 +6,10 @@ module Ipaper
 
 import Dates
 # using Ipaper
+
 using Reexport
 @reexport using DocStringExtensions: TYPEDSIGNATURES, METHODLIST
+@reexport using ProgressMeter
 
 include("Pipe.jl")
 @reexport using .Pipe: @pipe

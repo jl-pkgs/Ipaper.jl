@@ -19,9 +19,14 @@ end
 @time map(f, 1:10)
 ```
 """
-function par_map(f, A, args...; kw...)
+function par_map(f, A, args...; parallel=true, progress=true, kw...)
+  n = prod(size(A))
+  p = Progress(n)
+
   res = Vector{Any}(undef, size(A))
-  Threads.@threads for i in eachindex(A)
+  @par parallel for i in eachindex(A)
+    progress && next!(p)
+    
     x = A[i]
     r = f(x, args...; kw...)
     res[i] = r
@@ -40,14 +45,17 @@ end
 
 # Example
 ```julia
+using Ipaper
+using Distributions
+
 A = rand(10, 10, 30, 4)
 par_mapslices(mean, A)
 
-# @time r1 = par_mapslices(slope_mk, A; dims=3); # 并行可以快5被
+# @time r1 = par_mapslices(slope_mk, A; dims=3); # 5X faster
 ```
 """
 function par_mapslices(f, A::AbstractArray{<:Real,N}, args...;
-  dims=N, parallel=true, kw...) where {N}
+  dims=N, parallel=true, progress=true, kw...) where {N}
 
   idx1 = ntuple(d -> d in dims ? (:) : firstindex(A, d), ndims(A))
   Aslice = A[idx1...]
@@ -60,12 +68,16 @@ function par_mapslices(f, A::AbstractArray{<:Real,N}, args...;
 
   itershape = ntuple(d -> d in dims ? Base.OneTo(1) : axes(A, d), ndims(A))
   indices = CartesianIndices(itershape)
+  n = prod(size(indices))
+  p = Progress(n)
 
   R = zeros(eltype(r1), _dims...)
   slice_A = Slice.(axes(A))
   slice_R = Slice.(axes(R))
 
   @inbounds @par parallel for I in indices
+    progress && next!(p)
+
     idx = ifelse.(dim_mask, slice_A, Tuple(I))
     ridx = ifelse.(dim_mask, slice_R, Tuple(I))
 
