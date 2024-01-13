@@ -42,15 +42,18 @@ res = apply(x, 3; by=years, fun=_nanquantile, combine=true, probs=[0.05, 0.95])
 obj_size(res)
 
 res = apply(x, 3; by=years, fun=nanmean, combine=true)
+
+apply(x, 3; by = month.(dates), fun=slope_mk)
 ```
 """
-function apply(x::AbstractArray, dims_by=3, args...; dims=dims_by, by=nothing, fun::Function=mean, combine=true, 
+function apply(A::AbstractArray, dims_by=3, args...; dims=dims_by, 
+  by=nothing, fun::Function=mean, combine=true, 
   parallel=false, progress=parallel, kw...)
   
   fun2(x) = fun(x, args...; kw...)
   
   if by === nothing
-    ans = mapslices(fun2, x, dims=dims)
+    ans = mapslices(fun2, A, dims=dims)
     # 除掉长度为1维度
     if ndims(ans) > 1
       inds_bad = findall(size(ans) .== 1)
@@ -63,9 +66,11 @@ function apply(x::AbstractArray, dims_by=3, args...; dims=dims_by, by=nothing, f
     grps = unique(by)
     res = map(grp -> begin
         ind = by .== grp
-        data = selectdim(x, dims_by, ind)
+        data = selectdim(A, dims_by, ind) |> collect
         # ans = fun(data, args...; kw...)
         ans = par_mapslices(fun2, data; dims, parallel, progress)
+        # ans = mapslices(fun2, data; dims)
+        
         inds_bad = findall(size(ans) .== 1)
         length(inds_bad) >= 1 && ndims(ans) > 1 && (ans = dropdims(ans; dims=inds_bad[1]))
         ans
