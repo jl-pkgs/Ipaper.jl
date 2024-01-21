@@ -5,3 +5,4 @@ ignore:
   - "src/tools_plot.jl"
   - "src/aria2c.jl"
   - "ext/*/test"
+  - "src/main_cdo.jl"
