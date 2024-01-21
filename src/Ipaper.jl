@@ -49,6 +49,7 @@ include("missing.jl")
 include("Statistics/Statistics.jl")
 include("Climate/Climate.jl")
 include("Slope/Slope.jl")
+include("sf/sf.jl")
 
 include("precompile.jl")
 include("tools_plot.jl")

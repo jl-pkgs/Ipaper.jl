@@ -59,5 +59,6 @@ function dir(path=".", pattern=""; full_names=true, include_dirs=true, recursive
   fs
 end
 
+file_ext(file::String) = file[findlast(==('.'), file):end]
 
-export check_dir, check_file, dir
+export check_dir, check_file, dir, file_ext
