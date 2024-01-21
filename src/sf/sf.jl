@@ -1,5 +1,7 @@
 module sf
 
+
+using Ipaper: file_ext
 export bbox,
   in_bbox, bbox2lims,
   bbox2cellsize,
