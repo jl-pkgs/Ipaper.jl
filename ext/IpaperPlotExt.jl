@@ -3,7 +3,7 @@ module IpaperPlotExt
 
 # @static if isdefined(Base, :get_extension) # julia < 1.9
 using Plots: plot!, savefig
-import Ipaper: show_fig, write_fig
+import Ipaper: show_file, write_fig
 # else
 #   using ..Ipaper
 #   using ..Plots: plot!, savefig
