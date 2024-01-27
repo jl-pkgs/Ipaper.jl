@@ -31,7 +31,7 @@ function par_map(f, A, args...; parallel=true, progress=true, kw...)
     r = f(x, args...; kw...)
     res[i] = r
   end
-  res
+  map(x -> x, res)
 end
 
 

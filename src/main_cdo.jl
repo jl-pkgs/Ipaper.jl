@@ -21,7 +21,7 @@ function cdo_grid(x::AbstractVector, y::AbstractVector;
   fout
 end
 
-function cdo_grid(range, cellsize, mid::Bool; fout="grid.txt", kw...)
+function cdo_grid(range, cellsize, mid::Bool=true; fout="grid.txt", kw...)
   delta = mid ? cellsize / 2 : 0
   x = range[1]+delta:cellsize:range[2]
   y = range[3]+delta:cellsize:range[4]

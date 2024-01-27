@@ -59,6 +59,8 @@ bbox2tuple(b::bbox) = (xmin=b.xmin, ymin=b.ymin, xmax=b.xmax, ymax=b.ymax)
 bbox2vec(b::bbox) = [b.xmin, b.ymin, b.xmax, b.ymax]
 bbox2lims(b::bbox) = ((b.xmin, b.xmax), (b.ymin, b.ymax))
 
+range2bbox(r::AbstractVector) = bbox(r[1], r[3], r[2], r[4])
+
 function bbox_overlap(b::bbox, box::bbox; size=nothing, cellsize=nothing, reverse_lat=true)
   lon, lat = bbox2dims(b; size, cellsize, reverse_lat)
   Lon, Lat = bbox2dims(box; size, cellsize, reverse_lat)

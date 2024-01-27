@@ -45,8 +45,7 @@ duplicated(x)
 ```
 """
 function duplicated(x::Vector)
-  grps = table(x)
-  grps = filter(x -> x[2] > 1, grps)
+  grps = filter(x -> x[2] > 1, table(x))
 
   n = length(x)
   res = BitArray(undef, n)
@@ -56,12 +55,8 @@ function duplicated(x::Vector)
     for i = 1:n
       if x[i] == key
         k = k + 1
-        if k >= 2
-          res[i] = true
-        end
-        if k == freq
-          break
-        end
+        k >= 2 && (res[i] = true)
+        k == freq && break
       end
     end
   end

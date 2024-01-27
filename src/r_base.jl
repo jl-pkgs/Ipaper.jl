@@ -3,6 +3,8 @@
 # function r_in(x::AbstractVector, y::AbstractVector)::BitVector
 #   indexin(x, y) .!== nothing
 # end
+unlist(xs::AbstractVector) = map(x -> x, xs)
+self(x) = x
 
 function r_in(x::AbstractVector, y::AbstractVector)::BitVector
   res = falses(length(x))
@@ -102,3 +104,4 @@ LETTERS(I::AbstractVector{<:Integer}) = LETTERS.(I)
 
 export r_in, r_in_low, r_chunk, r_map, r_split, r_summary
 export letters, LETTERS
+export unlist, self

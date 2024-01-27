@@ -2,12 +2,12 @@ module sf
 
 
 using Ipaper: file_ext
-export bbox,
-  in_bbox, bbox2lims,
+export bbox, in_bbox, bbox_overlap
+export bbox2lims, 
   bbox2cellsize,
   bbox2range, bbox2vec,
-  bbox2dims, bbox2ndim,
-  bbox_overlap
+  bbox2dims, bbox2ndim
+export range2bbox
 export st_bbox, st_dims, st_cellsize
 
 
