@@ -25,7 +25,7 @@ get_clusters() = Threads.nthreads()
 
 # Example
 ```julia
-if !isCurrentWorker(i); continue; end
+!isCurrentWorker(i) && continue
 ```
 """
 function isCurrentWorker(i = 0)

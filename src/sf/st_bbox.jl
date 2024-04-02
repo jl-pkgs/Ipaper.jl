@@ -1,10 +1,20 @@
 # include("bbox.jl")
+function st_bbox(v::Vector{<:Real})
+  bbox(v[1:4]...)
+end
+
 function st_bbox(lon, lat)
   cellx = abs(lon[2] - lon[1])
   celly = abs(lat[2] - lat[1])
   bbox(minimum(lon) - cellx / 2, minimum(lat) - celly / 2,
     maximum(lon) + cellx / 2, maximum(lat) + celly / 2)
 end
+
+function st_bbox(f::String)
+  lon, lat = st_dims(f)
+  st_bbox(lon, lat)
+end
+
 
 # get large bbox, also know as bbox_merge
 function st_bbox(bs::Vector{bbox})
@@ -27,9 +37,5 @@ end
 # st_bbox(z::ZArray) = Terra.bbox(z.attrs["bbox"]...)
 # st_bbox(zs::Vector{<:ZArray}) = st_bbox(st_bbox.(zs))
 
-function st_bbox(f::String)
-  lon, lat = st_dims(f)
-  st_bbox(lon, lat)
-end
 
 # st_bbox(f::String) = gdalinfo(f)["bbox"]
