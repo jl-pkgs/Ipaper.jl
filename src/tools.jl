@@ -1,10 +1,12 @@
 function nanmean end
 
-
 import StatsBase: weights, mean, quantile
 import Random: seed!
 include("r_base.jl")
 
+# for quarto
+include2(f) = include("$(pwd())/$(basename(f))")
+includet2(f) = includet("$(pwd())/$(basename(f))")
 
 set_seed(seed) = seed!(seed)
 
@@ -190,3 +192,4 @@ export which_isnull, which_notnull,
 export isnan, all_isnan, any_isnan;
 export obj_size, r_summary, r_split
 export zip_continue
+export include2, includet2

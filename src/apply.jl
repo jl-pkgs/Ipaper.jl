@@ -63,7 +63,7 @@ function apply(A::AbstractArray, dims_by=3, args...; dims=dims_by,
     end
     res = ans
   else
-    grps = unique(by)
+    grps = unique(by) |> sort
     res = map(grp -> begin
         ind = by .== grp
         data = selectdim(A, dims_by, ind) |> collect

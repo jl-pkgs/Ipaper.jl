@@ -61,7 +61,7 @@ end
 
 
 function r_split(lst::AbstractVector, by::AbstractVector)
-  grps = unique(by)
+  grps = unique(by) |> sort
   res = []
   for grp in grps
     inds = by .== grp

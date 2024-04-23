@@ -136,13 +136,13 @@ function cal_mTRS_full(arr::AbstractArray{T,N}, dates;
   probs=[0.90, 0.95, 0.99, 0.999, 0.9999], kw...) where {T<:Real,N}
 
   years = year.(dates)
-  grps = unique(years)
+  grps = unique_sort(years)
 
   YEAR_MIN = minimum(grps)
   YEAR_MAX = maximum(grps)
 
   mmdd = factor(format_md.(dates)).refs
-  mds = unique(mmdd) |> sort
+  mds = unique_sort(mmdd)
   doy_max = length(mds)
 
   # 滑动平均两种不同的做法

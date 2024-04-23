@@ -57,7 +57,6 @@ function cal_warming_level(A::AbstractArray{T,N}, dates;
 
   # yms = format.(dates, "yyyy-mm")
   # ys = SubString.(unique(yms), 1, 4)
-  # grps = unique_sort(ys)
   grps = year.(dates) |> unique_sort
   inds_clim = @.(p1 <= grps <= p2)
 

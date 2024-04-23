@@ -14,7 +14,7 @@ function _cal_anomaly_3d(
 ) where {T<:Real}
 
   mmdd = format_md.(dates)
-  mds = mmdd |> unique |> sort
+  mds = mmdd |> unique_sort
 
   years = year.(dates)
   year_grps = years |> unique_sort
