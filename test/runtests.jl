@@ -11,9 +11,10 @@ import NaNStatistics: nanmean, nanmedian
 using Ipaper: NanQuantile_low, NanQuantile_low!
 
 
+include("test-rast.jl")
+
 using Distributions
 include("test-slope.jl")
-
 
 ## Ipaper
 include("test-sf.jl")
