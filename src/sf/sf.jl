@@ -15,6 +15,6 @@ export st_bbox, st_dims, st_cellsize
 include("bbox.jl")
 include("st_bbox.jl")
 include("st_dims.jl")
-include("Raster.jl")
+include("SpatRaster.jl")
 
 end
