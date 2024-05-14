@@ -10,14 +10,13 @@ import NaNStatistics
 import NaNStatistics: nanmean, nanmedian
 using Ipaper: NanQuantile_low, NanQuantile_low!
 
-
-include("test-rast.jl")
+using ArchGDAL
+include("sf/test_sf.jl")
 
 using Distributions
 include("test-slope.jl")
 
 ## Ipaper
-include("test-sf.jl")
 include("test-par.jl")
 include("test-Ipaper.jl")
 include("test-missing.jl")

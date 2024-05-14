@@ -21,6 +21,8 @@ function guess_filetype(f::String)
 end
 
 
+st_dims(r::AbstractSpatRaster) = r.lon, r.lat
+
 function st_dims(f::String)
   x = guess_filetype(f)
   st_dims(x)
@@ -39,7 +41,9 @@ end
 #   x, y
 # end
 
-function st_cellsize(lon, lat)
+st_cellsize(r::AbstractSpatRaster) = st_cellsize(r.lon, r.lat)
+
+function st_cellsize(lon::AbstractVector, lat::AbstractVector)
   lon[2] - lon[1], lat[2] - lat[1] # cellx, celly
 end
 

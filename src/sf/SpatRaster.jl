@@ -7,6 +7,7 @@ Base.@kwdef mutable struct SpatRaster{T,N} <: AbstractSpatRaster{T,N}
   lon::AbstractVector{<:Real}
   lat::AbstractVector{<:Real}
   time::Union{AbstractVector,Nothing} = nothing
+  bands::Union{AbstractVector{String},Nothing} = nothing
   name::String = "Raster"
 end
 
@@ -15,25 +16,29 @@ end
 
 - `kw`: other parameters: `time`, `name`
 """
-function SpatRaster(A::AbstractArray{T,N}, b::bbox; reverse_lat=true, time=nothing, name="Raster") where {T,N}
+function SpatRaster(A::AbstractArray{T,N}, b::bbox; reverse_lat=true, time=nothing, bands=nothing, name="Raster") where {T,N}
   if N == 3 && size(A, 3) == 1
     A = A[:, :, 1]
   end
   cellsize = bbox2cellsize(b, size(A))
   lon, lat = bbox2dims(b; cellsize, reverse_lat)
-  SpatRaster(; A, b, cellsize, lon, lat, time, name)
+  SpatRaster(; A, b, cellsize, lon, lat, time, bands, name)
 end
 
 function SpatRaster(r::SpatRaster, A::AbstractArray)
-  SpatRaster(A, r.b, r.cellsize, r.lon, r.lat, r.time, r.name) # rebuild
+  (; b, cellsize, lon, lat, time, bands, name) = r
+  SpatRaster(;A, b, cellsize, lon, lat, time, bands, name) # rebuild
 end
 
-Base.parent(ga::AbstractSpatRaster) = ga.A
-Base.iterate(ga::AbstractSpatRaster) = iterate(ga.A)
-Base.length(ga::AbstractSpatRaster) = length(ga.A)
-Base.size(ga::AbstractSpatRaster) = size(ga.A)
+Base.size(ra::AbstractSpatRaster) = size(ra.A)
+Base.size(ra::AbstractSpatRaster{T,2}) where {T} = (size(ra.A)..., 1)
+
+Base.parent(ra::AbstractSpatRaster) = ra.A
+Base.iterate(ra::AbstractSpatRaster) = iterate(ra.A)
+Base.length(ra::AbstractSpatRaster) = length(ra.A)
+# Base.size(ra::AbstractSpatRaster) = size(ra.A)
 Base.eltype(::Type{AbstractSpatRaster{T}}) where {T} = T
-Base.map(f, ga::AbstractSpatRaster) = SpatRaster(ga, map(f, ga.A))
+Base.map(f, ra::AbstractSpatRaster) = SpatRaster(ra, map(f, ra.A))
 
 # !note about NaN values
 Base_ops = ((:Base, :+), (:Base, :-), (:Base, :*), (:Base, :/),
@@ -66,7 +71,8 @@ function Base.show(io::IO, x::SpatRaster)
   println(io, "  b        : $(x.b)")
   println(io, "  cellsize : $(x.cellsize)")
   println(io, "  lon, lat : $(x.lon), $(x.lat)")
-  print(io, "  time     : $(x.time)")
+  println(io, "  time     : $(x.time)")
+  print(io,   "  bands    : $(x.bands)")
   nothing
 end
 

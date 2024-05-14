@@ -1,4 +1,6 @@
 # include("bbox.jl")
+st_bbox(r::AbstractSpatRaster) = r.b
+
 function st_bbox(v::Vector{<:Real})
   bbox(v[1:4]...)
 end
