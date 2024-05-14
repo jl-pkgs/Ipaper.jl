@@ -7,5 +7,3 @@ function getgeotransform(ra::AbstractSpatRaster)
   x0 = x[1] - cellx / 2
   [x0, cellx, 0, y0, 0, celly]
 end
-
-export getgeotransform

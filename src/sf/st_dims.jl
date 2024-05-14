@@ -28,9 +28,11 @@ function st_dims(f::String)
   st_dims(x)
 end
 
-# function st_dims(x::FileGDAL)
-#   gdalinfo(x.file)["dims"]
-# end
+function gdalinfo end
+
+function st_dims(x::FileGDAL)
+  gdalinfo(x.file)["dims"]
+end
 
 # function st_dims(ra::AbstractRaster)
 #   ds = map(dims(ra)) do d

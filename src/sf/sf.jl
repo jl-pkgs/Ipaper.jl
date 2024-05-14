@@ -10,6 +10,7 @@ export bbox2lims,
 export range2bbox
 export st_bbox, st_dims, st_cellsize
 export write_tiff, read_gdal
+export getgeotransform
 
 include("bbox.jl")
 include("SpatRaster.jl")

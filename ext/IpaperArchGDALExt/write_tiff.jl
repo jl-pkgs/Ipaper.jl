@@ -1,27 +1,4 @@
-# const drivers = AG.listdrivers()
-const shortnames = Dict(
-  (".tif", ".tiff") => "GTiff",
-  (".nc", ".nc4") => "netCDF",
-  (".img",) => "HFA",
-  (".xyz",) => "XYZ",
-  (".shp",) => "ESRI Shapefile",
-  (".geojson",) => "GeoJSON",
-  (".fgb",) => "FlatGeobuf",
-  (".gdb",) => "OpenFileGDB",
-  (".gml",) => "GML",
-  (".gpkg",) => "GPKG"
-)
 
-## corresponding functions
-function find_shortname(fn::AbstractString)
-  _, ext = splitext(fn)
-  for (k, v) in shortnames
-    if ext in k
-      return v
-    end
-  end
-  error("Cannot determine GDAL Driver for $fn")
-end
 
 function write_tiff(ra::AbstractSpatRaster, f::AbstractString;
   nodata=nothing, options=String[], NUM_THREADS=4, BIGTIFF=true, proj::String=WGS84)

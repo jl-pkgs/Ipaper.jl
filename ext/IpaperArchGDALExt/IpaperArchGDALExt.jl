@@ -3,14 +3,46 @@ module IpaperArchGDALExt
 
 export write_tiff
 
+using DocStringExtensions: TYPEDSIGNATURES, METHODLIST
+
 using ArchGDAL
 using ArchGDAL.GDAL
 using ArchGDAL.GDAL.GDAL_jll: gdalinfo_path, ogrinfo_path
+
 using Ipaper.sf
-import Ipaper.sf: write_tiff, read_gdal, WGS84
+import Ipaper.sf: write_tiff, read_gdal, gdalinfo, getgeotransform
+import Ipaper.sf: WGS84
 
 include("write_tiff.jl")
 include("read_gdal.jl")
+include("gdalinfo.jl")
+include("gdal_polygonize.jl")
+
+
+# const drivers = AG.listdrivers()
+const shortnames = Dict(
+  (".tif", ".tiff") => "GTiff",
+  (".nc", ".nc4") => "netCDF",
+  (".img",) => "HFA",
+  (".xyz",) => "XYZ",
+  (".shp",) => "ESRI Shapefile",
+  (".geojson",) => "GeoJSON",
+  (".fgb",) => "FlatGeobuf",
+  (".gdb",) => "OpenFileGDB",
+  (".gml",) => "GML",
+  (".gpkg",) => "GPKG"
+)
+
+## corresponding functions
+function find_shortname(fn::AbstractString)
+  _, ext = splitext(fn)
+  for (k, v) in shortnames
+    if ext in k
+      return v
+    end
+  end
+  error("Cannot determine GDAL Driver for $fn")
+end
 
 
 gdal_close(ds::Ptr{Nothing}) = GDAL.gdalclose(ds)
