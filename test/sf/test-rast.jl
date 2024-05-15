@@ -5,13 +5,21 @@ using ArchGDAL
 
 @testset "raster" begin
   b = bbox(-180.0, -60.0, 180.0, 90.0)
-  r2 = rast(rand(4, 4), b)
-  write_tiff(r2, "test.tif")
-  isfile("test.tif") && rm("test.tif")
+  A = rand(4, 4)
+  r2 = rast(A, b)
+  
+  f = "test.tif"
+  write_gdal(r2, f)
+  @test read_gdal(f)[:, :, 1] == A
+  @test st_bbox(f) == b
+  isfile(f) && rm(f)
 
-  r3 = rast(rand(4, 4, 3), b; time=1:3, bands=["a", "b", "c"])
-  write_tiff(r3, "test.tif")
-  isfile("test.tif") && rm("test.tif")
+  A = rand(4, 4, 3)
+  r3 = rast(A, b; time=1:3, bands=["a", "b", "c"])
+  st_write(r3, f)
+  @test st_read(f) == A
+  @test st_bbox(f) == b
+  isfile(f) && rm(f)
 
   print(r2)
   @test size(r2) == (4, 4, 1)

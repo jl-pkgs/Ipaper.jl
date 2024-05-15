@@ -7,3 +7,10 @@ function getgeotransform(ra::AbstractSpatRaster)
   x0 = x[1] - cellx / 2
   [x0, cellx, 0, y0, 0, celly]
 end
+
+
+flipud(x::AbstractArray{T,2}) where {T<:Real} = x[end:-1:1, :]
+flipud(x::AbstractArray{T,3}) where {T<:Real} = x[end:-1:1, :, :]
+
+fliplr(x::AbstractArray{T,2}) where {T<:Real} = x[:, end:-1:1]
+fliplr(x::AbstractArray{T,3}) where {T<:Real} = x[:, end:-1:1, :]

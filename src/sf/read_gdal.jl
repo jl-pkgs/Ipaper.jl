@@ -7,8 +7,6 @@
 
 # Return
 """
-function read_gdal end
-
 # read multiple tiff files and cbind
 function read_gdal(files::Vector{<:AbstractString}, options...)
   # bands = collect(bands)

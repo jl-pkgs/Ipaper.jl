@@ -18,8 +18,7 @@ function cast_to_gdal(A::AbstractArray{<:Real})
   if type in keys(gdt_conversion)
     newtype = gdt_conversion[type]
     @warn "Casting $type to $newtype to fit in GDAL."
-    # return newtype, 
-    return convert(Array{newtype}, A)
+    return newtype, convert(Array{newtype}, A)
   else
     error("Can't cast $(eltype(A)) to GDAL.")
   end
@@ -31,12 +30,40 @@ const OPTIONS_DEFAULT_TIFF = Dict(
   "COMPRESS" => "DEFLATE"
 )
 
-function write_tiff end
+function write_gdal(ra::AbstractSpatRaster, f::AbstractString;
+  nodata=nothing, options=String[], NUM_THREADS=4, BIGTIFF=true, proj::String=WGS84)
 
-## write tiff 
-# no missing value is allowed
+  data = ra.A
+  dtype = eltype(data)
+  shortname = find_shortname(f)
+  driver = ArchGDAL.getdriver(shortname)
+  width, height, nbands = size(ra)
 
+  if (shortname == "GTiff")
+    options = [options..., "COMPRESS=DEFLATE", "TILED=YES", "NUM_THREADS=$NUM_THREADS"]
+    BIGTIFF && (options = [options..., "BIGTIFF=YES"])
+  end
 
+  try
+    convert(ArchGDAL.GDALDataType, dtype)
+  catch
+    dtype, data = cast_to_gdal(data)
+  end
+
+  ArchGDAL.create(f; driver, width, height, nbands, dtype, options) do dataset
+    for i = 1:nbands
+      band = ArchGDAL.getband(dataset, i)
+      ArchGDAL.write!(band, data[:, :, i])
+      !isnothing(nodata) && ArchGDAL.GDAL.gdalsetrasternodatavalue(band.ptr, nodata)
+    end
+
+    # Set geotransform and crs
+    ArchGDAL.GDAL.gdalsetgeotransform(dataset.ptr, getgeotransform(ra))
+    ArchGDAL.GDAL.gdalsetprojection(dataset.ptr, proj)
+  end
+  ra.bands !== nothing && set_bandnames(f, ra.bands)
+  f
+end
 
 # # Slice data and replace missing by nodata
 # if isa(dtype, Union) && dtype.a == Missing
