@@ -29,9 +29,9 @@ include("Ops.jl")
 
 include("st_bbox.jl")
 include("st_dims.jl")
-
 include("read_gdal.jl")
-
+include("st_extract.jl")
+include("st_resample.jl")
 
 
 function shp_files(f)
