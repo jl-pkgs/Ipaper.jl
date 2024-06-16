@@ -76,3 +76,13 @@ function set_bandnames(f, bandnames)
   end
   nothing
 end
+
+function gdal_info(f)
+  run(`$(gdalinfo_path()) $f`)
+  nothing
+end
+
+function ogr_info(f)
+  run(`$(ogrinfo_path()) $f`)
+  nothing
+end

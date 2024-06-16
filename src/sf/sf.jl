@@ -18,6 +18,8 @@ function nlayer end
 function gdal_polygonize end
 function read_gdal end
 function write_gdal end
+function gdal_info end
+function org_info end
 
 nlyr = nband
 st_write = write_gdal
