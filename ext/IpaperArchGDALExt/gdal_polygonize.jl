@@ -82,4 +82,5 @@ function gdal_polygonize(raster_file, fout="out.gdb";
 
   GDAL.gdalclose(ds_shp)
   GDAL.gdalclose(ds_raster)
+  nothing
 end
