@@ -30,3 +30,10 @@ function writelines(x::AbstractVector{<:AbstractString}, f; mode="w", eof="\n")
   end
   close(fid)
 end
+
+function writelines(x::AbstractString, f; mode="w", eof="\n")
+  fid = open(f, mode)
+  write(fid, x)
+  write(fid, eof)
+  close(fid)
+end
