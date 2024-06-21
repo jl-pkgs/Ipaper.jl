@@ -11,6 +11,7 @@ export range2bbox
 export st_bbox, st_dims, st_cellsize
 export write_gdal, read_gdal, st_write, st_read
 export gdal_polygonize, rm_shp, nlyr, nband, nlayer
+export bandnames, set_bandnames
 export getgeotransform
 
 function nband end
@@ -20,6 +21,8 @@ function read_gdal end
 function write_gdal end
 function gdal_info end
 function org_info end
+function bandnames end
+function set_bandnames end
 
 nlyr = nband
 st_write = write_gdal
