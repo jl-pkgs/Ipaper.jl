@@ -4,9 +4,7 @@ using Ipaper
 # println(dirname(@__FILE__))
 # println(pwd())
 # cd(dirname(@__FILE__)) do
-
 import NaNStatistics
-import NaNStatistics: nanmean, nanmedian
 using Ipaper: NanQuantile_low, NanQuantile_low!
 
 using ArchGDAL

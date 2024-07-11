@@ -1,9 +1,10 @@
-function nanmean end
-
-import StatsBase: weights, mean, quantile
+using Statistics: mean, quantile
 import Random: seed!
+import StatsBase: weights
 include("r_base.jl")
 
+weighted_mean(x, w) = mean(x, weights(w))
+weighted_sum(x, w) = sum(x, weights(w))
 
 # for quarto
 include2(f) = include("$(pwd())/$(basename(f))")
@@ -11,15 +12,10 @@ include2(f) = include("$(pwd())/$(basename(f))")
 
 set_seed(seed) = seed!(seed)
 
-
 # import Base: length
 Base.length(x::Nothing) = 0
 is_empty(x) = length(x) == 0
 not_empty(x) = length(x) > 0
-
-
-weighted_mean(x, w) = mean(x, weights(w))
-weighted_sum(x, w) = sum(x, weights(w))
 
 
 function nth(x, n)

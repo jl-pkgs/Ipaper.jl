@@ -4,7 +4,7 @@ module IpaperNaNExt
 
 using NaNStatistics
 # using Ipaper
-import Ipaper: _nanquantile!, nanmean
+import Ipaper: _nanquantile!
 
 function _nanquantile!(q::AbstractVector, x::AbstractVector,
   probs::Vector{<:Real}=[0, 0.25, 0.5, 0.75, 1])
@@ -17,7 +17,5 @@ end
 function _nanquantile!(A, q::Real, dims::Int64)
   NaNStatistics._nanquantile!(A, q, dims)
 end
-
-nanmean(A; dims=:, dim=:) = NaNStatistics.nanmean(A; dims, dim)
 
 end

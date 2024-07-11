@@ -1,6 +1,5 @@
 using Ipaper
 using DimensionalData; const DD = DimensionalData
-# using Statistics
 
 arr = rand(200, 200, 365);
 d = DimArray(arr, ["lon", "lat", "time"]);

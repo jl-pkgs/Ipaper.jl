@@ -41,7 +41,7 @@ years = year.(dates)
 res = apply(x, 3; by=years, fun=_nanquantile, combine=true, probs=[0.05, 0.95])
 obj_size(res)
 
-res = apply(x, 3; by=years, fun=nanmean, combine=true)
+res = apply(x, 3; by=years, fun=mean, combine=true)
 
 apply(x, 3; by = month.(dates), fun=slope_mk)
 ```
