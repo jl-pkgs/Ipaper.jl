@@ -19,7 +19,6 @@ makedocs(
     "R Base"       => "RBase.md"
     "Statistics"   => "Statistics.md"
     "Slope"        => "Slope.md"
-    "Climate"      => "Climate.md"
     "Parallel"     => "Parallel.md"
   ],
   sitename="Ipaper.jl",
