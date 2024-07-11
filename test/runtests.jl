@@ -3,7 +3,6 @@ using Ipaper
 
 # println(dirname(@__FILE__))
 # println(pwd())
-
 # cd(dirname(@__FILE__)) do
 
 import NaNStatistics
@@ -26,7 +25,7 @@ include("test-list.jl")
 include("test-date.jl")
 include("test-r_base.jl")
 include("test-tools.jl")
-# include("test-timeit_all.jl")
+
 include("test-stat_quantile.jl")
 include("test-stat_linreg.jl")
 include("test-stat_apply.jl")
