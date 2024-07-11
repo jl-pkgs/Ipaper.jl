@@ -9,11 +9,12 @@ export bbox2lims,
   bbox2dims, bbox2ndim
 export range2bbox
 export st_bbox, st_dims, st_cellsize
-export write_gdal, read_gdal, st_write, st_read
-export gdal_polygonize, rm_shp, nlyr, nband, nlayer
-export bandnames, set_bandnames
+export st_write, st_read, nlyr
+export rm_shp
 export getgeotransform
-
+# export gdal_polygonize, nband, nlayer
+# export write_gdal, read_gdal
+# export bandnames, set_bandnames
 function nband end
 function nlayer end
 function gdal_polygonize end

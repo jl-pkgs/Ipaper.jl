@@ -21,4 +21,10 @@ include("read_gdal.jl")
 include("gdalinfo.jl")
 include("gdal_polygonize.jl")
 
+export gdal_polygonize
+export nband, nlayer
+export bandnames, set_bandnames
+export gdal_info, ogr_info
+export write_gdal
+
 end

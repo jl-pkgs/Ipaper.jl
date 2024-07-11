@@ -4,10 +4,6 @@ import StatsBase: weights, mean, quantile
 import Random: seed!
 include("r_base.jl")
 
-export load_sf
-function load_ext(ext::Symbol=:IpaperArchGDALExt)
-  Base.get_extension(Ipaper, ext)
-end
 
 # for quarto
 include2(f) = include("$(pwd())/$(basename(f))")
