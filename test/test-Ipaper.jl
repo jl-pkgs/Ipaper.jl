@@ -60,7 +60,7 @@ end
 
 @testset "weighted_mean" begin
   x = 1:4 |> collect
-  w = [1 1 0.5 0.5]
+  w = [1, 1, 0.5, 0.5]
   @test weighted_mean(x, w) ≈ 2.166666666
   @test weighted_sum(x, w) ≈ 6.5
 end

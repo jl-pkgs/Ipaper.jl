@@ -30,8 +30,6 @@ function movmean(x::AbstractArray, halfwin::Integer=2; dims=3, fun=mean, FT=Floa
   mapslices(xi -> movmean!(zi, xi, halfwin; fun=fun), x; dims=dims)
 end
 
-## the weighted version --------------------------------------------------------
-weighted_mean(x::AbstractVector, w::AbstractVector) = sum(x .* w) / sum(w)
 
 # 4 times slower
 function weighted_movmean!(z::AbstractVector, x::AbstractVector, w::AbstractVector,

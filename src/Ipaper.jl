@@ -31,7 +31,6 @@ export @λ, @lf, @f
 
 include("tools.jl")
 include("IO.jl")
-include("match2.jl")
 
 include("file_operation.jl")
 include("cmd.jl")

@@ -1,10 +1,5 @@
-using Statistics: mean, quantile
 import Random: seed!
-import StatsBase: weights
 include("r_base.jl")
-
-weighted_mean(x, w) = mean(x, weights(w))
-weighted_sum(x, w) = sum(x, weights(w))
 
 # for quarto
 include2(f) = include("$(pwd())/$(basename(f))")
@@ -176,7 +171,6 @@ end
 export which_isnull, which_notnull,
   which_isnan, which_notnan,
   is_empty, not_empty,
-  mean, weighted_mean, weighted_sum,
   seq_along, seq_len,
   r_range,
   nth,

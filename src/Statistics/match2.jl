@@ -64,6 +64,5 @@ function duplicated(x::Vector)
 end
 
 
-
 export match2, unique_length, duplicated,
   table, uniqueN
