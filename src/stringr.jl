@@ -1,6 +1,3 @@
-using Glob
-export glob
-
 Base.Regex(x::Regex) = x
 StringOrRegex = Union{AbstractString,Regex}
 

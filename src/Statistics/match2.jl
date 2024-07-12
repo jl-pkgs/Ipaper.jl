@@ -1,5 +1,24 @@
-import StatsBase: countmap
-table = countmap
+# import StatsBase: countmap
+# table = countmap
+
+"""
+  table(x::AbstractVector)
+
+!Caution:
+This function is about 5X slower than `StatsBase: countmap`.
+If speed matters for you, use `StatsBase.countmap` instead.
+"""
+function table(x::AbstractVector)
+  tbl = Dict{eltype(x),Int}()
+  for element in x
+    if haskey(tbl, element)
+      tbl[element] += 1
+    else
+      tbl[element] = 1
+    end
+  end
+  return tbl
+end
 
 
 """
@@ -44,23 +63,18 @@ duplicated(x)
 # [0, 0, 0, 0, 1]
 ```
 """
-function duplicated(x::Vector)
-  grps = filter(x -> x[2] > 1, table(x))
+function duplicated(x::AbstractVector)
+  seen_elements = Dict{eltype(x),Bool}()
+  result = falses(length(x))
 
-  n = length(x)
-  res = BitArray(undef, n)
-  res .= false
-  for (key, freq) in grps
-    k = 0
-    for i = 1:n
-      if x[i] == key
-        k = k + 1
-        k >= 2 && (res[i] = true)
-        k == freq && break
-      end
+  @inbounds for (i, element) in enumerate(x)
+    if haskey(seen_elements, element)
+      result[i] = true
+    else
+      seen_elements[element] = true
     end
   end
-  res
+  return result
 end
 
 
