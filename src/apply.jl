@@ -64,18 +64,14 @@ function apply(A::AbstractArray, dims_by=3, args...; dims=dims_by,
     res = ans
   else
     grps = unique(by) |> sort
-    res = map(grp -> begin
+    res = par_map(grp -> begin
         ind = by .== grp
         data = selectdim(A, dims_by, ind) |> collect
         # ans = fun(data, args...; kw...)
-        ans = par_mapslices(fun2, data; dims, parallel, progress)
-        # ans = mapslices(fun2, data; dims)
-        
-        inds_bad = findall(size(ans) .== 1)
-        length(inds_bad) >= 1 && ndims(ans) > 1 && (ans = dropdims(ans; dims=inds_bad[1]))
-        ans
-      end, grps)
-    # permutedims(A, perm)
+        # ans = par_mapslices(fun2, data; dims, parallel, progress)
+        ans = mapslices(fun2, data; dims)
+        _dropdims(ans)
+      end, grps; parallel, progress)
     if combine
       # res = abind(res; increase=true)
       r = res[1]
@@ -86,5 +82,11 @@ function apply(A::AbstractArray, dims_by=3, args...; dims=dims_by,
   res
 end
 
+
+function _dropdims(A::AbstractArray)
+  inds_bad = findall(size(A) .== 1)
+  length(inds_bad) >= 1 && ndims(A) > 1 && (A = dropdims(A; dims=inds_bad[1]))
+  return A
+end
 
 export apply
