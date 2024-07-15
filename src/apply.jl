@@ -46,31 +46,22 @@ res = apply(x, 3; by=years, fun=mean, combine=true)
 apply(x, 3; by = month.(dates), fun=slope_mk)
 ```
 """
-function apply(A::AbstractArray, dims_by=3, args...; dims=dims_by, 
-  by=nothing, fun::Function=mean, combine=true, 
+function apply(A::AbstractArray, dims_by=3, args...; dims=dims_by,
+  by=nothing, fun::Function=mean, combine=true,
   parallel=false, progress=parallel, kw...)
-  
+
   fun2(x) = fun(x, args...; kw...)
-  
+
   if by === nothing
-    ans = mapslices(fun2, A, dims=dims)
-    # 除掉长度为1维度
-    if ndims(ans) > 1
-      inds_bad = findall(size(ans) .== 1)
-      n1 = length(inds_bad)
-      
-      1 <= n1 < ndims(ans) && (ans = dropdims(ans; dims=inds_bad[1]))
-    end
-    res = ans
+    res = mapslices(fun2, A, dims=dims) |> _dropdims
   else
     grps = unique(by) |> sort
     res = par_map(grp -> begin
         ind = by .== grp
-        data = selectdim(A, dims_by, ind) |> collect
+        data = selectdim(A, dims_by, ind) # |> collect
         # ans = fun(data, args...; kw...)
         # ans = par_mapslices(fun2, data; dims, parallel, progress)
-        ans = mapslices(fun2, data; dims)
-        _dropdims(ans)
+        mapslices(fun2, data; dims) |> _dropdims
       end, grps; parallel, progress)
     if combine
       # res = abind(res; increase=true)
@@ -84,8 +75,8 @@ end
 
 
 function _dropdims(A::AbstractArray)
-  inds_bad = findall(size(A) .== 1)
-  length(inds_bad) >= 1 && ndims(A) > 1 && (A = dropdims(A; dims=inds_bad[1]))
+  inds1 = findall(size(A) .== 1)
+  1 <= length(inds1) < ndims(A) && (A = dropdims(A; dims=inds1[1]))
   return A
 end
 
