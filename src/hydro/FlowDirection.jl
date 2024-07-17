@@ -17,7 +17,6 @@ function FillDEM_FlowDirection(dem::AbstractMatrix{T}) where {T}
   n_valid = 0
 
   # Push all border cells into the queue
-  # @inbounds 
   for i in 1:nrow, j in 1:ncol
     isnan(dem[i, j]) && continue
     n_valid += 1
@@ -27,7 +26,7 @@ function FillDEM_FlowDirection(dem::AbstractMatrix{T}) where {T}
       if !InGrid(i2, j2, nrow, ncol) || isnan(dem[i2, j2])
         queue[i, j] = dem[i, j]
         isProcessed[i, j] = true
-        break # ? might bug, 为何跳出for loop
+        break # ? not bug, 为何跳出for loop
       end
     end
   end
@@ -39,19 +38,16 @@ function FillDEM_FlowDirection(dem::AbstractMatrix{T}) where {T}
   chunk = n_valid ÷ nchunk
   p = Progress(nchunk)
   
-  # @inbounds 
   while !isempty(queue)
     mod(count, chunk) == 0 && next!(p)
     count += 1
     (i, j), spill = peek(queue)
     dequeue!(queue)
-    # count <= 50 && println("[$i, $j] = $spill")
 
     for k in 1:8
       i2, j2 = row_goto(i, k), col_goto(j, k)
       
       !InGrid(i2, j2, nrow, ncol) && continue
-
       if !isnan(dem[i2, j2]) && !isProcessed[i2, j2]
 
         iSpill = dem[i2, j2] # next 低地
@@ -84,7 +80,6 @@ function D8Direction(dem::AbstractMatrix{T}, i::Int, j::Int, spill::T) where {T<
   last_index = 1 # default the first
   grad = 0.0
   
-  # @inbounds 
   for k in 1:8
     i2 = row_goto(i, k)
     j2 = col_goto(j, k)
@@ -105,10 +100,8 @@ function D8Direction(dem::AbstractMatrix{T}, i::Int, j::Int, spill::T) where {T<
     end
   end
 
-  ans = steepestSpill != 0 ? DIR[steepestSpill] : DIR[last_index]
-  steepestSpill == 0 && (steepestSpill = 256)
   # 这里可能会找不到坡度
-  ans
+  steepestSpill != 0 ? DIR[steepestSpill] : DIR[last_index]
 end
 
 
