@@ -8,6 +8,7 @@ import NaNStatistics
 using Ipaper: NanQuantile_low, NanQuantile_low!
 
 using ArchGDAL
+include("hydro/test-flowdir.jl")
 include("sf/test_sf.jl")
 
 using Distributions

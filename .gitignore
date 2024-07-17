@@ -31,7 +31,6 @@ gdal/
 
 ## Figures
 *.pdf
-*.tif
 # vscode
 .vscode/
 *.m
