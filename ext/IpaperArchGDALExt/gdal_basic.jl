@@ -77,6 +77,19 @@ function set_bandnames(f, bandnames)
   nothing
 end
 
+# gdal_nodata(band::ArchGDAL.GDALRasterBand) = ArchGDAL.GDAL.gdalgetrasternodatavalue(band.ptr)
+function gdal_nodata(f)
+  n = nband(f)
+  gdal_open(f, GDAL.GA_Update) do ds
+    map(iband -> begin
+        band = GDAL.gdalgetrasterband(ds, iband)
+        nodata = GDAL.gdalgetrasternodatavalue(band, Ref(Cint(0)))
+        Type = ArchGDAL.pixeltype(band)
+        Type(nodata)
+      end, 1:n)
+  end
+end
+
 function gdal_info(f)
   run(`$(gdalinfo_path()) $f`)
   nothing

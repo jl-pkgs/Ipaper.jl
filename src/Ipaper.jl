@@ -54,6 +54,7 @@ include("precompile.jl")
 include("tools_plot.jl")
 
 include("apply.jl")
+
 include("hydro/Hydro.jl")
 
 
@@ -71,6 +72,12 @@ function __init__()
   @require ArchGDAL = "c9ce4bd3-c3d5-55b8-8973-c0e20141b8c3" begin
     # include("../ext/IpaperArchGDALExt/IpaperArchGDALExt.jl")
     ext = load_ext(:IpaperArchGDALExt)
+    @reexport using .ext
+  end
+
+  @require Wflow = "d48b7d99-76e7-47ae-b1d5-ff0c1cf9a818" begin
+    # include("../ext/IpaperArchGDALExt/IpaperArchGDALExt.jl")
+    ext = load_ext(:IpaperWflowExt)
     @reexport using .ext
   end
 end

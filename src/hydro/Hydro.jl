@@ -2,5 +2,7 @@
 using DataStructures: PriorityQueue, dequeue!
 using ProgressMeter
 
+using .sf
+
 include("utils.jl")
 include("FlowDirection.jl")

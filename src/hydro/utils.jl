@@ -2,13 +2,28 @@
 # 1. The dimemsion of `dem`: [lon, lat], which is different from ArcGIS. Hence, DIR
 # is different.
 # 2. `lat` in the reverse order.
-const _GIS = UInt8.([1, 2, 4, 8, 16, 32, 64, 128])
-const _TAU = UInt8.(1:8)
+const DIR_GIS = UInt8.([1, 2, 4, 8, 16, 32, 64, 128])
+const DIR_TAU = UInt8.(1:8)
+const DIR_WFLOW = UInt8.([6, 3, 2, 1, 4, 7, 8, 9])
+# # 按照这种方法
+# const pcr_dir = [
+#     CartesianIndex(-1, -1),  # 1, 8
+#     CartesianIndex(0, -1),   # 2, 4
+#     CartesianIndex(1, -1),   # 3, 2
+#     CartesianIndex(-1, 0),   # 4, 16
+#     CartesianIndex(0, 0),    # 5, 0
+#     CartesianIndex(1, 0),    # 6, 1
+#     CartesianIndex(-1, 1),   # 7, 32
+#     CartesianIndex(0, 1),    # 8, 64
+#     CartesianIndex(1, 1),    # 9, 128
+# ]
+
 const NODATA = 0x00
 const DY = [0, 1, 1, 1, 0, -1, -1, -1]
 const DX = [1, 1, 0, -1, -1, -1, 0, 1]
 const DIR = [1, 2, 4, 8, 16, 32, 64, 128]
 const DIR_INV = [16, 32, 64, 128, 1, 2, 4, 8]
+
 # DIV = [
 #   32 64 128
 #   16 0  1
@@ -22,10 +37,20 @@ const DIR_INV = [16, 32, 64, 128, 1, 2, 4, 8]
 # const DX = [0, 1, 1, 1, 0, -1, -1, -1]
 # const DY = [1, 1, 0, -1, -1, -1, 0, 1]
 
+# 0~9
+function gis2wflow(A::AbstractArray)
+  R = copy(A)
+  for i in 1:8
+    replace!(R, DIR_GIS[i] => DIR_WFLOW[i])
+  end
+  replace!(R, UInt8(0) => UInt8(5))
+  R
+end
+
 function gis2tau(A::AbstractArray)
   R = copy(A)
   for i in 1:8
-    replace!(R, _GIS[i] => _TAU[i])
+    replace!(R, DIR_GIS[i] => DIR_TAU[i])
   end
   R
 end
@@ -33,10 +58,26 @@ end
 function tau2gis(A::AbstractArray)
   R = copy(A)
   for i in 1:8
-    replace!(R, _TAU[i] => _GIS[i])
+    replace!(R, DIR_TAU[i] => DIR_GIS[i])
   end
   R
 end
+
+
+function flowdir_drop_missing!(A::AbstractMatrix{T}; mv=T(99)) where {T<:Real}
+  replace!(A, missing => mv)
+  replace!(A, 0 => mv)
+end
+
+function read_flowdir_wflow(f::String)
+  A_gis = read_gdal(f)[:, end:-1:1] # 修正颠倒的lat
+  A = gis2wflow(A_gis)
+
+  nodata = gdal_nodata(f)[1]
+  replace!(A, nodata => 0) # replace missing value with 0
+  A
+end
+
 
 """
   row_goto(row::Int, idir::Int)::Int
@@ -88,4 +129,5 @@ end
 
 
 export InGrid, DirLength, NextCell, row_goto, col_goto
-export gis2tau, tau2gis
+export gis2wflow, gis2tau, tau2gis
+export read_flowdir_wflow, flowdir_drop_missing!

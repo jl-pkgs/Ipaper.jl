@@ -52,3 +52,5 @@ backup/
 
 *.html
 *.py
+
+.ipynb_checkpoints
