@@ -54,6 +54,7 @@ include("precompile.jl")
 include("tools_plot.jl")
 
 include("apply.jl")
+include("agg.jl")
 
 include("hydro/Hydro.jl")
 

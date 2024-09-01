@@ -1,6 +1,16 @@
 # using Ipaper
 # using Test
 
+@testset "agg" begin
+  _size = (10, 10, 12)
+  _size2 = (5, 5, 12)
+  A = rand(Float32, _size)
+  R = agg(A)
+  @test size(R) == _size2
+  @test eltype(R) == Float32
+end
+
+
 @testset "factor" begin
   probs = [0.90, 0.95, 0.99, 0.999, 0.9999]
   levs = factor(probs)
