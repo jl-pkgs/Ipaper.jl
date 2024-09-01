@@ -36,6 +36,24 @@ function date_dn(date; delta=8)
   date_dn(year(date), dn; delta)
 end
 
+"""
+    date_doy(str::AbstractString)
+    date_doy(year::Int, doy::Int=1)
+
+```julia
+date_doy("2000049")
+```
+"""
+function date_doy(year::Int, doy::Int=1)
+  Date(year) + Day(doy - 1)
+end
+
+function date_doy(str::AbstractString)
+  year = parse(Int, str[1:4])
+  doy = parse(Int, str[5:7])
+  date_doy(year, doy)
+end
+
 Dates.year(x::AbstractString) = parse(Int, x[1:4])
 Dates.month(x::AbstractString) = parse(Int, x[6:7])
 Dates.day(x::AbstractString) = parse(Int, x[9:10])
