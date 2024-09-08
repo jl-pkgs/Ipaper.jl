@@ -63,17 +63,12 @@ function tau2gis(A::AbstractArray)
   R
 end
 
-
-function flowdir_drop_missing!(A::AbstractMatrix{T}; mv=T(99)) where {T<:Real}
-  replace!(A, missing => mv)
-  replace!(A, 0 => mv)
-end
-
-function read_flowdir_wflow(f::String)
+function read_flowdir(f::String)
   A_gis = read_gdal(f)[:, end:-1:1] # 修正颠倒的lat
   A = gis2wflow(A_gis)
 
   nodata = gdal_nodata(f)[1]
+  # replace!(A, missing => 0)
   replace!(A, nodata => 0) # replace missing value with 0
   A
 end
@@ -130,4 +125,4 @@ end
 
 export InGrid, DirLength, NextCell, row_goto, col_goto
 export gis2wflow, gis2tau, tau2gis
-export read_flowdir_wflow, flowdir_drop_missing!
+export read_flowdir

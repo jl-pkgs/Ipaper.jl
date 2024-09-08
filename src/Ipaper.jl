@@ -75,12 +75,6 @@ function __init__()
     ext = load_ext(:IpaperArchGDALExt)
     @reexport using .ext
   end
-
-  @require Wflow = "d48b7d99-76e7-47ae-b1d5-ff0c1cf9a818" begin
-    # include("../ext/IpaperArchGDALExt/IpaperArchGDALExt.jl")
-    ext = load_ext(:IpaperWflowExt)
-    @reexport using .ext
-  end
 end
 
 
