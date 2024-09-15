@@ -32,8 +32,13 @@ function st_location(ra::AbstractSpatRaster, points::Vector{Tuple{T,T}}) where {
   b = st_bbox(ra)
   nx, ny = size(ra)[1:2]
   cellx, celly = st_cellsize(ra)
-  inds, locs = st_location.(points; b, cellx, celly, nx, ny) |> rm_empty
+  inds, locs = st_location.(points; b, cellx, celly, nx, ny) |> _rm_empty
   inds, locs
+end
+
+function _rm_empty(x::Vector)
+  inds = findall(!isnothing, x)
+  inds, x[inds]
 end
 
 
@@ -44,4 +49,4 @@ function st_extract(ra::AbstractSpatRaster, points::Vector{Tuple{T,T}}; combine=
   inds, combine(lst...) #cbind(lst...)
 end
 
-export st_location
+export st_location, st_extract
