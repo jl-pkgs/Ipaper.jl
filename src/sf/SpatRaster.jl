@@ -27,8 +27,12 @@ end
 
 function SpatRaster(r::SpatRaster, A::AbstractArray; reverse_lat=true)
   (; b, time, bands, name) = r
-  lon, lat = bbox2dims(b; size=size(A), reverse_lat)
-  cellsize = bbox2cellsize(b, size(A))
+  if size(A)[1:2] != size(r.A)[1:2]
+    lon, lat = bbox2dims(b; size=size(A), reverse_lat)
+    cellsize = bbox2cellsize(b, size(A))
+  else
+    (; lon, lat, cellsize) = r
+  end
   SpatRaster(; A, b, cellsize, lon, lat, time, bands, name) # rebuild
 end
 
@@ -82,7 +86,7 @@ function Base.show(io::IO, x::SpatRaster)
   println(io, "  lon, lat : $(x.lon), $(x.lat)")
   println(io, "  time     : $(x.time)")
   print(io, "  bands    : $(x.bands)")
-  nothing
+  return nothing
 end
 
 rast = SpatRaster
