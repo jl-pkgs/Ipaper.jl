@@ -4,10 +4,10 @@ using Test
 @testset "flowdir" begin
   indir = joinpath(@__DIR__, "../data")
 
-  dem = read_gdal("$indir/GuanShan_dem250m.tif", 1)
+  dem = read_gdal(guanshan_dem, 1)
   @time dir_julia = FillDEM_FlowDirection(dem) |> gis2tau
 
-  dir_cpp = read_gdal("$indir/GuanShan_flowdir_cpp.tif", 1) |> gis2tau
+  dir_cpp = read_gdal(guanshan_flowdir_cpp, 1) |> gis2tau
   @test dir_cpp == dir_julia
 end
 

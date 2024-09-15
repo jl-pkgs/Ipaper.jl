@@ -45,7 +45,7 @@ end
 function st_extract(ra::AbstractSpatRaster, points::Vector{Tuple{T,T}}; combine=hcat) where {T<:Real}
   inds, locs = st_location(ra, points)
   cols = repeat([:], ndims(ra) - 2)
-  lst = [ra.data[i, j, cols...] for (i, j) in locs]
+  lst = [ra.A[i, j, cols...] for (i, j) in locs]
   inds, combine(lst...) #cbind(lst...)
 end
 

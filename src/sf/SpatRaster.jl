@@ -27,9 +27,16 @@ end
 
 function SpatRaster(r::SpatRaster, A::AbstractArray)
   (; b, cellsize, lon, lat, time, bands, name) = r
-  SpatRaster(;A, b, cellsize, lon, lat, time, bands, name) # rebuild
+  SpatRaster(; A, b, cellsize, lon, lat, time, bands, name) # rebuild
 end
 
+function SpatRaster(f::String; kw...)
+  A = read_gdal(f)
+  SpatRaster(A, st_bbox(f); bands=bandnames(f), kw...)
+end
+
+
+Base.ndims(ra::AbstractSpatRaster) = ndims(ra.A)
 Base.size(ra::AbstractSpatRaster) = size(ra.A)
 Base.size(ra::AbstractSpatRaster{T,2}) where {T} = (size(ra.A)..., 1)
 
@@ -72,7 +79,7 @@ function Base.show(io::IO, x::SpatRaster)
   println(io, "  cellsize : $(x.cellsize)")
   println(io, "  lon, lat : $(x.lon), $(x.lat)")
   println(io, "  time     : $(x.time)")
-  print(io,   "  bands    : $(x.bands)")
+  print(io, "  bands    : $(x.bands)")
   nothing
 end
 

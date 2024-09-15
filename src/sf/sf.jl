@@ -1,5 +1,14 @@
 module sf
 
+
+## add test data
+const dir_data = "$(@__DIR__)/../../data"
+const guanshan_dem = "$dir_data/GuanShan_dem250m.tif"
+const guanshan_flowdir_cpp = "$dir_data/GuanShan_flowdir_cpp.tif"
+const guanshan_flowdir_gis = "$dir_data/GuanShan_flowdir_gis.tif"
+export guanshan_dem, guanshan_flowdir_cpp, guanshan_flowdir_gis
+
+
 using Ipaper: file_ext, obj_size
 
 export bbox, in_bbox, bbox_overlap

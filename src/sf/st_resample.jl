@@ -16,6 +16,11 @@ end
 # for Raster
 st_resample(x::AbstractArray; fact=10, kw...) = resample2(x; fact, kw...)
 
+function st_resample(ra::SpatRaster; fact=10, deepcopy=false)
+  A = resample2(ra.A; fact, deepcopy)
+  SpatRaster(A, ra.b)
+end
+
 # function st_resample(z::ZArray; fact=10, missingval=0)
 #   dat = resample2(z; fact)
 #   Raster(dat, st_bbox(z); missingval)
