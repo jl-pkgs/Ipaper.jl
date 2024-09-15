@@ -17,7 +17,7 @@ export bbox2lims,
   bbox2range, bbox2vec,
   bbox2dims, bbox2ndim
 export range2bbox
-export st_bbox, st_dims, st_cellsize
+export st_bbox, st_dims, st_cellsize, st_mosaic
 export st_write, st_read, nlyr
 export rm_shp
 export getgeotransform
@@ -47,6 +47,7 @@ include("st_dims.jl")
 include("read_gdal.jl")
 include("st_extract.jl")
 include("st_resample.jl")
+include("st_mosaic.jl")
 
 
 function shp_files(f)

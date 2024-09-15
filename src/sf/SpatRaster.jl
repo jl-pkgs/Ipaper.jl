@@ -25,8 +25,10 @@ function SpatRaster(A::AbstractArray{T,N}, b::bbox; reverse_lat=true, time=nothi
   SpatRaster(; A, b, cellsize, lon, lat, time, bands, name)
 end
 
-function SpatRaster(r::SpatRaster, A::AbstractArray)
-  (; b, cellsize, lon, lat, time, bands, name) = r
+function SpatRaster(r::SpatRaster, A::AbstractArray; reverse_lat=true)
+  (; b, time, bands, name) = r
+  lon, lat = bbox2dims(b; size=size(A), reverse_lat)
+  cellsize = bbox2cellsize(b, size(A))
   SpatRaster(; A, b, cellsize, lon, lat, time, bands, name) # rebuild
 end
 
