@@ -74,3 +74,18 @@ end
   @test weighted_mean(x, w) ≈ 2.166666666
   @test weighted_sum(x, w) ≈ 6.5
 end
+
+@testset "squeeze" begin
+  A = rand(1, 4, 4, 1)
+  @test size(squeeze_tail(A)) == (1, 4, 4)
+  @test size(squeeze_head(A)) == (4, 4, 1)
+  @test (selectdim_deep(A, 1, 1) isa SubArray) == false
+end
+
+@testset "readlines and writelines" begin
+  f = "a.txt"
+  str = ["a", "b"]
+  writelines(str, f)
+  @test readlines(f) == str
+  rm(f)
+end
