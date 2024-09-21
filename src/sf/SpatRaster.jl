@@ -84,7 +84,11 @@ function Base.show(io::IO, x::SpatRaster)
   println(io, "  b        : $(x.b)")
   println(io, "  cellsize : $(x.cellsize)")
   println(io, "  lon, lat : $(x.lon), $(x.lat)")
-  println(io, "  time     : $(x.time)")
+  if !isnothing(x.time)
+    time_beg = x.time[1]
+    time_end = x.time[end]
+    println(io, "  time     : $time_beg ~ $time_end, ntime=$(length(x.time))")
+  end
   print(io, "  bands    : $(x.bands)")
   return nothing
 end

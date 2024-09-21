@@ -168,6 +168,13 @@ function selectdim_deep(A, dims::Integer, i; deep=true)
 end
 
 
+findnear(x::Real, vals::AbstractVector) = argmin(abs.(vals .- x))
+function findnear(x::Real, y::Real, lon::AbstractVector, lat::AbstractVector)
+  i = findnear(x, lon)
+  j = findnear(y, lat)
+  return i, j
+end
+
 export which_isnull, which_notnull,
   which_isnan, which_notnan,
   is_empty, not_empty,
@@ -177,7 +184,8 @@ export which_isnull, which_notnull,
   selectdim_deep,
   length_unique, unique_sort,
   squeeze, squeeze_tail, squeeze_head,
-  abind,
+  abind, 
+  findnear,
   set_seed;
 export isnan, all_isnan, any_isnan;
 export obj_size, r_summary, r_split
