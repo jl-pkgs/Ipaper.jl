@@ -65,8 +65,9 @@ end
 
 
 @testset "r_split" begin
-  @test r_split(1:4, [1, 1, 1, 2]) == [[1, 2, 3], [4]]
-  @test r_split(1:4, [1, 1, 2, 2]) == [[1, 2], [3, 4]]
+  r = r_split(1:4, [1, 1, 1, 2])
+  @test r[1] == [1, 2, 3]
+  @test r[2] == [4]
 end
 
 @testset "writelines" begin

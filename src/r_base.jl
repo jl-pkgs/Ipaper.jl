@@ -1,3 +1,4 @@
+import DataStructures: OrderedDict
 # using LoopVectorization: @turbo
 
 # function r_in(x::AbstractVector, y::AbstractVector)::BitVector
@@ -59,19 +60,18 @@ end
 #   DataFrame(vals, names)
 # end
 
-
 function r_split(lst::AbstractVector, by::AbstractVector)
   grps = unique(by) |> sort
-  res = []
+  res = OrderedDict()
   for grp in grps
     inds = by .== grp
+    res[grp] = lst[inds]
     # ans = Dict(grp => lst[inds])
-    ans = lst[inds]    
-    push!(res, ans)
+    # ans = lst[inds]
+    # push!(res, ans)
   end
   res
 end
-
 
 r_summary(x; digits=2) = nothing
 
