@@ -57,7 +57,7 @@ function apply(A::AbstractArray, dims_by=3, args...; dims=dims_by,
   else
     grps = unique(by) |> sort
     res = par_map(grp -> begin
-        ind = by .== grp
+        ind = findall(by .== grp)
         data = selectdim(A, dims_by, ind) # |> collect
         # ans = fun(data, args...; kw...)
         # ans = par_mapslices(fun2, data; dims, parallel, progress)
@@ -70,7 +70,7 @@ function apply(A::AbstractArray, dims_by=3, args...; dims=dims_by,
       res = cat(res..., dims=along)
     end
   end
-  res
+  return res
 end
 
 

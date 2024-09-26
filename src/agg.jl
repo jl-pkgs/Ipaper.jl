@@ -25,7 +25,7 @@ function agg!(R::AbstractArray{FT,3}, A::AbstractArray{<:Real,3};
     end
     progress && next!(p)
   end
-  R
+  return R
 end
 
 function agg(A::AbstractArray{<:Real,3}; fact=2, parallel=true, fun=mean)
@@ -47,7 +47,7 @@ function agg_time(A::AbstractArray{T,3}; fact::Int=2, parallel=true, progress=fa
       R[i, j, k] = fun(@view A[i, j, I])
     end
   end
-  R
+  return R
 end
 
 
@@ -66,12 +66,13 @@ function agg_time(A::AbstractArray{T,3}, by::Vector; parallel=true, progress=fal
   p = Progress(ntime)
   @inbounds @par parallel for k = 1:_ntime
     progress && next!(p)
-    I = grps[k] .== by
+    I = (grps[k] .== by) |> findall # 必须要有findall
+
     for j = 1:nlat, i = 1:nlon
       R[i, j, k] = fun(@view A[i, j, I])
     end
   end
-  R
+  return R
 end
 
 export agg!, agg, agg_time
