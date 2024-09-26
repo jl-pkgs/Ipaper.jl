@@ -15,6 +15,7 @@ using Distributions
 include("test-slope.jl")
 
 ## Ipaper
+include("test-agg.jl")
 include("test-par.jl")
 include("test-Ipaper.jl")
 include("test-missing.jl")

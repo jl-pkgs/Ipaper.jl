@@ -6,9 +6,9 @@
 Aggregate a 3D array `A` by a factor of `fact` in time dimension (third dim)
 using the function `fun`.
 """
-function agg!(R::AbstractArray{FT,3}, A::AbstractArray{<:Real,3}; 
+function agg!(R::AbstractArray{FT,3}, A::AbstractArray{<:Real,3};
   fact=2, parallel=true, progress=true, fun=mean) where {FT<:Real}
-  
+
   nlon, nlat, ntime = size(A)
   _nlon = cld(nlon, fact)
   _nlat = cld(nlat, fact)
@@ -34,4 +34,38 @@ function agg(A::AbstractArray{<:Real,3}; fact=2, parallel=true, fun=mean)
 end
 
 
-export agg!, agg
+function agg_time(A::AbstractArray{T,3}; fact::Int=2, parallel=true, progress=false, fun=mean) where {T<:Real}
+  nlon, nlat, ntime = size(A)
+  _ntime = cld(ntime, fact)
+  R = A[:, :, 1:fact:end] .* 0
+
+  p = Progress(ntime)
+  @inbounds @par parallel for k = 1:_ntime
+    progress && next!(p)
+    I = (k-1)*fact+1:min(k * fact, ntime)
+    for j = 1:nlat, i = 1:nlon
+      R[i, j, k] = fun(@view A[i, j, I])
+    end
+  end
+  R
+end
+
+
+function agg_time(A::AbstractArray{T,3}, by::Vector; parallel=true, progress=false, fun=mean) where {T<:Real}
+  nlon, nlat, ntime = size(A)
+  grps = unique_sort(by)
+  _ntime = length(grps)
+  R = zeros(T, nlon, nlat, _ntime)
+
+  p = Progress(ntime)
+  @inbounds @par parallel for k = 1:_ntime
+    progress && next!(p)
+    I = grps[k] .== by
+    for j = 1:nlat, i = 1:nlon
+      R[i, j, k] = fun(@view A[i, j, I])
+    end
+  end
+  R
+end
+
+export agg!, agg, agg_time

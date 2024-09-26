@@ -61,7 +61,7 @@ function apply(A::AbstractArray, dims_by=3, args...; dims=dims_by,
         data = selectdim(A, dims_by, ind) # |> collect
         # ans = fun(data, args...; kw...)
         # ans = par_mapslices(fun2, data; dims, parallel, progress)
-        mapslices(fun2, data; dims) |> _dropdims
+        mapslices(fun2, data; dims) |> _dropdims # map slice is low efficient
       end, grps; parallel, progress)
     if combine
       # res = abind(res; increase=true)
