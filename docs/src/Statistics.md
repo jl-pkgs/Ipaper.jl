@@ -21,5 +21,10 @@ linreg_fast
 ### apply
 
 ```@docs
+agg_time
+agg
+```
+
+```@docs
 apply
 ```

@@ -51,6 +51,12 @@ function agg_time(A::AbstractArray{T,3}; fact::Int=2, parallel=true, progress=fa
 end
 
 
+"""
+    agg_time(A::AbstractArray{T,3}, by::Vector; parallel=true, progress=false, 
+        fun=mean) where {T<:Real}
+    agg_time(A::AbstractArray{T,3}; fact::Int=2, parallel=true, progress=false, 
+      fun=mean) where {T<:Real}
+"""
 function agg_time(A::AbstractArray{T,3}, by::Vector; parallel=true, progress=false, fun=mean) where {T<:Real}
   nlon, nlat, ntime = size(A)
   grps = unique_sort(by)
