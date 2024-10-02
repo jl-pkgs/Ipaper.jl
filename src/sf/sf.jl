@@ -29,6 +29,7 @@ function nlayer end
 function gdal_polygonize end
 function read_gdal end
 function write_gdal end
+function gdalinfo end
 function gdal_info end
 function org_info end
 function bandnames end

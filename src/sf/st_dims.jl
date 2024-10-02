@@ -28,7 +28,6 @@ function st_dims(f::String)
   st_dims(x)
 end
 
-function gdalinfo end
 
 function st_dims(x::FileGDAL)
   gdalinfo(x.file)["dims"]
