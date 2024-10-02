@@ -35,7 +35,7 @@ include("cmd.jl")
 include("aria2c.jl")
 include("main_cdo.jl")
 
-include("dates.jl")
+include("Dates/Dates.jl")
 include("factor.jl")
 include("list.jl")
 include("par.jl")

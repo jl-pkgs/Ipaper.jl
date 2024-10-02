@@ -9,6 +9,7 @@ const guanshan_flowdir_gis = "$dir_data/GuanShan_flowdir_gis.tif"
 export guanshan_dem, guanshan_flowdir_cpp, guanshan_flowdir_gis
 
 
+using ProgressMeter
 using Ipaper: file_ext, obj_size
 
 export bbox, in_bbox, bbox_overlap

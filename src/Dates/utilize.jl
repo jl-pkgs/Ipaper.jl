@@ -1,6 +1,6 @@
-import Dates
-import Dates: Date, DateTime, Year, Month, Day, year, month, day, format
-# using CFTime
+function datediff(x::T, y::T; unit=Day) where {T<:Union{Date,DateTime}}
+  convert(unit, x - y).value
+end
 
 # only for daily scale 
 function dates_miss(dates)
@@ -57,10 +57,3 @@ end
 Dates.year(x::AbstractString) = parse(Int, x[1:4])
 Dates.month(x::AbstractString) = parse(Int, x[6:7])
 Dates.day(x::AbstractString) = parse(Int, x[9:10])
-
-
-export dates_miss, dates_nmiss,
-  DateTime, Date, year, month, day, Year, Month, Day, format,
-  make_datetime, make_date,
-  date_doy,
-  date_year, date_ym, date_dn
