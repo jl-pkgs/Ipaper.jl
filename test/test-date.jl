@@ -31,7 +31,7 @@ end
 
 @testset "weight_d8mon" begin
   dates = Date(2010):Day(8):Date(2010, 12, 31) |> collect
-  d = weight_d8mon(dates, Date(2010, 2)) |> DataFrame
+  d = weight_d8mon(dates, Date(2010, 2))
 
   @test d.days == [1, 8, 8, 8, 3]
   @test d.w == [1, 8, 8, 8, 3] / 8
