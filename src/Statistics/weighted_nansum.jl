@@ -5,8 +5,8 @@ function weighted_nansum(x::AbstractVector{T1}, w::AbstractVector{T2}) where
   T = promote_type(T1, T2)
   ∑ = ∅ = T(0)
 
-  @inbounds for i in eachindex(x)
-    ∑ += ifelse(x[i] == x[i], x[i] * w[i], ∅)
+  @inbounds for k in eachindex(x)
+    ∑ += ifelse(x[k] == x[k], x[k] * w[k], ∅)
   end
   return ∑
 end
@@ -17,8 +17,8 @@ function weighted_nansum(A::AbstractArray{T,3}, w::AbstractVector) where {T<:Rea
 
   @inbounds for i = 1:nlon, j = 1:nlat
     for k = 1:ntime
-      xi = A[i, j, k]
-      xi == xi && (R[i, j] += xi * w[i])
+      xk = A[i, j, k]
+      xk == xk && (R[i, j] += xk * w[k])
     end
   end
   return R
