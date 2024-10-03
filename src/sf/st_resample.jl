@@ -1,9 +1,9 @@
-function slice2(x::AbstractArray, i, j)
-  cols = repeat([:], ndims(x) - 2)
-  @views x[i, j, cols...]
-end
+# function slice2(x::AbstractArray, i, j)
+#   cols = repeat([:], ndims(x) - 2)
+#   @views x[i, j, cols...]
+# end
 
-function resample2(r::AbstractArray; fact=10, deepcopy=false)
+function resample_first(r::AbstractArray; fact=10, deepcopy=false)
   cols = repeat([:], ndims(r) - 2)
 
   if deepcopy
@@ -38,4 +38,4 @@ end
 #   st_mosaic(res; missingval)
 # end
 
-export slice2, resample2, st_resample
+export resample_first

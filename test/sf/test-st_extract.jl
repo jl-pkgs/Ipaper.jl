@@ -14,3 +14,12 @@
   # r2 = st_resample(ra; fact=10)
   # @test size(r2) == (16, 12, 1)
 end
+
+@testset "resample_first" begin
+  r = resample_first(rand(10, 10, 4), fact=2)
+  @test size(r) == (5, 5, 4)
+  @test isa(r, SubArray)
+
+  r = resample_first(rand(10, 10, 4), fact=2, deepcopy=true)
+  @test !isa(r, SubArray)  
+end

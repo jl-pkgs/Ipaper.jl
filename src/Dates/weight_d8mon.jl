@@ -2,8 +2,8 @@ add_d8(date::T) where {T<:Union{Date,DateTime}} =
   min(date + Day(7), T(year(date), 12, 31))
 
 """
-    weight_d8_mon(dates_beg::Vector{T}, date::T) where {T<:Union{Date,DateTime}}
-    weight_d8_mon(dates_beg::Vector{T}, dates_end::Vector{T}, date::T) where {T<:Union{Date,DateTime}}
+    weight_d8mon(dates_beg::Vector{T}, date::T) where {T<:Union{Date,DateTime}}
+    weight_d8mon(dates_beg::Vector{T}, dates_end::Vector{T}, date::T) where {T<:Union{Date,DateTime}}
 
 convert MODIS 8-day to monthly
 """
