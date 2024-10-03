@@ -1,9 +1,5 @@
-using Test
-using Ipaper
+using Test, Ipaper
 
-# println(dirname(@__FILE__))
-# println(pwd())
-# cd(dirname(@__FILE__)) do
 import NaNStatistics
 using Ipaper: NanQuantile_low, NanQuantile_low!
 
@@ -12,7 +8,11 @@ include("hydro/test-flowdir.jl")
 include("sf/test_sf.jl")
 
 using Distributions
-include("test-slope.jl")
+include("Statistics/test-Statistics.jl")
+
+# println(dirname(@__FILE__))
+# println(pwd())
+# cd(dirname(@__FILE__)) do
 
 ## Ipaper
 include("test-agg.jl")
@@ -25,8 +25,3 @@ include("test-list.jl")
 include("test-date.jl")
 include("test-r_base.jl")
 include("test-tools.jl")
-
-include("test-stat_quantile.jl")
-include("test-stat_linreg.jl")
-include("test-stat_apply.jl")
-include("test-stat_weighted.jl")

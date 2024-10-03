@@ -1,0 +1,5 @@
+include("test-slope.jl")
+include("test-stat_quantile.jl")
+include("test-stat_linreg.jl")
+include("test-stat_apply.jl")
+include("test-stat_weighted.jl")

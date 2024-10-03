@@ -58,11 +58,12 @@ A = rand(100, 100, 30, 4)
 @time r = mapslices(slope_mk, A; dims=3);
 ```
 """
-function slope_mk(y::AbstractVector, x::AbstractVector=1:length(y); ci=0.95)
+function slope_mk(y::AbstractVector, x::AbstractVector=1:length(y);
+  ci=0.95, nmin::Int=5)
   # z0 = z = pval0 = pval = slp = intercept = NaN
   # y = dropmissing(y)
   n = length(y)
-  if n < 5
+  if n < nmin
     return [NaN, NaN] # [slope, pvalue]
   end
 
