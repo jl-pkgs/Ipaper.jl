@@ -24,6 +24,12 @@ function bbox2cellsize(b::bbox, size)
 end
 
 # 两个至少提供一个
+"""
+    bbox2dims(b::bbox; size=nothing, cellsize=nothing, reverse_lat=true)
+
+# Arguments
+- `cellsize`: celly为负，则lat倒序
+"""
 function bbox2dims(b::bbox; size=nothing, cellsize=nothing, reverse_lat=true)
   if size !== nothing && cellsize === nothing
     cellsize = bbox2cellsize(b, size)

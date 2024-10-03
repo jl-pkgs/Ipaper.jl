@@ -32,7 +32,10 @@ function st_mosaic(rs::Vector{SpatRaster{T,N}}; kw...) where {T,N}
 end
 
 
-function merge_var!(R::AbstractArray, f; var=nothing, box::bbox)
+function merge_var!(R::AbstractArray, f;
+  var=nothing, box::bbox, cellsize=nothing)
+  isnothing(cellsize) && (cellsize = st_cellsize(f))
+  
   b = st_bbox(f)
   bands = bandnames(f)
   nband = length(bands)
@@ -40,24 +43,43 @@ function merge_var!(R::AbstractArray, f; var=nothing, box::bbox)
   ntime = length(inds_var)
 
   println("Reading data ...")
-  @time A = read_gdal(f, inds_var)
+  A = read_gdal(f, inds_var)
   ilon, ilat = bbox_overlap(b, box; cellsize)
   R[ilon, ilat, 1:ntime] .= A
+  nothing
 end
 
+"""
+    merge_var(fs; vars=nothing, var=nothing,
+        progress=true, box::Union{bbox,Nothing}=nothing)
+
+# Arguments
+- `fs`: tiff file paths
+- `vars`: variables in the tiff
+- `var`: variable to merge
+
+# Examples
+```julia
+box = bbox(-180, -60, 180, 90)
+```
+"""
 function merge_var(fs; vars=nothing, var=nothing,
-  box::bbox=bbox(-180, -60, 180, 90))
+  progress=true, box::Union{bbox,Nothing}=nothing)
+  isnothing(box) && (box = st_bbox(st_bbox.(fs)))
 
   f = fs[1]
-  cellsize = gdalinfo(f)["cellsize"][1]
+  cellsize = st_cellsize(f)
   lon, lat = bbox2dims(box; cellsize)
   nlon, nlat = length(lon), length(lat)
+
   bands = bandnames(f)
   ntime = isnothing(vars) ? length(bands) : length(bands) / length(vars)
 
   R = zeros(Float32, nlon, nlat, ntime)
-  @showprogress for f in fs
-    merge_var!(R, f; var, box)
+  p = Progress(ntime)
+  for f in fs
+    progress && next!(p)
+    merge_var!(R, f; var, box, cellsize)
   end
   R
 end

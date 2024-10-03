@@ -48,6 +48,8 @@ function st_cellsize(lon::AbstractVector, lat::AbstractVector)
   lon[2] - lon[1], lat[2] - lat[1] # cellx, celly
 end
 
+st_cellsize(f::AbstractString) = gdalinfo(f)["cellsize"]
+
 # function st_cellsize(ra::AbstractRaster)
 #   # x, y = st_dims(r)
 #   # x[2] - x[1], y[2] - y[1]
