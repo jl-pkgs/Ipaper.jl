@@ -21,13 +21,12 @@ end
 which_isnull(x) = findall(x .== nothing)
 which_notnull(x) = findall(x .!= nothing)
 
-which_isnan(x) = findall(isnan(x))
-which_notnan(x) = findall(.!isnan(x))
+which_isnan(x) = findall(isnan.(x))
+which_notnan(x) = findall(.!isnan.(x))
 
-Base.isnan(x::AbstractArray) = isnan.(x)
-
-all_isnan(x::AbstractArray) = all(isnan(x))
-any_isnan(x::AbstractArray) = any(isnan(x))
+# Base.isnan(x::AbstractArray) = isnan.(x)
+all_isnan(x::AbstractArray) = all(isnan.(x))
+any_isnan(x::AbstractArray) = any(isnan.(x))
 
 
 # TODO: need to test
@@ -187,6 +186,7 @@ export which_isnull, which_notnull,
   abind, 
   findnear,
   set_seed;
+export array
 export isnan, all_isnan, any_isnan;
 export obj_size, r_summary, r_split
 export zip_continue

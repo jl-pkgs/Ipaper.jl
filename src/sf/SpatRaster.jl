@@ -25,7 +25,7 @@ function SpatRaster(A::AbstractArray{T,N}, b::bbox; reverse_lat=true, time=nothi
   SpatRaster(; A, b, cellsize, lon, lat, time, bands, name)
 end
 
-function SpatRaster(r::SpatRaster, A::AbstractArray; reverse_lat=true)
+function SpatRaster(A::AbstractArray, r::SpatRaster; reverse_lat=true)
   (; b, time, bands, name) = r
   if size(A)[1:2] != size(r.A)[1:2]
     lon, lat = bbox2dims(b; size=size(A), reverse_lat)
@@ -45,13 +45,12 @@ end
 Base.ndims(ra::AbstractSpatRaster) = ndims(ra.A)
 Base.size(ra::AbstractSpatRaster) = size(ra.A)
 Base.size(ra::AbstractSpatRaster{T,2}) where {T} = (size(ra.A)..., 1)
-
-Base.parent(ra::AbstractSpatRaster) = ra.A
-Base.iterate(ra::AbstractSpatRaster) = iterate(ra.A)
-Base.length(ra::AbstractSpatRaster) = length(ra.A)
+# Base.parent(ra::AbstractSpatRaster) = ra.A
+# Base.iterate(ra::AbstractSpatRaster) = iterate(ra.A)
+# Base.length(ra::AbstractSpatRaster) = length(ra.A)
 # Base.size(ra::AbstractSpatRaster) = size(ra.A)
-Base.eltype(::Type{AbstractSpatRaster{T}}) where {T} = T
-Base.map(f, ra::AbstractSpatRaster) = SpatRaster(ra, map(f, ra.A))
+# Base.eltype(::Type{AbstractSpatRaster{T}}) where {T} = T
+# Base.map(f, ra::AbstractSpatRaster) = SpatRaster(map(f, ra.A), ra)
 
 # !note about NaN values
 Base_ops = ((:Base, :+), (:Base, :-), (:Base, :*), (:Base, :/),
@@ -63,12 +62,12 @@ for (m, f) in Base_ops
   # _f = Symbol(m, ".:", f)
   @eval begin
     $m.$f(a::AbstractSpatRaster, b::AbstractSpatRaster) = begin
-      size(a) != size(b) || throw(DimensionMismatch("size mismatch"))
-      SpatRaster(a, $m.$f.(a.A, b.A))
+      size(a) != size(b) && throw(DimensionMismatch("size mismatch"))
+      SpatRaster($m.$f.(a.A, b.A), a)
     end
 
-    $m.$f(a::AbstractSpatRaster, b::Real) = SpatRaster(a, $m.$f.(a.A, b))
-    $m.$f(a::Real, b::AbstractSpatRaster) = SpatRaster(a, $m.$f.(a, b.A))
+    $m.$f(a::AbstractSpatRaster, b::Real) = SpatRaster($m.$f.(a.A, b), a)
+    $m.$f(a::Real, b::AbstractSpatRaster) = SpatRaster($m.$f.(a, b.A), b)
   end
 end
 

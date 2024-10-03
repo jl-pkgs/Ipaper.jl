@@ -101,4 +101,11 @@ end
   @test collect(values(tbl)) == [3, 4]
 end
 
-
+@testset "nan" begin
+  x = [1, 2, NaN, 4]
+  @test all_isnan(x) == false
+  @test all_isnan([NaN, NaN])
+  @test all_isnan([NaN])
+  @test which_isnan(x) == [3]
+  @test which_notnan(x) == [1, 2, 4]
+end

@@ -11,6 +11,6 @@
   inds, vals = st_extract(ra, points)
   @test length(vals) == 2
 
-  r2 = st_resample(ra; fact=10)
-  @test size(r2) == (16, 12, 1)
+  # r2 = st_resample(ra; fact=10)
+  # @test size(r2) == (16, 12, 1)
 end

@@ -11,7 +11,7 @@ function _nanquantile!(q::AbstractVector, x::AbstractVector,
   for k = eachindex(probs)
     q[k] = NaNStatistics._nanquantile!(x, probs[k], (1,))[1]
   end
-  q
+  return q
 end
 
 function _nanquantile!(A, q::Real, dims::Int64)

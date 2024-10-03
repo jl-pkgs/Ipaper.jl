@@ -101,17 +101,15 @@ function slope_mk(y::AbstractVector, x::AbstractVector=1:length(y);
   end
 
   VS = var_S * essf
-  if S == 0
-    z = 0.0
-    z0 = 0.0
-  elseif S > 0
+  z = 0.0
+  z0 = 0.0
+  if S > 0
     z = (S - 1) / sqrt2(VS)
     z0 = (S - 1) / sqrt(var_S)
-  else
+  elseif S < 0
     z = (S + 1) / sqrt2(VS)
     z0 = (S + 1) / sqrt(var_S)
   end
-
   # pvalue0 = 2 * pnorm(-abs(z0))
   # Tau = S / (0.5 * n * (n - 1))
   pvalue = 2 * pnorm(-abs(z))
