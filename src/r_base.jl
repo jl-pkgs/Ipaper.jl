@@ -1,4 +1,5 @@
 import DataStructures: OrderedDict
+export OrderedDict
 # using LoopVectorization: @turbo
 
 # function r_in(x::AbstractVector, y::AbstractVector)::BitVector

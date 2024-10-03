@@ -57,6 +57,7 @@ end
   fout = "out.gdb"
   @time gdal_polygonize(f, fout, mask=true, diag=false)
   @test nlayer(fout) == 100
+  ogr_info(fout)
   run(`rm -rf $fout`)
 
   fout = "out.gdb"
@@ -67,6 +68,7 @@ end
   fout = "out.gpkg" # about 10 times slower
   @time gdal_polygonize(f, fout; bands=1:2, mask=true, diag=false)
   @test nlayer(fout) == 2
+  ogr_info(fout)
   run(`rm -rf $fout`)
   rm(f)
 end

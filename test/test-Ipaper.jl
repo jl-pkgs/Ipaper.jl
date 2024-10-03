@@ -87,5 +87,18 @@ end
   str = ["a", "b"]
   writelines(str, f)
   @test readlines(f) == str
+
+  writelines("Hello world", f)
+  @test readlines("a.txt")[1] == "Hello world"
   rm(f)
 end
+
+@testset "table" begin
+  tbl = table([2, 2, 2, 1, 1, 1, 1]; rev=true)
+  @test collect(values(tbl)) == [4, 3]
+
+  tbl = table([2, 2, 2, 1, 1, 1, 1]; rev=false)
+  @test collect(values(tbl)) == [3, 4]
+end
+
+

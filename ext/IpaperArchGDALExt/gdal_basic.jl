@@ -74,7 +74,7 @@ function set_bandnames(f, bandnames)
         GDAL.gdalsetdescription(band, bandnames[iband])
       end, 1:n)
   end
-  nothing
+  return nothing
 end
 
 # gdal_nodata(band::ArchGDAL.GDALRasterBand) = ArchGDAL.GDAL.gdalgetrasternodatavalue(band.ptr)
@@ -92,10 +92,10 @@ end
 
 function gdal_info(f)
   run(`$(gdalinfo_path()) $f`)
-  nothing
+  return nothing
 end
 
 function ogr_info(f)
   run(`$(ogrinfo_path()) $f`)
-  nothing
+  return nothing
 end

@@ -22,7 +22,7 @@ export writelines
 
 ! `x` 需要是string，不然文件错误
 """
-function writelines(x::AbstractVector{<:AbstractString}, f; mode="w", eof="\n")
+function writelines(x::AbstractVector{<:AbstractString}, f::AbstractString; mode="w", eof="\n")
   fid = open(f, mode)
   @inbounds for _x in x
     write(fid, _x)
@@ -31,7 +31,7 @@ function writelines(x::AbstractVector{<:AbstractString}, f; mode="w", eof="\n")
   close(fid)
 end
 
-function writelines(x::AbstractString, f; mode="w", eof="\n")
+function writelines(x::AbstractString, f::AbstractString; mode="w", eof="\n")
   fid = open(f, mode)
   write(fid, x)
   write(fid, eof)
