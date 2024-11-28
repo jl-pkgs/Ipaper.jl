@@ -7,7 +7,7 @@ fill_depressions_wang_and_liu
 
 Wang&Liu(2006) to fill depressions
 """
-function FillDEM_FlowDirection(dem::AbstractMatrix{T}) where {T}
+function FillDEM_FlowDirection(dem::AbstractMatrix{T}; nchunk = 50) where {T}
   dem = deepcopy(dem)
   nrow, ncol = size(dem)
   isProcessed = falses(nrow, ncol)
@@ -34,9 +34,8 @@ function FillDEM_FlowDirection(dem::AbstractMatrix{T}) where {T}
   count = 0
   _spill = 0.0
   
-  nchunk = 50
   chunk = n_valid ÷ nchunk
-  p = Progress(nchunk)
+  p = Progress(Int(nchunk))
   
   while !isempty(queue)
     mod(count, chunk) == 0 && next!(p)

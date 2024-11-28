@@ -75,4 +75,16 @@ function agg_time(A::AbstractArray{T,3}, by::Vector; parallel=true, progress=fal
   return R
 end
 
+function agg_time(A::AbstractVector{T}, by::Vector; fun=mean) where {T<:Real}
+  grps = unique_sort(by)
+  _ntime = length(grps)
+  R = zeros(T, _ntime)
+
+  @inbounds for k = 1:_ntime
+    I = (grps[k] .== by) #|> findall # 必须要有findall
+    R[k] = fun(@view A[I])
+  end
+  return R
+end
+
 export agg!, agg, agg_time
