@@ -6,6 +6,7 @@ using Statistics: mean, median, quantile
 # weighted_sum(x, w) = sum(x, weights(w))
 
 include("movmean.jl")
+include("movstd.jl")
 include("NanQuantile.jl")
 include("match2.jl")
 include("weighted_nansum.jl")

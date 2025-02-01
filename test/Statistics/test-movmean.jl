@@ -20,6 +20,10 @@
   @test movmean(1:10, (1, 2)) == [2.0, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.0, 9.5]
 end
 
+@testset "movstd" begin
+  @test movstd([1, 2, 2]) == [0.7071067811865476, 0.5773502691896255, 0.0]
+  @test movstd([1, 3, 2]; skip_centre=true)[2] == 0.7071067811865476
+end
 
 @testset "weighted_movmean" begin
   r = weighted_movmean([1, 3, 5], [0.1, 1, 0.2])
