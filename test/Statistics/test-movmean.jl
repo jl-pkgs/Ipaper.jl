@@ -13,6 +13,11 @@
   test_movmean(x, 10)
 
   @test movmean([1, 3, 5], 1) == [2, 3, 4.0]
+
+  # Moving average: 1D, 2side windows
+  @test movmean(1:10, (1, 1)) == [1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 9.5]
+  @test movmean(1:10, (1, 1); skip_centre=true) == [2.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 9.0]
+  @test movmean(1:10, (1, 2)) == [2.0, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.0, 9.5]
 end
 
 
