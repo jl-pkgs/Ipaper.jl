@@ -27,6 +27,7 @@ Pkg.add(url="https://github.com/jl-pkgs/Ipaper.jl")
 - `drop_missing`:
 - `set_seed`:
 - `factor`:
+- `approx`, `na_approx`:
 
 ## File Operations
 

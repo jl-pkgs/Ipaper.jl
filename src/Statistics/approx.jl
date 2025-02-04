@@ -108,11 +108,9 @@ end
 
 ## na_approx
 function na_approx!(x::AbstractVector, y::AbstractVector; maxgap::Real=Inf, rule=2)
-  # x = 1:length(y)
   lgl = .!isnan.(y)
   inds_na = findnan(y; maxgap)
   isempty(inds_na) && return y
-  # y2 = deepcopy(y)
   y[inds_na] = approx(x[lgl], y[lgl], x[inds_na]; rule=2) # also modify `y`
   return y
 end
