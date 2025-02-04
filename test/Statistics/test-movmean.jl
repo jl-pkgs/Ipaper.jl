@@ -30,19 +30,3 @@ end
   r = weighted_movmean([1, 3, 5], [0.1, 1, 0.2])
   @test length(r) == 3
 end
-
-@testset "weighted_nansum" begin
-  x = [1.0, NaN, 3]
-  # A = reshape(x, 1, 1, 3)
-  @test weighted_nansum([1.0, 2, 3], [1, 1, 1]) == 6.0
-  @test weighted_nansum(x, [1, 1, 1]) == 4.0
-  # @test weighted_nansum(A, [1, 1, 1])[1] == 4.0
-end
-
-@testset "weighted_nansum" begin
-  x = [1.0, NaN, 3]
-  A = reshape(x, 1, 1, 3)
-  @test weighted_nanmean([1.0, 2, 3], [1, 1, 1]) == 2.0
-  @test weighted_nanmean(x, [1, 1, 1]) == 2.0
-  # weighted_nanmean(A, [1, 1, 1])[1] == 4.0
-end

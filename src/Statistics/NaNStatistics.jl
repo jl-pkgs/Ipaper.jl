@@ -1,3 +1,27 @@
+export nanmean, nansum
+export weighted_mean, weighted_nanmean, weighted_sum, weighted_nansum
+
+function nanmean(x::AbstractVector{T}) where {T<:Real}
+  FT = Base.promote_op(/, T, Int)
+  ∑ = ∅ = FT(0)
+  n = 0
+  @inbounds @simd for xᵢ in x
+    notnan = xᵢ == xᵢ
+    ∑ += ifelse(notnan, xᵢ, ∅)
+    n += notnan
+  end
+  return ∑ / n
+end
+
+function nansum(x::AbstractVector{T}) where {T<:Real}
+  ∑ = ∅ = T(0)
+  @inbounds @simd for xᵢ in x
+    ∑ += ifelse(xᵢ == xᵢ, xᵢ, ∅)
+  end
+  return ∑
+end
+
+
 # using LoopVectorization
 weighted_mean(x::AbstractVector, w::AbstractVector) = sum(x .* w) / sum(w)
 
@@ -6,7 +30,7 @@ function weighted_nanmean(x::AbstractVector{Tx}, w::AbstractVector{Tw}) where {T
   ∑ = ∅ = T(0)
   ∑w = ∅w = Tw(0)
 
-  @inbounds for i = eachindex(x)
+  @inbounds @simd for i = eachindex(x)
     xᵢ = x[i]
     notnan = xᵢ == xᵢ
     ∑ += ifelse(notnan, x[i] * w[i], ∅)
@@ -23,7 +47,7 @@ function weighted_nansum(x::AbstractVector{Tx}, w::AbstractVector{Tw}) where
   T = promote_type(Tx, Tw)
   ∑ = ∅ = T(0)
 
-  @inbounds for i in eachindex(x)
+  @inbounds @simd for i in eachindex(x)
     ∑ += ifelse(x[i] == x[i], x[i] * w[i], ∅)
   end
   return ∑
