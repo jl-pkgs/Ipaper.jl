@@ -40,7 +40,7 @@ function approx(x::AbstractVector{Tx}, y::AbstractVector{Ty}, xout::AbstractVect
   yout = similar(xout, Ty)
 
   ## fix for random order in `x`
-  if !issorted(x)
+  if !(issorted(x) || issorted(x, rev=true))
     inds = sortperm(x)
     x = x[inds]
     y = y[inds]
