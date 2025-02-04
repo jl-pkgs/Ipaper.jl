@@ -1,3 +1,4 @@
+import StatsBase: rle, inverse_rle
 import Dates: DateTime, datetime2unix
 # import Interpolations: linear_interpolation, Line
 # function approx(x, y, xout)
@@ -73,4 +74,53 @@ approx(x::AbstractVector{DateTime}, y::AbstractVector, xout::AbstractVector{Date
 approx(x::AbstractVector{Date}, y::AbstractVector, xout::AbstractVector{Date}; rule=2) =
   approx(DateTime.(x), y, DateTime.(xout); rule)
 
+
+"""
+    findnan(y::AbstractVector; maxgap::Int=Inf)
+
+Find the indices of `NaN` values in the vector `y`, but only if the run of `NaN`s is less than or equal to `maxgap`.
+
+# Arguments
+- `y::AbstractVector`: The input vector to search for `NaN` values.
+- `maxgap::Int=Inf`: The maximum allowed length of consecutive `NaN` values to be included in the result. Runs of `NaN`s longer than this will be ignored.
+
+# Returns
+- `Vector{Int}`: A vector of indices where `NaN` values are found, considering the `maxgap` constraint.
+
+# Example
+```julia
+y = [1.0, NaN, NaN, 4.0, NaN, NaN, NaN, 8.0]
+findnan(y, maxgap=2) # returns [2, 3]
+findnan(y, maxgap=3) # returns [2, 3, 5, 6, 7]
+```
+"""
+function findnan(y::AbstractVector; maxgap::Real=Inf)
+  lgl = isnan.(y)
+  vals, lens = rle(lgl)
+  for i in eachindex(vals)
+    if vals[i] == true && lens[i] > maxgap
+      vals[i] = false
+    end
+  end
+  lgl2 = inverse_rle(vals, lens)
+  findall(lgl2)
+end
+
+## na_approx
+function na_approx!(x::AbstractVector, y::AbstractVector; maxgap::Real=Inf, rule=2)
+  # x = 1:length(y)
+  lgl = .!isnan.(y)
+  inds_na = findnan(y; maxgap)
+  isempty(inds_na) && return y
+  # y2 = deepcopy(y)
+  y[inds_na] = approx(x[lgl], y[lgl], x[inds_na]; rule=2) # also modify `y`
+  return y
+end
+na_approx(x::AbstractVector, y::AbstractVector; maxgap::Real=Inf, rule::Int=2) = na_approx!(x, deepcopy(y); maxgap, rule)
+
+na_approx!(y::AbstractVector; maxgap::Real=Inf, rule::Int=2) = na_approx!(eachindex(y), y; maxgap, rule)
+na_approx(y::AbstractVector; maxgap::Real=Inf, rule::Int=2) = na_approx!(deepcopy(y); maxgap, rule)
+
+
 export approx
+export findnan, na_approx, na_approx!

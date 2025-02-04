@@ -47,6 +47,32 @@ using Ipaper, Test
   @test yout == [1.0, 1.0, 1.5, 3.0]
 end
 
+
+@testset "na_approx" begin
+  set_seed(1)
+  y = rand(10)
+  y[2:3] .= NaN
+  y[5:8] .= NaN
+  y[10] = NaN
+
+  r = na_approx(y; maxgap=2)
+  r = na_approx(y; maxgap=Inf)
+
+  ## second
+  x = eachindex(y)
+  r = na_approx(x, y; maxgap=2)
+  @test length(findall(isnan.(r))) == 4
+  
+  r = na_approx(x, y; maxgap=Inf)
+  @test length(findall(isnan.(r))) == 0
+  
+  # test result
+  @test r[2:3] == [0.0408126516069233, 0.0324534810657255]
+  @test r[10] == 0.8025607099234905
+end
+
+
+
 # using RCall
 
 # begin

@@ -28,3 +28,8 @@ agg
 ```@docs
 apply
 ```
+
+
+```@docs
+approx
+```
