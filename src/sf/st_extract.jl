@@ -8,9 +8,13 @@ function _is_empty(locs::Vector)
   isempty, locs
 end
 
-function st_location_exact(lon::AbstractVector, lat::AbstractVector, points::Vector{Tuple{T,T}}) where {T<:Real}
-  cellx, celly = st_cellsize(lon, lat)
-  map(p -> findnear(p, lon, lat; cellx, celly), points)
+function st_location_exact(lon::AbstractVector, lat::AbstractVector, points::Vector{Tuple{T,T}}; 
+  rm_empty::Bool=false, cellsize=nothing) where {T<:Real}
+  isnothing(cellsize) && (cellsize = st_cellsize(lon, lat))
+  cellx, celly = cellsize  
+  
+  locs = map(p -> findnear(p, lon, lat; cellx, celly), points)
+  return rm_empty ? _rm_empty(locs) : locs
 end
 
 
@@ -24,11 +28,15 @@ return the overlaping indexes `inds`, and corresponding (i,j)
 inds, locs = st_location(r, points)
 ```
 """
-function st_location(lon::AbstractVector, lat::AbstractVector, points::Vector{Tuple{T,T}}) where {T<:Real}
+function st_location_fast(lon::AbstractVector, lat::AbstractVector, points::Vector{Tuple{T,T}}; 
+  rm_empty::Bool=false, cellsize=nothing) where {T<:Real}
+  isnothing(cellsize) && (cellsize = st_cellsize(lon, lat))
+  cellx, celly = cellsize
+
   b = st_bbox(lon, lat)
   nx, ny = length(lon), length(lat)
-  cellx, celly = st_cellsize(lon, lat)
-  _location_fast.(points; b, cellx, celly, nx, ny)
+  locs = _location_fast.(points; b, cellx, celly, nx, ny)
+  return rm_empty ? _rm_empty(locs) : locs
 end
 
 function _location_fast((x, y)::Tuple{Real,Real};
@@ -51,14 +59,14 @@ function _location_fast((x, y)::Tuple{Real,Real};
   end
 end
 
-function st_location(ra::AbstractSpatRaster, points::Vector{Tuple{T,T}}) where {T<:Real}
+function st_location(ra::AbstractSpatRaster, points::Vector{Tuple{T,T}}; kw...) where {T<:Real}
   lon, lat = st_dims(ra)
-  st_location(lon, lat, points)
+  st_location_fast(lon, lat, points; kw...)
 end
 
 
 function st_extract(ra::AbstractSpatRaster, points::Vector{Tuple{T,T}}; combine=hcat) where {T<:Real}
-  inds, locs = st_location(ra, points) |> _rm_empty
+  inds, locs = st_location(ra, points; rm_empty=true, cellsize=ra.cellsize)
   cols = repeat([:], ndims(ra) - 2)
   lst = [ra.A[i, j, cols...] for (i, j) in locs]
   inds, combine(lst...) #cbind(lst...)

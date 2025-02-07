@@ -11,6 +11,7 @@ export guanshan_dem, guanshan_flowdir_cpp, guanshan_flowdir_gis
 
 using ProgressMeter
 using Ipaper: file_ext, obj_size, findnear
+using Statistics: median
 
 export bbox, in_bbox, bbox_overlap
 export bbox2lims, 

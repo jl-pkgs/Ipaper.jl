@@ -12,11 +12,8 @@ using Reexport
 include("Pipe.jl")
 @reexport using .Pipe: @pipe
 
-# using DimensionalData
+using Statistics: mean, median, quantile
 # @reexport using NaNStatistics
-
-# @reexport using TimerOutputs: reset_timer!, @timeit
-# include("timeit_all.jl")
 
 using Printf
 export @sprintf

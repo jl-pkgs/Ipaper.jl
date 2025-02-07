@@ -45,7 +45,7 @@ end
 st_cellsize(r::AbstractSpatRaster) = st_cellsize(r.lon, r.lat)
 
 function st_cellsize(lon::AbstractVector, lat::AbstractVector)
-  lon[2] - lon[1], lat[2] - lat[1] # cellx, celly
+  median(diff(lon)), median(diff(lat)) # cellx, celly
 end
 
 st_cellsize(f::AbstractString) = gdalinfo(f)["cellsize"]
