@@ -7,8 +7,8 @@ function st_location((x, y)::Tuple{Real,Real};
   else
     j = (b.ymax - y) / abs(celly)
   end
-  i = floor(Int, i)
-  j = floor(Int, j)
+  i = ceil(Int, i)
+  j = ceil(Int, j)
 
   if (i < 1 || i > nx) || (j < 1 || j > ny)
     nothing
