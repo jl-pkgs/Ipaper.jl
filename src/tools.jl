@@ -173,23 +173,24 @@ end
 #   j = findnear(y, lat)
 #   return i, j
 # end
-function findnear(x::Real, vals::AbstractVector; cell::Real=NaN)
+function findnear(x::Real, vals::AbstractVector; cell::Real=NaN, tol=1e-2)
   diff = abs.(vals .- x)
   i = argmin(diff)
   isnan(cell) && return i
-  diff[i] <= abs(cell) / 2 ? i : -1 # 在1个网格内
+  diff[i] <= (0.5+tol)*abs(cell) ? i : -1 # 在1个网格内
 end
 
+# cellsize需要是准确的
 function findnear((x, y)::Tuple{Real,Real}, lon::AbstractVector, lat::AbstractVector;
-  cellx::Real=NaN, celly::Real=NaN)
-  i = findnear(x, lon; cell=cellx)
-  j = findnear(y, lat; cell=celly)
+  cellx::Real=NaN, celly::Real=NaN, tol=1e-2)
+  i = findnear(x, lon; cell=cellx, tol)
+  j = findnear(y, lat; cell=celly, tol)
   (i == -1 || j == -1) && (return nothing)
   return i, j
 end
 
-findnear(x::Real, y::Real, lon::AbstractVector, lat::AbstractVector; cellx::Real=NaN, celly::Real=NaN) = 
-  findnear((x, y), lon, lat; cellx=cellx, celly=celly)
+findnear(x::Real, y::Real, lon::AbstractVector, lat::AbstractVector; cellx::Real=NaN, celly::Real=NaN, tol=1e-2) = 
+  findnear((x, y), lon, lat; cellx, celly, tol)
 
 export which_isnull, which_notnull,
   which_isnan, which_notnan,

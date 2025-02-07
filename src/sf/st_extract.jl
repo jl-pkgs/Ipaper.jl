@@ -8,12 +8,13 @@ function _is_empty(locs::Vector)
   isempty, locs
 end
 
+# - `tol`: (0.5 + tol) * cellsize
 function st_location_exact(lon::AbstractVector, lat::AbstractVector, points::Vector{Tuple{T,T}}; 
-  rm_empty::Bool=false, cellsize=nothing) where {T<:Real}
+  rm_empty::Bool=false, cellsize=nothing, tol=1e-2) where {T<:Real}
   isnothing(cellsize) && (cellsize = st_cellsize(lon, lat))
   cellx, celly = cellsize  
   
-  locs = map(p -> findnear(p, lon, lat; cellx, celly), points)
+  locs = map(p -> findnear(p, lon, lat; cellx, celly, tol), points)
   return rm_empty ? _rm_empty(locs) : locs
 end
 
@@ -73,5 +74,5 @@ function st_extract(ra::AbstractSpatRaster, points::Vector{Tuple{T,T}}; combine=
 end
 
 
-export st_location, st_location_exact
+export st_location, st_location_fast, st_location_exact
 export st_extract
