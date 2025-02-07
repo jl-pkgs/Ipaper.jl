@@ -10,7 +10,7 @@ export guanshan_dem, guanshan_flowdir_cpp, guanshan_flowdir_gis
 
 
 using ProgressMeter
-using Ipaper: file_ext, obj_size
+using Ipaper: file_ext, obj_size, findnear
 
 export bbox, in_bbox, bbox_overlap
 export bbox2lims, 
@@ -18,6 +18,7 @@ export bbox2lims,
   bbox2range, bbox2vec,
   bbox2dims, bbox2ndim
 export range2bbox
+export st_points
 export st_bbox, st_dims, st_cellsize, st_mosaic
 export st_write, st_read, nlyr
 export rm_shp
@@ -50,6 +51,10 @@ include("read_gdal.jl")
 include("st_extract.jl")
 include("st_resample.jl")
 include("st_mosaic.jl")
+
+function st_points(x::AbstractVector, y::AbstractVector)
+  [(x[i], y[i]) for i in eachindex(x)]
+end
 
 
 function shp_files(f)

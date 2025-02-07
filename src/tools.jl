@@ -167,12 +167,29 @@ function selectdim_deep(A, dims::Integer, i; deep=true)
 end
 
 
-findnear(x::Real, vals::AbstractVector) = argmin(abs.(vals .- x))
-function findnear(x::Real, y::Real, lon::AbstractVector, lat::AbstractVector)
-  i = findnear(x, lon)
-  j = findnear(y, lat)
+# findnear(x::Real, vals::AbstractVector) = argmin(abs.(vals .- x))
+# function findnear(x::Real, y::Real, lon::AbstractVector, lat::AbstractVector)
+#   i = findnear(x, lon)
+#   j = findnear(y, lat)
+#   return i, j
+# end
+function findnear(x::Real, vals::AbstractVector; cell::Real=NaN)
+  diff = abs.(vals .- x)
+  i = argmin(diff)
+  isnan(cell) && return i
+  diff[i] <= abs(cell) / 2 ? i : -1 # 在1个网格内
+end
+
+function findnear((x, y)::Tuple{Real,Real}, lon::AbstractVector, lat::AbstractVector;
+  cellx::Real=NaN, celly::Real=NaN)
+  i = findnear(x, lon; cell=cellx)
+  j = findnear(y, lat; cell=celly)
+  (i == -1 || j == -1) && (return nothing)
   return i, j
 end
+
+findnear(x::Real, y::Real, lon::AbstractVector, lat::AbstractVector; cellx::Real=NaN, celly::Real=NaN) = 
+  findnear((x, y), lon, lat; cellx=cellx, celly=celly)
 
 export which_isnull, which_notnull,
   which_isnan, which_notnan,
