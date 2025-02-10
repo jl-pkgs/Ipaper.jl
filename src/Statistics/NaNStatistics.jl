@@ -1,7 +1,7 @@
 export nanmean, nansum
 export weighted_mean, weighted_nanmean, weighted_sum, weighted_nansum
 
-function nanmean(x::AbstractVector{T}) where {T<:Real}
+function nanmean(x::AbstractArray{T}) where {T<:Real}
   FT = Base.promote_op(/, T, Int)
   ∑ = ∅ = FT(0)
   n = 0
@@ -13,7 +13,7 @@ function nanmean(x::AbstractVector{T}) where {T<:Real}
   return ∑ / n
 end
 
-function nansum(x::AbstractVector{T}) where {T<:Real}
+function nansum(x::AbstractArray{T}) where {T<:Real}
   ∑ = ∅ = T(0)
   @inbounds @simd for xᵢ in x
     ∑ += ifelse(xᵢ == xᵢ, xᵢ, ∅)
