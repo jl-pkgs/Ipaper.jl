@@ -18,8 +18,7 @@ import Ipaper.sf: find_shortname, cast_to_gdal
 # import Ipaper.sf: WGS84
 
 include("gdal_basic.jl")
-include("write_gdal.jl")
-include("read_gdal.jl")
+include("IO.jl")
 include("gdalinfo.jl")
 include("gdal_polygonize.jl")
 
@@ -28,6 +27,6 @@ export nband, nlayer
 export bandnames, set_bandnames
 export gdal_nodata
 export gdal_info, ogr_info
-export write_gdal
+export write_gdal, read_gdal
 
 end

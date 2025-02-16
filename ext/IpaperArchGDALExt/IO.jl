@@ -1,3 +1,9 @@
+function read_gdal(file::AbstractString, options...)
+  ArchGDAL.read(file) do dataset
+    ArchGDAL.read(dataset, options...)
+  end
+end
+
 ## This part is borrowed from the GeoArrays.jl package.
 # MIT License, Copyright (c) 2018 Maarten Pronk
 # <https://github.com/evetion/GeoArrays.jl/blob/master/src/io.jl>
@@ -7,12 +13,10 @@
 # GFT.val(ga.crs)
 const WGS84 = "GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AXIS[\"Latitude\",NORTH],AXIS[\"Longitude\",EAST],AUTHORITY[\"EPSG\",\"4326\"]]"
 
-const OPTIONS_DEFAULT_TIFF = Dict(
-  # "BIGTIFF" => "YES"
-  "TILED" => "YES", # not work
-  "COMPRESS" => "DEFLATE"
-)
-
+# const OPTIONS_DEFAULT_TIFF = Dict(
+#   "TILED" => "YES", # not work
+#   "COMPRESS" => "DEFLATE"
+# )
 import ArchGDAL: OF_UPDATE
 
 function gdal_setproj!(f::AbstractString, transform::Vector{Cdouble})
