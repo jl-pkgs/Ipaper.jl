@@ -12,7 +12,9 @@ using ArchGDAL.GDAL.GDAL_jll: gdalinfo_path, ogrinfo_path
 using Ipaper.sf
 import Ipaper.sf: write_gdal, read_gdal, gdalinfo, getgeotransform, 
   gdal_polygonize, nband, nlayer
-import Ipaper.sf: gdal_info, org_info, bandnames, set_bandnames
+import Ipaper.sf: gdal_info, ogr_info, bandnames, set_bandnames
+import Ipaper.sf: find_shortname, cast_to_gdal
+
 # import Ipaper.sf: WGS84
 
 include("gdal_basic.jl")

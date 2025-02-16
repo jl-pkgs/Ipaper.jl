@@ -34,7 +34,7 @@ function read_gdal end
 function write_gdal end
 function gdalinfo end
 function gdal_info end
-function org_info end
+function ogr_info end
 function bandnames end
 function set_bandnames end
 
@@ -48,7 +48,8 @@ include("Ops.jl")
 
 include("st_bbox.jl")
 include("st_dims.jl")
-include("read_gdal.jl")
+include("IO.jl")
+
 include("st_extract.jl")
 include("st_resample.jl")
 include("st_mosaic.jl")

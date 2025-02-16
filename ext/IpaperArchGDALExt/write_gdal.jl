@@ -7,44 +7,39 @@
 # GFT.val(ga.crs)
 const WGS84 = "GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AXIS[\"Latitude\",NORTH],AXIS[\"Longitude\",EAST],AUTHORITY[\"EPSG\",\"4326\"]]"
 
-# copied from `GeoArrays`
-const gdt_conversion = Dict{DataType,DataType}(
-  Bool => UInt8,
-  Int8 => UInt8,
-  UInt64 => UInt32,
-  Int64 => Int32
-)
-
-"""Converts type of Array for one that exists in GDAL."""
-function cast_to_gdal(A::AbstractArray{<:Real})
-  type = eltype(A)
-  if type in keys(gdt_conversion)
-    newtype = gdt_conversion[type]
-    @warn "Casting $type to $newtype to fit in GDAL."
-    return newtype, convert(Array{newtype}, A)
-  else
-    error("Can't cast $(eltype(A)) to GDAL.")
-  end
-end
-
 const OPTIONS_DEFAULT_TIFF = Dict(
   # "BIGTIFF" => "YES"
   "TILED" => "YES", # not work
   "COMPRESS" => "DEFLATE"
 )
 
-function write_gdal(ra::AbstractSpatRaster, f::AbstractString;
-  nodata=nothing, options=String[], NUM_THREADS=4, BIGTIFF=true, proj::String=WGS84)
+import ArchGDAL: OF_UPDATE
 
-  data = ra.A
+function gdal_setproj!(f::AbstractString, transform::Vector{Cdouble})
+  # ArchGDAL.open(f, "r+") do ds
+  ArchGDAL.read(f; flags=OF_UPDATE) do ds
+    ## Set geotransform and crs
+    ArchGDAL.GDAL.gdalsetgeotransform(ds.ptr, transform)
+    ArchGDAL.GDAL.gdalsetprojection(ds.ptr, WGS84)
+  end
+  return nothing
+end
+
+
+function write_gdal(data::AbstractArray, f::AbstractString;
+  nodata=nothing, options=String[], NUM_THREADS=4, BIGTIFF=false)
+
   dtype = eltype(data)
   shortname = find_shortname(f)
   driver = ArchGDAL.getdriver(shortname)
-  width, height, nbands = size(ra)
+
+  width, height = size(data)[1:2]
+  ndims(data) == 2 && (nbands = 1)
+  ndims(data) == 3 && (nbands = size(data, 3))
 
   if (shortname == "GTiff")
     options = [options..., "COMPRESS=DEFLATE", "TILED=YES", "NUM_THREADS=$NUM_THREADS"]
-    BIGTIFF && (options = [options..., "BIGTIFF=YES"])
+    BIGTIFF && (push!(options, "BIGTIFF=YES"))
   end
 
   try
@@ -59,13 +54,18 @@ function write_gdal(ra::AbstractSpatRaster, f::AbstractString;
       ArchGDAL.write!(band, data[:, :, i])
       !isnothing(nodata) && ArchGDAL.GDAL.gdalsetrasternodatavalue(band.ptr, nodata)
     end
-
-    # Set geotransform and crs
-    ArchGDAL.GDAL.gdalsetgeotransform(dataset.ptr, getgeotransform(ra))
-    ArchGDAL.GDAL.gdalsetprojection(dataset.ptr, proj)
   end
-  ra.bands !== nothing && set_bandnames(f, ra.bands)
-  f
+end
+
+# only support WGS84 proj
+function write_gdal(ra::AbstractSpatRaster, f::AbstractString;
+  nodata=nothing, options=String[], NUM_THREADS=4, BIGTIFF=true)
+
+  write_gdal(ra.A, f; nodata, options, NUM_THREADS, BIGTIFF)
+  gdal_setproj!(f, getgeotransform(ra))
+
+  !isnothing(ra.bands) && set_bandnames(f, ra.bands)
+  return f
 end
 
 # # Slice data and replace missing by nodata

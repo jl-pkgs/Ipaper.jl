@@ -56,3 +56,6 @@ backup/
 .ipynb_checkpoints
 
 *flow*
+
+*.tif
+*.db
