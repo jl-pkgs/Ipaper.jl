@@ -24,7 +24,9 @@ export st_bbox, st_dims, st_cellsize, st_mosaic
 export st_write, st_read, nlyr
 export rm_shp
 export getgeotransform
-export read_sf
+export read_sf, write_sf
+
+export xy2ij, cellArea
 
 # export gdal_polygonize, nband, nlayer
 # export write_gdal, read_gdal
@@ -77,6 +79,34 @@ end
 function rm_shp(f)
   rm.(shp_files(f))
   nothing
+end
+
+
+## cell info
+# b = st_bbox(f)
+# cellx, celly = sf.gdalinfo(f)["cellsize"]
+function xy2ij(x::T, y::T, b::bbox, cellsize) where {T<:Real}
+  cellx, celly = cellsize
+  i = floor(Int, (x - b.xmin) / cellx)
+  if celly < 0
+    j = floor(Int, (b.ymax - y) / abs(celly))
+  else
+    j = floor(Int, (y - b.ymin) / celly)
+  end
+  return i, j
+end
+
+function xy2ij(point::Tuple{T,T}, ra::SpatRaster) where {T<:Real}
+  x, y = point
+  xy2ij(x, y, st_bbox(ra), st_cellsize(ra))
+end
+
+# in km^2
+function cellArea(x, y, cellsize)
+  cellx, celly = cellsize
+  dx = earth_dist((x, y), (x + cellx, y))
+  dy = earth_dist((x, y), (x, y + celly))
+  return dx * dy
 end
 
 
