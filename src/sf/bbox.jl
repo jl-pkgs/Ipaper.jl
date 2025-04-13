@@ -67,15 +67,23 @@ bbox2lims(b::bbox) = ((b.xmin, b.xmax), (b.ymin, b.ymax))
 
 range2bbox(r::AbstractVector) = bbox(r[1], r[3], r[2], r[4])
 
-function bbox_overlap(b::bbox, box::bbox; size=nothing, cellsize=nothing, reverse_lat=true)
+function bbox_overlap(b::bbox, box::bbox; size=nothing, cellsize=nothing, reverse_lat=true, zip=true)
   lon, lat = bbox2dims(b; size, cellsize, reverse_lat)
   Lon, Lat = bbox2dims(box; size, cellsize, reverse_lat)
 
-  ilon = findall(b.xmin .< Lon .< b.xmax)
-  ilat = findall(b.ymin .< Lat .< b.ymax)
+  ilon = findall(b.xmin .< Lon .< b.xmax) |> _zip
+  ilat = findall(b.ymin .< Lat .< b.ymax) |> _zip
+
+  if zip 
+    ilon = _zip(ilon)
+    ilat = _zip(ilat)
+  end
+  
   # 由于精度的原因，有一些会存在空值
   ## 必定是所有的数据都在box中，不然是程序的错误
   @assert length(lon) == length(ilon)
   @assert length(lat) == length(ilat)
   ilon, ilat
 end
+
+_zip(x) = x[1]:x[end]

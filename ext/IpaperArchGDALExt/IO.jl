@@ -4,6 +4,21 @@ function read_gdal(file::AbstractString, options...)
   end
 end
 
+function read_gdal(file::AbstractString, indices, b::bbox, options...)
+  # cellsize = 1 / 1200
+  cellsize = sf.gdalinfo(file)["cellsize"]
+  box = st_bbox(file)
+  ilon, ilat = bbox_overlap(b, box; cellsize)
+  
+  A = read_gdal(file, indices, ilat, ilon, options...)
+  rast(A, b)
+end
+
+function read_gdal(file::AbstractString, b::bbox, options...)
+  indices = 1:nband(file)
+  read_gdal(file, indices, b, options...)
+end
+
 ## This part is borrowed from the GeoArrays.jl package.
 # MIT License, Copyright (c) 2018 Maarten Pronk
 # <https://github.com/evetion/GeoArrays.jl/blob/master/src/io.jl>
