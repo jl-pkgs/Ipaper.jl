@@ -65,6 +65,13 @@ function gdal_nodata(f)
   end
 end
 
+# function gdal_nodata(f::String, band::Int)
+#   ArchGDAL.read(f) do dataset
+#     band = ArchGDAL.getband(dataset, band)
+#     ArchGDAL.getnodatavalue(band)
+#   end
+# end
+
 function gdal_info(f)
   run(`$(gdalinfo_path()) $f`)
   return nothing

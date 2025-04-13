@@ -24,9 +24,14 @@ export st_bbox, st_dims, st_cellsize, st_mosaic
 export st_write, st_read, nlyr
 export rm_shp
 export getgeotransform
+export read_sf
+
 # export gdal_polygonize, nband, nlayer
 # export write_gdal, read_gdal
 # export bandnames, set_bandnames
+function read_sf end
+function write_sf end
+
 function nband end
 function nlayer end
 function gdal_polygonize end
@@ -53,6 +58,8 @@ include("IO.jl")
 include("st_extract.jl")
 include("st_resample.jl")
 include("st_mosaic.jl")
+
+include("TauDEM.jl")
 
 function st_points(x::AbstractVector, y::AbstractVector)
   [(x[i], y[i]) for i in eachindex(x)]
