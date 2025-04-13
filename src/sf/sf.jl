@@ -59,6 +59,7 @@ include("st_extract.jl")
 include("st_resample.jl")
 include("st_mosaic.jl")
 
+include("distance.jl")
 include("TauDEM.jl")
 
 function st_points(x::AbstractVector, y::AbstractVector)
