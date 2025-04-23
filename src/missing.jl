@@ -51,7 +51,7 @@ function drop_missing(x::AbstractArray{Union{T,Missing}}, replacement=NaN) where
   Array{T}(x2)
 end
 
-drop_missing(x::AbstractArray{T}, replacement=NaN) where {T<:Real} = x
+drop_missing(x, replacement=NaN) = x
 
 # not for user
 function drop_missing!(x::AbstractArray{Union{T,Missing}}, replacement=NaN) where {T<:Real}
@@ -59,7 +59,7 @@ function drop_missing!(x::AbstractArray{Union{T,Missing}}, replacement=NaN) wher
 end
 
 # not for user
-drop_missing!(x::AbstractArray{T}, replacement=NaN) where {T<:Real} = x
+drop_missing!(x, replacement=NaN) = x
 
 
 replace_miss = drop_missing
