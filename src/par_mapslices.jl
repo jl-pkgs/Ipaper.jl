@@ -24,12 +24,12 @@ function par_map(f, A, args...; parallel=true, progress=true, kw...)
   p = Progress(n)
 
   res = Vector{Any}(undef, size(A))
-  @par parallel for i in eachindex(A)
-    progress && next!(p)
-    
+  @par parallel for i in eachindex(A)    
     x = A[i]
     r = f(x, args...; kw...)
     res[i] = r
+
+    progress && next!(p)
   end
   map(x -> x, res)
 end
@@ -80,8 +80,6 @@ function par_mapslices(f, A::AbstractArray{<:Real,N}, args...;
   slice_R = Slice.(axes(R))
 
   @inbounds @par parallel for I in indices
-    progress && next!(p)
-
     idx = ifelse.(dim_mask, slice_A, Tuple(I))
     ridx = ifelse.(dim_mask, slice_R, Tuple(I))
 
@@ -89,6 +87,8 @@ function par_mapslices(f, A::AbstractArray{<:Real,N}, args...;
     Aslice = @view A[idx...] # consume large memory
     r = f(Aslice, args...; kw...)
     concatenate_setindex!(R, r, ridx...)
+
+    progress && next!(p)
   end
   R #|> squeeze
 end
