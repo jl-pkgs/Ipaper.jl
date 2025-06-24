@@ -44,6 +44,7 @@ function gdal_info end
 function ogr_info end
 function bandnames end
 function set_bandnames end
+function gdal_nodata end
 
 nlyr = nband
 st_write = write_gdal
