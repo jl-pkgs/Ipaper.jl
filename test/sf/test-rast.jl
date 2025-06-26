@@ -1,9 +1,12 @@
 using Test, Ipaper, Ipaper.sf, ArchGDAL
 
+
 @testset "raster" begin
   b = bbox(-180.0, -60.0, 180.0, 90.0)
   A = rand(4, 4)
-  r2 = rast(A, b)
+  r2 = rast(A, b; nodata=1.0)
+  r2 = rast(A, b; nodata=[1.0])
+  r2 = rast(A, b;)
 
   @test ndims(r2) == 2
   @test (r2 + 1).A == (1 + r2).A

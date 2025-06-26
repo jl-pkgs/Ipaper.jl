@@ -9,7 +9,7 @@ function read_gdal(file::AbstractString, indices, b::bbox, options...)
   cellsize = sf.gdalinfo(file)["cellsize"]
   box = st_bbox(file)
   ilon, ilat = bbox_overlap(b, box; cellsize)
-  
+
   A = read_gdal(file, indices, ilat, ilon, options...)
   rast(A, b)
 end
@@ -56,6 +56,10 @@ function write_gdal(data::AbstractArray, f::AbstractString;
   ndims(data) == 2 && (nbands = 1)
   ndims(data) == 3 && (nbands = size(data, 3))
 
+  if !isnothing(nodata) && length(nodata) == 1
+    nodata = fill(nodata, nbands)
+  end
+
   if (shortname == "GTiff")
     options = [options..., "COMPRESS=DEFLATE", "TILED=YES", "NUM_THREADS=$NUM_THREADS"]
     BIGTIFF && (push!(options, "BIGTIFF=YES"))
@@ -71,7 +75,7 @@ function write_gdal(data::AbstractArray, f::AbstractString;
     for i = 1:nbands
       band = ArchGDAL.getband(dataset, i)
       ArchGDAL.write!(band, data[:, :, i])
-      !isnothing(nodata) && ArchGDAL.GDAL.gdalsetrasternodatavalue(band.ptr, nodata)
+      !isnothing(nodata) && ArchGDAL.GDAL.gdalsetrasternodatavalue(band.ptr, nodata[i])
     end
   end
 end
@@ -79,6 +83,8 @@ end
 # only support WGS84 proj
 function write_gdal(ra::AbstractSpatRaster, f::AbstractString;
   nodata=nothing, options=String[], NUM_THREADS=4, BIGTIFF=true)
+
+  isnothing(nodata) && (nodata = ra.nodata)
 
   write_gdal(ra.A, f; nodata, options, NUM_THREADS, BIGTIFF)
   gdal_setproj!(f, getgeotransform(ra))

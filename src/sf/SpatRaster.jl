@@ -9,6 +9,14 @@ Base.@kwdef mutable struct SpatRaster{T,N} <: AbstractSpatRaster{T,N}
   time::Union{AbstractVector,Nothing} = nothing
   bands::Union{AbstractVector{String},Nothing} = nothing
   name::String = "Raster"
+  nodata::Union{AbstractVector{T},T,Nothing} = nothing
+end
+
+function nband(ra::SpatRaster{T,N}) where {T, N}
+  n = 1
+  N == 3 && (n == size(ra.A)[end])
+  N > 3 && (n = size(ra.A)[end])
+  return n
 end
 
 """
@@ -16,13 +24,13 @@ end
 
 - `kw`: other parameters: `time`, `name`
 """
-function SpatRaster(A::AbstractArray{T,N}, b::bbox; reverse_lat=true, time=nothing, bands=nothing, name="Raster") where {T,N}
+function SpatRaster(A::AbstractArray{T,N}, b::bbox; reverse_lat=true, time=nothing, bands=nothing, name="Raster", kw...) where {T,N}
   if N == 3 && size(A, 3) == 1
     A = A[:, :, 1]
   end
   cellsize = bbox2cellsize(b, size(A))
   lon, lat = bbox2dims(b; cellsize, reverse_lat)
-  SpatRaster(; A, b, cellsize, lon, lat, time, bands, name)
+  SpatRaster(; A, b, cellsize, lon, lat, time, bands, name, kw...)
 end
 
 function SpatRaster(A::AbstractArray, r::SpatRaster; reverse_lat=true)
@@ -38,7 +46,9 @@ end
 
 function SpatRaster(f::String; kw...)
   A = read_gdal(f)
-  SpatRaster(A, st_bbox(f); bands=bandnames(f), kw...)
+  bands = bandnames(f)
+  nodata = gdal_nodata(f)
+  SpatRaster(A, st_bbox(f); bands, nodata, kw...)
 end
 
 
@@ -88,7 +98,8 @@ function Base.show(io::IO, x::SpatRaster)
     time_end = x.time[end]
     println(io, "  time     : $time_beg ~ $time_end, ntime=$(length(x.time))")
   end
-  print(io, "  bands    : $(x.bands)")
+  println(io, "  bands    : $(x.bands)")
+  print(io, "  nodata   : $(x.nodata)")
   return nothing
 end
 
