@@ -17,7 +17,6 @@ end
 @testset "raster" begin
   b = bbox(-180.0, -60.0, 180.0, 90.0)
   A = rand(4, 4)
-  r2 = rast(A, b; nodata=1.0)
   r2 = rast(A, b; nodata=[1.0])
   r2 = rast(A, b;)
 
