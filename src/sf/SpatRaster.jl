@@ -9,10 +9,10 @@ Base.@kwdef mutable struct SpatRaster{T,N} <: AbstractSpatRaster{T,N}
   time::Union{AbstractVector,Nothing} = nothing
   bands::Union{AbstractVector{String},Nothing} = nothing
   name::String = "Raster"
-  nodata::Union{AbstractVector{T},T,Nothing} = nothing
+  nodata::Union{AbstractVector{T},Nothing} = nothing
 end
 
-function nband(ra::SpatRaster{T,N}) where {T, N}
+function nband(ra::SpatRaster{T,N}) where {T,N}
   n = 1
   N == 3 && (n == size(ra.A)[end])
   N > 3 && (n = size(ra.A)[end])
@@ -79,6 +79,12 @@ for (m, f) in Base_ops
     $m.$f(a::AbstractSpatRaster, b::Real) = SpatRaster($m.$f.(a.A, b), a)
     $m.$f(a::Real, b::AbstractSpatRaster) = SpatRaster($m.$f.(a, b.A), b)
   end
+end
+
+
+import Base: ==
+function ==(x::SpatRaster, y::SpatRaster)
+  x.b == y.b && x.A == y.A && x.nodata == y.nodata
 end
 
 

@@ -61,6 +61,7 @@ include("IO.jl")
 include("st_extract.jl")
 include("st_resample.jl")
 include("st_mosaic.jl")
+include("st_crop.jl")
 
 include("distance.jl")
 

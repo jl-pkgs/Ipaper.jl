@@ -1,5 +1,18 @@
 using Test, Ipaper, Ipaper.sf, ArchGDAL
 
+@testset "st_crop" begin
+  b = bbox(-180.0, -60.0, 180.0, 90.0)
+  A = rand(360, 150)
+  r = rast(A, b; nodata=[1.0])
+
+  f = "test.tif"
+  write_gdal(r, f)
+
+  _b = bbox(0.0, 0.0, 180.0, 90.0)
+  r1 = read_gdal(f, _b)
+  r2 = st_crop(r, _b)
+  @test r1 == r2
+end
 
 @testset "raster" begin
   b = bbox(-180.0, -60.0, 180.0, 90.0)

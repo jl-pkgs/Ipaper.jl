@@ -4,14 +4,18 @@ function read_gdal(file::AbstractString, options...)
   end
 end
 
+# convert into a rast
 function read_gdal(file::AbstractString, indices, b::bbox, options...)
   # cellsize = 1 / 1200
   cellsize = sf.gdalinfo(file)["cellsize"]
   box = st_bbox(file)
+  lon, lat = st_dims(file)
   ilon, ilat = bbox_overlap(b, box; cellsize)
 
-  A = read_gdal(file, indices, ilat, ilon, options...)
-  rast(A, b)
+  _lon, _lat = lon[ilon], lat[ilat]
+  _b = st_bbox(_lon, _lat)
+  _A = read_gdal(file, indices, ilat, ilon, options...)
+  rast(_A, _b; nodata=gdal_nodata(file))
 end
 
 function read_gdal(file::AbstractString, b::bbox, options...)
@@ -56,7 +60,7 @@ function write_gdal(data::AbstractArray, f::AbstractString;
   ndims(data) == 2 && (nbands = 1)
   ndims(data) == 3 && (nbands = size(data, 3))
 
-  if !isnothing(nodata) && length(nodata) == 1
+  if !isnothing(nodata) && !isa(nodata, Vector)
     nodata = fill(nodata, nbands)
   end
 
@@ -85,7 +89,6 @@ function write_gdal(ra::AbstractSpatRaster, f::AbstractString;
   nodata=nothing, options=String[], NUM_THREADS=4, BIGTIFF=true)
 
   isnothing(nodata) && (nodata = ra.nodata)
-
   write_gdal(ra.A, f; nodata, options, NUM_THREADS, BIGTIFF)
   gdal_setproj!(f, getgeotransform(ra))
 
