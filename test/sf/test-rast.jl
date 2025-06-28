@@ -47,6 +47,26 @@ end
   @test (r3 / 2).A == r3.A ./ 2
 end
 
+@testset "rast getindex" begin  
+  ra = rast(rand(180, 90))
+  r = ra[1:10, 1:10]
+  _lon, _lat = st_dims(r)
+  
+  @test length(r[1, 2]) == 1
+  @test st_bbox(r) == bbox(-180.0, 70.0, -160.0, 90.0)
+  @test _lon == -179.0:2.0:-161.0
+  @test _lat == 89.0:-2.0:71.0
+
+  ra = rast(rand(180, 90, 3))
+  r = ra[1:10, 1:10]
+  _lon, _lat = st_dims(r)
+
+  @test length(r[1, 2, 1]) == 1
+  @test length(r[1, 2]) == 3
+  @test st_bbox(r) == bbox(-180.0, 70.0, -160.0, 90.0)
+  @test _lon == -179.0:2.0:-161.0
+  @test _lat == 89.0:-2.0:71.0
+end
 
 
 @testset "gdal_nodata" begin

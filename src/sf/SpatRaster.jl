@@ -24,7 +24,9 @@ end
 
 - `kw`: other parameters: `time`, `name`
 """
-function SpatRaster(A::AbstractArray{T,N}, b::bbox; reverse_lat=true, time=nothing, bands=nothing, name="Raster", kw...) where {T,N}
+function SpatRaster(A::AbstractArray{T,N}, b::bbox=bbox(-180.0, -90.0, 180.0, 90.0);
+  reverse_lat=true, time=nothing, bands=nothing, name="Raster", kw...) where {T,N}
+
   if N == 3 && size(A, 3) == 1
     A = A[:, :, 1]
   end
@@ -49,6 +51,34 @@ function SpatRaster(f::String; kw...)
   bands = bandnames(f)
   nodata = gdal_nodata(f)
   SpatRaster(A, st_bbox(f); bands, nodata, kw...)
+end
+
+
+function Base.getindex(ra::AbstractSpatRaster, i, j, args...; deep=true)
+  (; A, cellsize, lon, lat, time, bands, name, nodata) = ra
+
+  cols = repeat([:], max(ndims(ra) - 2 - length(args), 0))
+  inds = (i, j, args..., cols...)
+  
+  if length(args) > 0
+    k = args[1]
+    !isnothing(bands) && (bands = bands[k])
+    !isnothing(time) && (time = time[k])
+  end
+
+  lon, lat = st_dims(ra)
+  _lon, _lat = lon[i], lat[j]
+  _b = st_bbox(_lon, _lat)
+  _A = deep ? A[inds...] : @view A[inds...]
+
+  rast(; A=_A, b=_b, lon=_lon, lat=_lat, time, bands,
+    cellsize, name, nodata)
+end
+
+function Base.getindex(ra::AbstractSpatRaster, i::Int, j::Int, args...)
+  cols = repeat([:], max(ndims(ra) - 2 - length(args), 0))
+  inds = (i, j, args..., cols...)
+  ra.A[inds...]
 end
 
 
