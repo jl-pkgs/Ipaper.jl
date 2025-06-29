@@ -1,4 +1,4 @@
-import DataStructures: OrderedDict
+import OrderedCollections: OrderedDict
 export OrderedDict
 # using LoopVectorization: @turbo
 
