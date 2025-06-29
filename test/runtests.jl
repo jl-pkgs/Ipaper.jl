@@ -3,9 +3,9 @@ using Test, Ipaper
 import NaNStatistics
 using Ipaper: NanQuantile_low, NanQuantile_low!
 
-using ArchGDAL
-include("hydro/test-flowdir.jl")
-include("sf/test_sf.jl")
+# using ArchGDAL
+# include("hydro/test-flowdir.jl")
+# include("sf/test_sf.jl")
 
 using Distributions
 include("Statistics/test-Statistics.jl")

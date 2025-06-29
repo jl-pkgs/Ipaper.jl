@@ -43,7 +43,7 @@ include("missing.jl")
 include("Statistics/Statistics.jl")
 # include("Climate/Climate.jl")
 include("Slope/Slope.jl")
-include("sf/sf.jl")
+# include("sf/sf.jl")
 
 include("precompile.jl")
 include("tools_plot.jl")
@@ -51,26 +51,26 @@ include("tools_plot.jl")
 include("apply.jl")
 include("agg.jl")
 
-include("hydro/Hydro.jl")
+# include("hydro/Hydro.jl")
 
 
 dim = size
 export dim
 # whos = varinfo
 
-export load_ext
-function load_ext(ext::Symbol=:IpaperArchGDALExt)
-  Base.get_extension(@__MODULE__, ext)
-end
+# export load_ext
+# function load_ext(ext::Symbol=:IpaperArchGDALExt)
+#   Base.get_extension(@__MODULE__, ext)
+# end
 
-using Requires
-function __init__()
-  @require ArchGDAL = "c9ce4bd3-c3d5-55b8-8973-c0e20141b8c3" begin
-    # include("../ext/IpaperArchGDALExt/IpaperArchGDALExt.jl")
-    ext = load_ext(:IpaperArchGDALExt)
-    @reexport using .ext
-  end
-end
+# using Requires
+# function __init__()
+#   @require ArchGDAL = "c9ce4bd3-c3d5-55b8-8973-c0e20141b8c3" begin
+#     # include("../ext/IpaperArchGDALExt/IpaperArchGDALExt.jl")
+#     ext = load_ext(:IpaperArchGDALExt)
+#     @reexport using .ext
+#   end
+# end
 
 
 end
