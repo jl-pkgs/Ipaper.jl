@@ -94,10 +94,10 @@ end
 end
 
 @testset "table" begin
-  tbl = table([2, 2, 2, 1, 1, 1, 1]; rev=true)
+  tbl = table([2, 2, 2, 1, 1, 1, 1]; rev=true, by_value=true)
   @test collect(values(tbl)) == [4, 3]
 
-  tbl = table([2, 2, 2, 1, 1, 1, 1]; rev=false)
+  tbl = table([2, 2, 2, 1, 1, 1, 1]; rev=false, by_value=true)
   @test collect(values(tbl)) == [3, 4]
 end
 

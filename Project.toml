@@ -4,8 +4,6 @@ authors = ["Dongdong Kong <kongdd@users.noreply.github.com>"]
 version = "0.3.0"
 
 [deps]
-CategoricalArrays = "324d7699-5711-5eae-9e2f-1d82baa6b597"
-DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 DocStringExtensions = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
 Glob = "c27321d9-0574-5035-807b-f59d2c89b15c"
@@ -33,8 +31,6 @@ IpaperPlotExt = "Plots"
 IpaperSlopeExt = "Distributions"
 
 [compat]
-CategoricalArrays = "0.10"
-DataFrames = "1.7.0"
 Distributions = "0.25"
 DocStringExtensions = "0.8, 0.9"
 Glob = "1.3"

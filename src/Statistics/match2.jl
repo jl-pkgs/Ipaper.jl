@@ -1,9 +1,11 @@
 # import StatsBase: countmap
 # table = countmap
-function dict2order(dict; rev=true)
+function dict2order(dict; rev=true, by_value=true)
   _keys = keys(dict) |> collect
   _values = values(dict) |> collect
-  inds = sortperm(_values; rev)
+  
+  x = by_value ? _values : _keys
+  inds = sortperm(x; rev)
   OrderedDict(_keys[i] => _values[i] for i in inds)
 end
 
@@ -14,7 +16,7 @@ end
 This function is about 5X slower than `StatsBase: countmap`.
 If speed matters for you, use `StatsBase.countmap` instead.
 """
-function table(x::AbstractVector; rev=true)
+function table(x::AbstractVector; rev=false, by_value=false)
   tbl = Dict{eltype(x),Int}()
   for element in x
     if haskey(tbl, element)
@@ -23,7 +25,7 @@ function table(x::AbstractVector; rev=true)
       tbl[element] = 1
     end
   end
-  return dict2order(tbl; rev)
+  return dict2order(tbl; rev, by_value)
 end
 
 
