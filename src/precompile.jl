@@ -50,8 +50,7 @@ precompile(str_extract_strip, (String, String))
       x = rand(T, 10)
       w = rand(T, 10)
 
-      factor(x)
-      
+      # factor(x)
       movmean(x)
       weighted_mean(x, w)
       

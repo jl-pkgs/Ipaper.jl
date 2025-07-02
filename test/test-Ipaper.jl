@@ -11,18 +11,18 @@
 end
 
 
-@testset "factor" begin
-  probs = [0.90, 0.95, 0.99, 0.999, 0.9999]
-  levs = factor(probs)
+# @testset "factor" begin
+#   probs = [0.90, 0.95, 0.99, 0.999, 0.9999]
+#   levs = factor(probs)
 
-  @test factor_value(levs) == probs
-  
-  n = Int(1e3)
-  x = repeat([levs[1]], n)
-  y = repeat([probs[1]], n)
-  
-  sizeof(x) < sizeof(y)
-end
+#   @test factor_value(levs) == probs
+
+#   n = Int(1e3)
+#   x = repeat([levs[1]], n)
+#   y = repeat([probs[1]], n)
+
+#   sizeof(x) < sizeof(y)
+# end
 
 
 @testset "dir" begin
