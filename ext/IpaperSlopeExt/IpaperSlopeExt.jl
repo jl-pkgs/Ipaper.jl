@@ -1,4 +1,4 @@
-export IpaperSlopeExt
+# export IpaperSlopeExt
 module IpaperSlopeExt
 
 

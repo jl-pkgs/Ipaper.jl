@@ -1,4 +1,4 @@
-export IpaperPlotExt
+# export IpaperPlotExt
 module IpaperPlotExt
 
 # @static if isdefined(Base, :get_extension) # julia < 1.9
