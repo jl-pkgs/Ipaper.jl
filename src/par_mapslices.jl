@@ -2,7 +2,7 @@ export par_mapslices, par_map
 
 
 import Base.Threads
-import Base: Slice, concatenate_setindex!, _unsafe_getindex!
+import Base: Slice, concatenate_setindex!
 
 """
     par_map(f, A, args...; kw...)
@@ -35,6 +35,16 @@ function par_map(f, A, args...; parallel=true, progress=true, kw...)
 end
 
 
+# Build the index tuple for a slice.
+# Using @generated with Val{mask} avoids Union-typed tuples from ifelse.() broadcast,
+# eliminating per-iteration heap allocations and enabling type-stable view/setindex.
+@generated function _make_slice_idx(::Val{mask}, slice_A, I) where {mask}
+  N = length(mask)
+  exprs = [mask[d] ? :(slice_A[$d]) : :(I[$d]) for d in 1:N]
+  :(tuple($(exprs...)))
+end
+
+
 """
     par_mapslices(f, A::AbstractArray{<:Real,N}, args...; dims=N, kw...)
 
@@ -56,65 +66,46 @@ par_mapslices(mean, A)
 # @time r = mapslices(slope_mk, A; dims=3);
 # @time r_par = par_mapslices(slope_mk, A; dims=3); # 5X faster
 ```
-# TODO: par_mapslices is low efficiency
 """
 function par_mapslices(f, A::AbstractArray{<:Real,N}, args...;
   dims=N, parallel=true, progress=true, kw...) where {N}
 
-  idx1 = ntuple(d -> d in dims ? (:) : firstindex(A, d), ndims(A))
+  idx1 = ntuple(d -> d in dims ? (:) : firstindex(A, d), N)
   Aslice = A[idx1...]
-  r1 = f(Aslice)
+  r1 = f(Aslice, args...; kw...)
 
-  _dims = size(A) |> collect
-  _dims[dims] = length(r1)
+  _dims = ntuple(d -> d in dims ? length(r1) : size(A, d), N)
+  dim_mask = ntuple(d -> d in dims, N)
+  dim_mask_val = Val(dim_mask)
 
-  dim_mask = ntuple(d -> d in dims, ndims(A))
-
-  itershape = ntuple(d -> d in dims ? Base.OneTo(1) : axes(A, d), ndims(A))
+  itershape = ntuple(d -> d in dims ? Base.OneTo(1) : axes(A, d), N)
   indices = CartesianIndices(itershape)
-  n = prod(size(indices))
-  p = Progress(n)
+  n = length(indices)
 
-  R = zeros(eltype(r1), _dims...)
+  R = zeros(eltype(r1), _dims)
   slice_A = Slice.(axes(A))
   slice_R = Slice.(axes(R))
 
-  @inbounds @par parallel for I in indices
-    idx = ifelse.(dim_mask, slice_A, Tuple(I))
-    ridx = ifelse.(dim_mask, slice_R, Tuple(I))
+  p = Progress(n)
 
-    # _unsafe_getindex!(Aslice, A, idx...)
-    Aslice = @view A[idx...] # consume large memory
-    r = f(Aslice, args...; kw...)
-    concatenate_setindex!(R, r, ridx...)
+  nt = parallel ? Threads.nthreads() : 1
+  actual_nt = min(nt, max(n, 1))
+  chunks = r_chunk(vec(collect(indices)), actual_nt)
 
-    progress && next!(p)
+  # Per-thread dense buffers: avoid strided SubArray overhead in the inner loop
+  buffers = [similar(Aslice) for _ in 1:actual_nt]
+
+  @par parallel for t in 1:actual_nt
+    buf = buffers[t]
+    @inbounds for I in chunks[t]
+      I_tup = Tuple(I)
+      idx  = _make_slice_idx(dim_mask_val, slice_A, I_tup)
+      ridx = _make_slice_idx(dim_mask_val, slice_R, I_tup)
+      copyto!(buf, view(A, idx...))
+      r = f(buf, args...; kw...)
+      concatenate_setindex!(R, r, ridx...)
+      progress && next!(p)
+    end
   end
-  R #|> squeeze
+  R
 end
-
-# if option == 1
-#   # 方案1：划分成块
-#   inds = collect(indices)[:]
-#   nworker = get_clusters()
-#   i_chunks = r_chunk(inds, nworker)
-
-#   # kws = [deepcopy(kw) for _ in 1:nworker]  
-#   slices = [zeros(size(Aslice)) for _ in 1:nworker]
-
-#   @par parallel for t = 1:nworker
-#     x = slices[t]
-
-#     @inbounds for I in i_chunks[t]
-#       idx = ifelse.(dim_mask, slice_A, Tuple(I))
-#       ridx = ifelse.(dim_mask, slice_R, Tuple(I))
-
-#       _unsafe_getindex!(x, A, idx...) # this not work
-#       # Aslice = @view A[idx...] # consume large memory
-#       # R[ridx...] .= r
-#       r = f(Aslice, args...; kw...)
-#       concatenate_setindex!(R, r, ridx...)
-#     end
-#   end
-# elseif option == 2
-# end
