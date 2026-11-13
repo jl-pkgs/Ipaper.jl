@@ -1,39 +1,7 @@
-export par_mapslices, par_map
-
+export par_mapslices
 
 import Base.Threads
 import Base: Slice, concatenate_setindex!
-
-"""
-    par_map(f, A, args...; kw...)
-
-# Examples
-```julia
-function f(x)
-  sleep(0.1)
-  x
-end
-
-# get_clusters()
-@time par_map(f, 1:10)
-@time map(f, 1:10)
-```
-"""
-function par_map(f, A, args...; parallel=true, progress=true, kw...)
-  n = prod(size(A))
-  p = Progress(n)
-
-  res = Vector{Any}(undef, size(A))
-  @par parallel for i in eachindex(A)    
-    x = A[i]
-    r = f(x, args...; kw...)
-    res[i] = r
-
-    progress && next!(p)
-  end
-  map(x -> x, res)
-end
-
 
 # Build the index tuple for a slice.
 # Using @generated with Val{mask} avoids Union-typed tuples from ifelse.() broadcast,
@@ -90,15 +58,15 @@ function par_mapslices(f, A::AbstractArray{<:Real,N}, args...;
 
   nt = parallel ? Threads.nthreads() : 1
   actual_nt = min(nt, max(n, 1))
-  chunks = r_chunk(vec(collect(indices)), actual_nt)
+  chunks = r_chunk(n, actual_nt)
 
   # Per-thread dense buffers: avoid strided SubArray overhead in the inner loop
   buffers = [similar(Aslice) for _ in 1:actual_nt]
 
   @par parallel for t in 1:actual_nt
     buf = buffers[t]
-    @inbounds for I in chunks[t]
-      I_tup = Tuple(I)
+    @inbounds for i in chunks[t]
+      I_tup = Tuple(indices[i])
       idx  = _make_slice_idx(dim_mask_val, slice_A, I_tup)
       ridx = _make_slice_idx(dim_mask_val, slice_R, I_tup)
       copyto!(buf, view(A, idx...))
